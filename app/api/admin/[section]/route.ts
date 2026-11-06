@@ -28,7 +28,6 @@ const SECTIONS: readonly AdminSection[] = [
   "publications",
   "layout",
   "content",
-  "social",
   "videos",
 ];
 
@@ -144,15 +143,6 @@ export async function PUT(req: Request, { params }: { params: { section: string 
       return NextResponse.json({ ok: true });
     }
 
-    case "social": {
-      const b = body as { item?: unknown } | null;
-      const post = parseSocialPost(b?.item ?? body);
-      if (!post) return bad;
-      const ref = post.id ? db.collection(COLLECTIONS.social).doc(post.id) : db.collection(COLLECTIONS.social).doc();
-      await ref.set({ ...post, id: ref.id });
-      return NextResponse.json({ ok: true, id: ref.id });
-    }
-
     case "videos": {
       const b = body as { item?: unknown } | null;
       const vid = parseVideo(b?.item ?? body);
@@ -167,7 +157,7 @@ export async function PUT(req: Request, { params }: { params: { section: string 
 export async function DELETE(req: Request, { params }: { params: { section: string } }) {
   const g = await guard(params.section);
   if ("error" in g) return g.error;
-  const allowed = ["news", "publications", "applications", "board", "social", "videos"];
+  const allowed = ["news", "publications", "applications", "board", "videos"];
   if (!allowed.includes(g.section)) return fail("Silme bu bölümde desteklenmiyor.", 405);
   const id = new URL(req.url).searchParams.get("id");
   if (!id) return fail("id gerekli.", 400);
@@ -177,7 +167,6 @@ export async function DELETE(req: Request, { params }: { params: { section: stri
     publications: COLLECTIONS.publications,
     applications: COLLECTIONS.applications,
     board: COLLECTIONS.board,
-    social: COLLECTIONS.social,
     videos: COLLECTIONS.videos,
   };
 

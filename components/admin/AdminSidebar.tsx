@@ -33,7 +33,6 @@ const SECTION_ICONS: Record<AdminSection, typeof Newspaper> = {
   applications: UserCheck,
   provinces: MapPin,
   iban: Landmark,
-  social: Share2,
   videos: Video,
 };
 

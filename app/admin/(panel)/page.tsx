@@ -64,10 +64,6 @@ const SECTION_META: Record<AdminSection, { icon: typeof Newspaper; desc: string 
     icon: Landmark,
     desc: "Bağış modalında görünen resmî banka hesaplarını güncelleyin.",
   },
-  social: {
-    icon: Share2,
-    desc: "X (Twitter) ve Instagram @milligenclikmgd paylaşımlarını yönetin veya senkronize edin.",
-  },
 };
 
 export default async function AdminHome({ searchParams }: { searchParams: { denied?: string } }) {

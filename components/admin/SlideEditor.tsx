@@ -1,25 +1,28 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowDown,
   ArrowUp,
+  Camera,
   Check,
   ChevronRight,
   Copy,
   ExternalLink,
   Eye,
   Layers,
+  Loader2,
   Pencil,
   Plus,
   RefreshCw,
   Sparkles,
   Trash2,
+  Upload,
   X,
 } from "lucide-react";
-import { Card, PageHeader } from "@/components/admin/ui";
+import { Card } from "@/components/admin/ui";
 import { useSlides } from "@/hooks/useSiteData";
 import { HOME_SLIDES, type HomeSlideItem } from "@/data/slides";
 
@@ -74,6 +77,13 @@ export default function SlideEditor() {
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [form, setForm] = useState<HomeSlideItem>(EMPTY_FORM);
   const [savedToast, setSavedToast] = useState(false);
+  const [uploadingIndex, setUploadingIndex] = useState<number | null>(null);
+  const [modalUploading, setModalUploading] = useState(false);
+
+  // Dosya seçici ref'leri
+  const cardFileInputRef = useRef<HTMLInputElement>(null);
+  const [activeReplaceIndex, setActiveReplaceIndex] = useState<number | null>(null);
+  const modalFileInputRef = useRef<HTMLInputElement>(null);
 
   const saveSlides = (newSlides: HomeSlideItem[]) => {
     setSlides(newSlides);
@@ -86,6 +96,50 @@ export default function SlideEditor() {
       } catch (e) {
         console.error("Slayt kaydedilemedi:", e);
       }
+    }
+  };
+
+  // Bilgisayardan fotoğraf yükleme işlemi
+  const handleUploadFile = async (e: React.ChangeEvent<HTMLInputElement>, isModal: boolean) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (isModal) {
+      setModalUploading(true);
+    } else if (activeReplaceIndex !== null) {
+      setUploadingIndex(activeReplaceIndex);
+    }
+
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const res = await fetch("/api/admin/upload", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await res.json();
+
+      if (data.ok && data.url) {
+        if (isModal) {
+          setForm((prev) => ({ ...prev, image: data.url }));
+        } else if (activeReplaceIndex !== null) {
+          const next = slides.map((s, idx) =>
+            idx === activeReplaceIndex ? { ...s, image: data.url } : s
+          );
+          saveSlides(next);
+        }
+      } else {
+        alert(data.error || "Görsel yüklenirken bir sorun oluştu.");
+      }
+    } catch (err) {
+      console.error("Upload error:", err);
+      alert("Fotoğraf yükleme başarısız oldu.");
+    } finally {
+      setModalUploading(false);
+      setUploadingIndex(null);
+      setActiveReplaceIndex(null);
+      if (e.target) e.target.value = "";
     }
   };
 
@@ -163,6 +217,22 @@ export default function SlideEditor() {
 
   return (
     <div className="space-y-6">
+      {/* Gizli Dosya Girişleri */}
+      <input
+        ref={cardFileInputRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={(e) => handleUploadFile(e, false)}
+      />
+      <input
+        ref={modalFileInputRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={(e) => handleUploadFile(e, true)}
+      />
+
       {/* Üst Başlık & Eylemler */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
@@ -170,7 +240,7 @@ export default function SlideEditor() {
             <Layers className="text-secondary" /> Manşet Slaytları & Afişler
           </h1>
           <p className="mt-1 text-sm text-slate-600">
-            Ana sayfa manşetinde (Hero altında) dönen afişleri, burs duyurularını ve fotoğraflı kampanyaları buradan yönetin.
+            Ana sayfa manşetinde (Hero altında) dönen afişleri ve burs duyurularını buradan yönetin. İstediğiniz slaytın fotoğrafını doğrudan bilgisayarınızdan değiştirebilirsiniz.
           </p>
         </div>
 
@@ -232,21 +302,39 @@ export default function SlideEditor() {
                 </button>
               </div>
 
-              {/* Görsel Önizleme Thumbnail */}
-              <div className="relative w-full sm:w-48 h-28 rounded-xl overflow-hidden bg-slate-900 border border-slate-200 shrink-0 group">
+              {/* Görsel Önizleme Thumbnail ve Fotoğrafı Değiştir Butonu */}
+              <div className="relative w-full sm:w-52 h-32 rounded-xl overflow-hidden bg-slate-900 border border-slate-200 shrink-0 group">
                 <Image
                   src={item.image || "/images/slider/burs-universite.jpg"}
                   alt={item.title}
                   fill
                   className="object-cover group-hover:scale-105 transition duration-300"
                 />
-                <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
+
+                {uploadingIndex === index && (
+                  <div className="absolute inset-0 bg-black/70 flex flex-col items-center justify-center text-white text-xs gap-1 z-20">
+                    <Loader2 size={20} className="animate-spin text-secondary" />
+                    <span>Yükleniyor…</span>
+                  </div>
+                )}
+
+                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex flex-col items-center justify-center gap-1.5 p-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActiveReplaceIndex(index);
+                      cardFileInputRef.current?.click();
+                    }}
+                    className="w-full py-1.5 px-2 rounded-lg bg-secondary text-primary-dark text-xs font-bold flex items-center justify-center gap-1.5 shadow active:scale-95 transition"
+                  >
+                    <Camera size={13} /> Fotoğrafı Değiştir
+                  </button>
                   <button
                     type="button"
                     onClick={() => setPreviewSlide(item)}
-                    className="p-2 rounded-full bg-white/90 text-slate-900 text-xs font-bold flex items-center gap-1 shadow"
+                    className="w-full py-1.5 px-2 rounded-lg bg-white/90 hover:bg-white text-slate-900 text-xs font-bold flex items-center justify-center gap-1 shadow transition"
                   >
-                    <Eye size={14} /> Önizle
+                    <Eye size={13} /> Önizle
                   </button>
                 </div>
               </div>
@@ -289,11 +377,14 @@ export default function SlideEditor() {
               <div className="flex items-center gap-2 w-full lg:w-auto justify-end border-t lg:border-t-0 pt-3 lg:pt-0 border-slate-100">
                 <button
                   type="button"
-                  onClick={() => setPreviewSlide(item)}
-                  className="p-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 transition"
-                  title="Tam Boyut Önizle"
+                  onClick={() => {
+                    setActiveReplaceIndex(index);
+                    cardFileInputRef.current?.click();
+                  }}
+                  className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-amber-300 text-amber-900 bg-amber-50 hover:bg-amber-100 font-semibold text-xs transition"
+                  title="Bu slaytın fotoğrafını değiştir"
                 >
-                  <Eye size={16} />
+                  <Camera size={14} className="text-amber-700" /> Fotoğrafı Değiştir
                 </button>
                 <button
                   type="button"
@@ -427,31 +518,50 @@ export default function SlideEditor() {
                 </div>
               </div>
 
-              {/* Görsel Yolu & Hızlı Seçici */}
+              {/* Görsel Yolu & Dosya Yükleme */}
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
-                  Afiş / Görsel Dosya Yolu *
-                </label>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="block text-xs font-bold text-slate-700">
+                    Afiş / Görsel Dosya Yolu *
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => modalFileInputRef.current?.click()}
+                    disabled={modalUploading}
+                    className="flex items-center gap-1.5 text-xs font-bold text-primary hover:text-primary-dark bg-blue-50 hover:bg-blue-100 px-2.5 py-1 rounded-lg border border-blue-200 transition"
+                  >
+                    {modalUploading ? (
+                      <>
+                        <Loader2 size={13} className="animate-spin" /> Yükleniyor…
+                      </>
+                    ) : (
+                      <>
+                        <Upload size={13} /> Bilgisayardan Fotoğraf Yükle
+                      </>
+                    )}
+                  </button>
+                </div>
+
                 <div className="flex gap-2">
                   <input
                     type="text"
                     required
                     value={form.image}
                     onChange={(e) => setForm({ ...form, image: e.target.value })}
-                    placeholder="/images/slider/burs-universite.jpg"
+                    placeholder="/images/slider/burs-universite.jpg veya /uploads/..."
                     className="flex-1 rounded-xl border border-slate-300 px-3.5 py-2 text-sm font-mono text-slate-800 focus:border-secondary focus:outline-none"
                   />
                   {form.image && (
-                    <div className="relative w-12 h-10 rounded-lg overflow-hidden border border-slate-200 shrink-0">
+                    <div className="relative w-14 h-10 rounded-lg overflow-hidden border border-slate-200 shrink-0">
                       <Image src={form.image} alt="" fill className="object-cover" />
                     </div>
                   )}
                 </div>
 
                 {/* Hızlı Fotoğraf Seçici */}
-                <div className="mt-2">
+                <div className="mt-2.5">
                   <p className="text-[11px] font-semibold text-slate-500 mb-1">
-                    Sitedeki Hazır Fotoğraflardan Seç:
+                    Veya Hazır Slayt Fotoğraflarından Seç:
                   </p>
                   <div className="flex flex-wrap gap-1.5">
                     {PRESET_IMAGES.map((img) => (

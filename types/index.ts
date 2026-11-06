@@ -11,7 +11,6 @@ export type AdminSection =
   | "publications"
   | "layout"
   | "content"
-  | "social"
   | "videos";
 
 export interface HomeSlideItem {
