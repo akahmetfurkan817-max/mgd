@@ -12,28 +12,40 @@ export interface HomeSlideItem {
 
 export const HOME_SLIDES: HomeSlideItem[] = [
   {
+    id: "slide-yeniden-mgd",
+    badge: "MİLLİ GENÇLİK HAREKETİ",
+    badgeColor: "bg-blue-600",
+    title: "Yeniden Milli Gençlik: Aydınlık Yarınlar İçin Başlıyoruz",
+    subtitle:
+      "Ahlak, ilim ve maneviyat bayrağını 81 ilde daha yükseğe taşımak için kutlu yürüyüşümüz kararlılıkla devam ediyor.",
+    image: "/images/slider/yeniden-milli-genclik.jpg",
+    linkUrl: "/kurumsal",
+    buttonText: "Teşkilatımızı Tanıyın →",
+    date: "Resmî Kampanya",
+  },
+  {
     id: "slide-burs-sonuclari",
     badge: "BURS DUYURUSU",
     badgeColor: "bg-emerald-600",
-    title: "2026 - 2027 Eğitim Dönemi Üniversite Lisans & Lisansüstü Burs Sonuçları Açıklandı!",
+    title: "2026 - 2027 Dönemi Üniversite Lisans & Yükseköğrenim Burs Başvuruları Açıldı",
     subtitle:
-      "Genel Merkez Eğitim ve Burs Komisyonumuz tarafından titizlikle incelenen burs başvuruları sonuçlanmıştır. Sonuçları hemen sorgulayabilirsiniz.",
-    image: "/images/basinda-biz/antalya-il.png",
-    linkUrl: "/haberler#burs-sonuclari",
-    buttonText: "Burs Sonuçlarını Sorgula →",
-    date: "Kasım 2026",
-  },
-  {
-    id: "slide-burs-basvuru",
-    badge: "BURS BAŞVURULARI DEVAM EDİYOR",
-    badgeColor: "bg-blue-600",
-    title: "Milli Maarif Yükseköğrenim ve Barınma Destek Bursu Başvuruları Başladı",
-    subtitle:
-      "Türkiye genelindeki üniversite öğrencilerimiz için karşılıksız eğitim bursu ve yurt destek başvuruları resmî portalımız üzerinden alınmaktadır.",
-    image: "/images/basinda-biz/yaz-etkinlikleri.png",
+      "Genel Merkez Eğitim ve Burs Komisyonumuz tarafından yürütülen karşılıksız eğitim desteği ve barınma bursu başvuruları başlamıştır.",
+    image: "/images/slider/burs-universite.jpg",
     linkUrl: "/haberler#burs-basvuru",
     buttonText: "Burs Başvuru Formuna Git →",
     date: "Aktif Başvuru",
+  },
+  {
+    id: "slide-haydi-mgd",
+    badge: "GENÇLİK BULUŞMASI",
+    badgeColor: "bg-emerald-700",
+    title: "Haydi Milli Gençlik! Büyük Anadolu Seferberliği Başladı",
+    subtitle:
+      "81 il, 120 üniversite ve binlerce gencimizle tek yürek: 'Önce Ahlak ve Maneviyat' düsturuyla geleceği inşa ediyoruz.",
+    image: "/images/slider/haydi-milli-genclik.jpg",
+    linkUrl: "/etkinlikler",
+    buttonText: "Etkinlik Takvimine Git →",
+    date: "Dönemsel Program",
   },
   {
     id: "slide-buyuk-solen",
@@ -42,21 +54,21 @@ export const HOME_SLIDES: HomeSlideItem[] = [
     title: "3. Olağan Büyük Gençlik Şöleni ve Liderler Buluşması Tarihi Belli Oldu",
     subtitle:
       "81 il teşkilatımız, üniversite temsilciliklerimiz ve on binlerce gencimizin katılımıyla Ankara'da gerçekleşecek dev buluşmanın program akışı yayınlandı.",
-    image: "/images/basinda-biz/istanbul-fetih.png",
+    image: "/images/slider/genclik-soleni.jpg",
     linkUrl: "/etkinlikler",
     buttonText: "Program Akışını İncele →",
     date: "18 Kasım 2026",
   },
   {
-    id: "slide-yaz-kampi",
-    badge: "TEŞKİLAT SEFERBERLİĞİ",
+    id: "slide-okuma-halkalari",
+    badge: "EĞİTİM & İRFAN",
     badgeColor: "bg-indigo-600",
     title: "81 İlde 'Milli Maarif Okuma Halkaları' ve Liderlik Kampları Başlıyor",
     subtitle:
       "Ahlak, ilim ve maneviyatla yoğrulan gençliğimiz için 120 üniversitede eş zamanlı atölyeler ve seminer takvimi hayata geçiyor.",
-    image: "/images/basinda-biz/antalya-yayla.png",
+    image: "/images/slider/okuma-halkalari.jpg",
     linkUrl: "/faaliyetler",
     buttonText: "Faaliyetleri İncele →",
-    date: "Dönemsel Program",
+    date: "Akademik Yıl",
   },
 ];

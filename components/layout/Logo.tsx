@@ -13,7 +13,10 @@ export default function Logo({ className = "", light = false }: LogoProps) {
 
   return (
     <span className={`inline-flex items-center select-none ${className}`}>
-      <div className="relative h-11 sm:h-13 w-32 sm:w-40 shrink-0">
+      <div
+        className="relative h-11 sm:h-13 w-32 sm:w-40 shrink-0"
+        style={{ position: "relative", width: "160px", height: "48px", maxWidth: "100%", overflow: "hidden" }}
+      >
         <Image
           src={logoSrc}
           alt="Milli Gençlik Derneği Logosu"

@@ -54,6 +54,7 @@ export default function HomeSlider() {
     <section
       id="manset-slider"
       className="relative bg-slate-950 text-white overflow-hidden select-none border-b border-blue-900/30"
+      style={{ position: "relative", overflow: "hidden" }}
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
       onTouchStart={handleTouchStart}
@@ -64,13 +65,17 @@ export default function HomeSlider() {
       onMouseUp={handleTouchEnd}
     >
       {/* Slayt Arka Plan Görseli & Gradient Katmanları */}
-      <div className="relative min-h-[460px] sm:min-h-[520px] lg:min-h-[580px] w-full flex items-center">
+      <div
+        className="relative min-h-[460px] sm:min-h-[520px] lg:min-h-[580px] w-full flex items-center overflow-hidden"
+        style={{ position: "relative", minHeight: "480px", overflow: "hidden" }}
+      >
         {HOME_SLIDES.map((item, idx) => (
           <div
             key={item.id}
             className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
               idx === current ? "opacity-100 z-10" : "opacity-0 z-0 pointer-events-none"
             }`}
+            style={{ position: "absolute", inset: 0, overflow: "hidden" }}
           >
             <Image
               src={item.image}
