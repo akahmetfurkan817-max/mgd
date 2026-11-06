@@ -8,6 +8,7 @@ import {
   ChevronDown,
   FileCheck,
   FileText,
+  Handshake,
   HeartHandshake,
   Landmark,
   Mail,
@@ -26,7 +27,7 @@ import Logo from "@/components/layout/Logo";
 import { useDonate } from "@/components/donate/DonateProvider";
 import { useVolunteer } from "@/components/volunteer/VolunteerProvider";
 import { useSiteSettings } from "@/hooks/useSiteData";
-import CorporateModal from "@/components/modals/CorporateModal";
+import FlipbookModal from "@/components/corporate/FlipbookModal";
 import SearchModal from "@/components/modals/SearchModal";
 
 export default function Header() {
@@ -120,12 +121,13 @@ export default function Header() {
 
           {/* Orta: Yeniden Refah Partisi Mimarisi Menü Ağacı */}
           <nav className="hidden items-center gap-5 xl:gap-6 lg:flex" aria-label="Ana menü">
-            <Link
+            {/* ANASAYFA linki logo tıklandığında zaten açıldığı için şimdilik gizlendi, istendiğinde yorumdan çıkarılabilir */}
+            {/* <Link
               href="/"
               className="text-xs xl:text-sm font-bold text-slate-800 transition hover:text-secondary py-2"
             >
               ANASAYFA
-            </Link>
+            </Link> */}
 
             {/* DERNEK / KURUMSAL DROPDOWN */}
             <div
@@ -144,32 +146,32 @@ export default function Header() {
                   <button
                     type="button"
                     onClick={() => {
+                      setActiveCorporateDoc("hakkimizda");
+                      setActiveDropdown(null);
+                    }}
+                    className="w-full text-left rounded-lg px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-blue-50 hover:text-secondary flex items-center gap-2"
+                  >
+                    <FileText size={14} className="text-secondary" /> Hakkımızda (Dergi)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
                       setActiveCorporateDoc("tuzuk");
                       setActiveDropdown(null);
                     }}
                     className="w-full text-left rounded-lg px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-blue-50 hover:text-secondary flex items-center gap-2"
                   >
-                    <FileText size={14} className="text-secondary" /> Dernek Tüzüğü
+                    <BookOpen size={14} className="text-secondary" /> Dernek Tüzüğü (Dergi)
                   </button>
                   <button
                     type="button"
                     onClick={() => {
-                      setActiveCorporateDoc("program");
+                      setActiveCorporateDoc("protokoller");
                       setActiveDropdown(null);
                     }}
                     className="w-full text-left rounded-lg px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-blue-50 hover:text-secondary flex items-center gap-2"
                   >
-                    <BookOpen size={14} className="text-secondary" /> Teşkilat Programı
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setActiveCorporateDoc("gelirGider");
-                      setActiveDropdown(null);
-                    }}
-                    className="w-full text-left rounded-lg px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-blue-50 hover:text-secondary flex items-center gap-2"
-                  >
-                    <FileCheck size={14} className="text-secondary" /> Gelir - Gider & Mali Şeffaflık
+                    <Handshake size={14} className="text-emerald-600" /> Protokollerimiz (Dergi)
                   </button>
                   <button
                     type="button"
@@ -181,16 +183,14 @@ export default function Header() {
                   >
                     <Sparkles size={14} className="text-secondary" /> Kurumsal Kimlik & Logo
                   </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      openDonate();
-                      setActiveDropdown(null);
-                    }}
-                    className="w-full text-left rounded-lg px-3 py-2 text-xs font-semibold text-primary hover:bg-blue-50 flex items-center gap-2 border-t border-slate-100 mt-1"
+                  <Link
+                    href="/kurumsal"
+                    onClick={() => setActiveDropdown(null)}
+                    className="w-full text-left rounded-lg px-3 py-2 text-xs font-bold text-primary hover:bg-blue-50 flex items-center justify-between border-t border-slate-100 mt-1"
                   >
-                    <Landmark size={14} className="text-primary" /> Banka Hesap Numaraları (İBAN)
-                  </button>
+                    <span>Tüm Kurumsal Sayfası</span>
+                    <span>→</span>
+                  </Link>
                 </div>
               )}
             </div>
@@ -298,12 +298,12 @@ export default function Header() {
               YAYINLAR
             </Link>
 
-            {/* İLKELER (VAATLER) */}
+            {/* ÖNCÜ ŞAHSİYETLER */}
             <Link
-              href="/#ilkeler"
+              href="/oncu-sahsiyetler"
               className="text-xs xl:text-sm font-bold text-slate-800 transition hover:text-secondary py-2"
             >
-              İLKELER
+              ÖNCÜ ŞAHSİYETLER
             </Link>
 
             {/* MULTİMEDYA */}
@@ -438,18 +438,28 @@ export default function Header() {
 
               {/* Mobile Linkler */}
               <div className="mt-5 space-y-1">
-                <Link
+                {/* <Link
                   href="/"
                   onClick={() => setMobileMenuOpen(false)}
                   className="block rounded-lg px-3 py-2 text-sm font-bold text-slate-800 hover:bg-blue-50"
                 >
                   Ana Sayfa
-                </Link>
+                </Link> */}
 
                 <div className="py-2 border-t border-slate-100 mt-2">
                   <span className="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                    Kurumsal
+                    Kurumsal (Dergi & Resmî)
                   </span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      setActiveCorporateDoc("hakkimizda");
+                    }}
+                    className="w-full text-left rounded-lg px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-blue-50"
+                  >
+                    Hakkımızda (Dergi)
+                  </button>
                   <button
                     type="button"
                     onClick={() => {
@@ -458,27 +468,17 @@ export default function Header() {
                     }}
                     className="w-full text-left rounded-lg px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-blue-50"
                   >
-                    Dernek Tüzüğü
+                    Dernek Tüzüğü (Dergi)
                   </button>
                   <button
                     type="button"
                     onClick={() => {
                       setMobileMenuOpen(false);
-                      setActiveCorporateDoc("program");
+                      setActiveCorporateDoc("protokoller");
                     }}
                     className="w-full text-left rounded-lg px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-blue-50"
                   >
-                    Teşkilat Programı
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setMobileMenuOpen(false);
-                      setActiveCorporateDoc("gelirGider");
-                    }}
-                    className="w-full text-left rounded-lg px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-blue-50"
-                  >
-                    Gelir - Gider & Mali Şeffaflık
+                    Protokollerimiz (Dergi)
                   </button>
                   <button
                     type="button"
@@ -566,11 +566,11 @@ export default function Header() {
                     Video Galeri
                   </Link>
                   <Link
-                    href="/#ilkeler"
+                    href="/oncu-sahsiyetler"
                     onClick={() => setMobileMenuOpen(false)}
                     className="block rounded-lg px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-blue-50"
                   >
-                    Milli Gençlik İlkeleri (Vaatler)
+                    Öncü Şahsiyetlerimiz
                   </Link>
                   <Link
                     href="/#sosyal-medya"
@@ -611,7 +611,7 @@ export default function Header() {
       )}
 
       {/* 4. MODALLAR */}
-      <CorporateModal
+      <FlipbookModal
         docKey={activeCorporateDoc}
         onClose={() => setActiveCorporateDoc(null)}
       />

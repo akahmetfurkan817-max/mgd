@@ -5,7 +5,14 @@ type Obj = Record<string, unknown>;
 const isObj = (v: unknown): v is Obj => typeof v === "object" && v !== null && !Array.isArray(v);
 const str = (v: unknown, max = 5000): string => (typeof v === "string" ? v.trim().slice(0, max) : "");
 
-const CATEGORIES: readonly NewsCategory[] = ["Genel Merkez", "Üniversite", "Basın Açıklaması"];
+const CATEGORIES: readonly NewsCategory[] = [
+  "Genel Merkez",
+  "Üniversite",
+  "Basın Açıklaması",
+  "Duyurular & Burs",
+  "Programlar",
+  "Teşkilattan Haberler",
+];
 const PUBLICATION_CATEGORIES: readonly PublicationCategory[] = ["Bülten", "Faaliyet Raporu", "Dergi", "Kitapçık"];
 const VIDEO_CATEGORIES: readonly VideoItem["category"][] = [
   "Genel Başkan Konuşması",

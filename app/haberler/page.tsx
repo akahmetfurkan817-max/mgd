@@ -8,9 +8,20 @@ import { useNews } from "@/hooks/useSiteData";
 import Link from "next/link";
 import type { NewsCategory, NewsItem } from "@/types";
 
-const FILTERS: ("Tümü" | NewsCategory)[] = ["Tümü", "Genel Merkez", "Üniversite", "Basın Açıklaması"];
+const FILTERS: ("Tümü" | NewsCategory)[] = [
+  "Tümü",
+  "Duyurular & Burs",
+  "Programlar",
+  "Teşkilattan Haberler",
+  "Genel Merkez",
+  "Basın Açıklaması",
+  "Üniversite",
+];
 
 const BADGE: Record<NewsCategory, string> = {
+  "Duyurular & Burs": "bg-emerald-600 text-white",
+  Programlar: "bg-purple-600 text-white",
+  "Teşkilattan Haberler": "bg-blue-600 text-white",
   "Genel Merkez": "bg-primary text-white",
   Üniversite: "bg-secondary text-white",
   "Basın Açıklaması": "bg-slate-800 text-white",

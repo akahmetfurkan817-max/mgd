@@ -11,8 +11,8 @@ import TeamGrid from "@/components/home/TeamGrid";
 import SocialMediaSection from "@/components/home/SocialMediaSection";
 import TurkeyMap from "@/components/home/TurkeyMap";
 import NewsShowcase from "@/components/home/NewsShowcase";
-import SliderNews from "@/components/home/SliderNews";
-import PrinciplesSection from "@/components/home/PrinciplesSection";
+import HomeSlider from "@/components/home/HomeSlider";
+import OncuSahsiyetlerSection from "@/components/home/OncuSahsiyetlerSection";
 import ReportsSection from "@/components/home/ReportsSection";
 import CalendarEventsSection from "@/components/home/CalendarEventsSection";
 import VideoGallerySection from "@/components/home/VideoGallerySection";
@@ -23,10 +23,10 @@ import type { HomeSectionId } from "@/types";
 
 const SECTION_COMPONENTS: Record<HomeSectionId, () => ReactNode> = {
   hero: () => <Hero key="hero" />,
-  sliderNews: () => <SliderNews key="sliderNews" />,
+  sliderNews: () => <HomeSlider key="sliderNews" />,
   stats: () => <StatsBar key="stats" />,
   basindaBiz: () => <BasindaBizSection key="basindaBiz" />,
-  principles: () => <PrinciplesSection key="principles" />,
+  principles: () => <OncuSahsiyetlerSection key="oncuSahsiyetler" />,
   reports: () => <ReportsSection key="reports" />,
   events: () => <CalendarEventsSection key="events" />,
   videos: () => <VideoGallerySection key="videos" />,

@@ -7,7 +7,14 @@ import { useNews } from "@/hooks/useSiteData";
 import { deleteNews, saveSection } from "@/lib/adminApi";
 import type { NewsCategory, NewsItem } from "@/types";
 
-const CATEGORIES: NewsCategory[] = ["Genel Merkez", "Üniversite", "Basın Açıklaması"];
+const CATEGORIES: NewsCategory[] = [
+  "Genel Merkez",
+  "Üniversite",
+  "Basın Açıklaması",
+  "Duyurular & Burs",
+  "Programlar",
+  "Teşkilattan Haberler",
+];
 const PRESET_NEWS_IMAGES = [
   { label: "Antalya İl", url: "/images/basinda-biz/antalya-il.png" },
   { label: "İstanbul Fetih", url: "/images/basinda-biz/istanbul-fetih.png" },

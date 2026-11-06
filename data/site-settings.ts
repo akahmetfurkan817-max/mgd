@@ -3,8 +3,14 @@ import type { SectionBlock, SiteSettings } from "@/types";
 export const DEFAULT_SECTIONS: SectionBlock[] = [
   {
     id: "hero",
-    label: "Hero / Manşet & Duyuru Slider",
-    desc: "Ana karşılama mesajı, eylem butonları ve döner duyuru paneli",
+    label: "Hero / Karşılama & Erbakan Portresi",
+    desc: "Ana karşılama mesajı, eylem butonları ve Erbakan silüeti",
+    enabled: true,
+  },
+  {
+    id: "sliderNews",
+    label: "Manşet Slider (Burs & Duyuru Slaytı)",
+    desc: "Dokunmatik ve kaydırılabilir büyük manşet bannerları (Burs sonuçları, şölen ve kamp linkleri)",
     enabled: true,
   },
   {
@@ -14,33 +20,21 @@ export const DEFAULT_SECTIONS: SectionBlock[] = [
     enabled: true,
   },
   {
-    id: "basindaBiz",
-    label: "Basında Biz & Faaliyetlerimiz",
-    desc: "2025-2026 Yaz Etkinlikleri ve İl Binası Açılışları (milligenclik.org.tr vitrini)",
-    enabled: true,
-  },
-  {
-    id: "reports",
-    label: "Basın Bildirileri ve Haftalık Raporlar",
-    desc: "Haftalık faaliyet raporları ve resmi kamuoyu duyuruları",
+    id: "news",
+    label: "Haberler & Burs Duyuruları Vitrini",
+    desc: "Kategorilere göre filtrelenebilir son gelişmeler (Burs, Teşkilat, Programlar)",
     enabled: true,
   },
   {
     id: "events",
-    label: "Genel Başkan & Teşkilat Program Takvimi",
-    desc: "İl kongreleri, üniversite buluşmaları ve ziyaret takvimi",
-    enabled: true,
-  },
-  {
-    id: "videos",
-    label: "Video Galeri & Multimedya Vitrini",
-    desc: "Genel Başkan konuşmaları ve kongre video arşivi (Dahili oynatıcı)",
+    label: "Genel Başkan & Teşkilat Program Takvimi (Gerçek Takvim)",
+    desc: "Aylık interaktif takvim, gün gün programlar ve il kongreleri",
     enabled: true,
   },
   {
     id: "principles",
-    label: "Milli Görüş İlkeleri & Gençlik Hedefleri (Vaatler)",
-    desc: "Denk Bütçe, Önce Ahlak ve Maneviyat, Yeniden Büyük Türkiye vizyon kartları",
+    label: "Öncü Şahsiyetlerimiz (Erbakan & Demirtürk)",
+    desc: "Prof. Dr. Necmettin Erbakan ve Adnan Demirtürk hayatı, vizyonu, video ve eserleri",
     enabled: true,
   },
   {
@@ -96,12 +90,6 @@ export const DEFAULT_SECTIONS: SectionBlock[] = [
     label: "Fotoğraf Galerisi & Etkinlikler",
     desc: "Kamplar, şuralar ve buluşmalardan kareler (Lightbox)",
     enabled: true,
-  },
-  {
-    id: "sliderNews",
-    label: "Manşet Slider & Hızlı Haber Akışı",
-    desc: "Yeniden Refah tarzı çift kanatlı büyük manşet ve son dakika haber vitrini",
-    enabled: false,
   },
 ];
 

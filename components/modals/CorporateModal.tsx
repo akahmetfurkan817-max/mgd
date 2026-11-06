@@ -89,8 +89,30 @@ export default function CorporateModal({ docKey, onClose }: CorporateModalProps)
             </div>
           </div>
 
-          <div className="whitespace-pre-line font-normal text-slate-800 leading-relaxed space-y-4">
-            {doc.content}
+          <div className="space-y-6">
+            {doc.pages.map((p) => (
+              <div key={p.pageNumber} className="border-b border-slate-100 pb-5 last:border-b-0">
+                {p.chapterTitle && (
+                  <span className="text-[10px] font-mono uppercase tracking-wider text-secondary font-semibold">
+                    {p.chapterTitle}
+                  </span>
+                )}
+                <h3 className="text-base font-bold text-slate-900 mt-0.5 mb-2">{p.heading}</h3>
+                {p.subheading && (
+                  <p className="text-xs font-medium text-slate-500 mb-2 italic">{p.subheading}</p>
+                )}
+                <div className="space-y-2 text-slate-700 leading-relaxed text-sm">
+                  {p.body.map((para, pIdx) => (
+                    <p key={pIdx}>{para}</p>
+                  ))}
+                </div>
+                {p.notes && (
+                  <p className="mt-3 p-2.5 rounded-lg bg-amber-50/60 border border-amber-200/60 text-xs text-amber-900 font-medium">
+                    📌 {p.notes}
+                  </p>
+                )}
+              </div>
+            ))}
           </div>
         </div>
 
@@ -107,9 +129,7 @@ export default function CorporateModal({ docKey, onClose }: CorporateModalProps)
             </button>
             <button
               type="button"
-              onClick={() => {
-                alert("Resmi PDF belgesi hazırlanıyor. İndirme kısa süre içinde başlayacaktır.");
-              }}
+              onClick={handlePrint}
               className="px-4 py-2 text-xs font-semibold text-white bg-primary hover:bg-primary-dark rounded-lg flex items-center gap-1.5 transition shadow-sm"
             >
               <Download size={14} /> PDF Olarak İndir

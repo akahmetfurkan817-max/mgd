@@ -50,7 +50,13 @@ export interface Province {
   email: string;
 }
 
-export type NewsCategory = "Genel Merkez" | "Üniversite" | "Basın Açıklaması";
+export type NewsCategory =
+  | "Genel Merkez"
+  | "Üniversite"
+  | "Basın Açıklaması"
+  | "Duyurular & Burs"
+  | "Programlar"
+  | "Teşkilattan Haberler";
 
 export interface NewsItem {
   id: string;
