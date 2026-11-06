@@ -1,0 +1,58 @@
+import type { Publication } from "@/types";
+
+export const PUBLICATIONS: Publication[] = [
+  {
+    id: "pub-1",
+    title: "Milli Gençlik Bülteni - Sayı 48 (Ekim 2026)",
+    category: "Bülten",
+    date: "2026-10-15",
+    description: "81 il teşkilatımızın son üç aylık faaliyetleri, üniversite çalışmaları ve gençlik atölyeleri özel sayısı.",
+    coverImage: "",
+    pdfUrl: "#",
+  },
+  {
+    id: "pub-2",
+    title: "2025-2026 Faaliyet ve Çalışma Raporu",
+    category: "Faaliyet Raporu",
+    date: "2026-09-01",
+    description: "Genel Merkez ve birimlerimizin yıllık kurumsal faaliyet raporu, bütçe ve etki analizi.",
+    coverImage: "",
+    pdfUrl: "#",
+  },
+  {
+    id: "pub-3",
+    title: "Üniversite Gençliği ve Gelecek Vizyonu",
+    category: "Kitapçık",
+    date: "2026-08-20",
+    description: "Üniversite Teşkilatları Başkanlığımız tarafından hazırlanan akademik, sosyal ve kültürel rehber kitapçık.",
+    coverImage: "",
+    pdfUrl: "#",
+  },
+  {
+    id: "pub-4",
+    title: "Genç Nesil Dergisi - Yaz Özel Sayısı",
+    category: "Dergi",
+    date: "2026-07-10",
+    description: "Kültür, sanat, fikir ve medeniyet ekseninde genç kalemlerin kaleme aldığı denemeler ve röportajlar.",
+    coverImage: "",
+    pdfUrl: "#",
+  },
+  {
+    id: "pub-5",
+    title: "Milli Gençlik Bülteni - Sayı 47 (Mayıs 2026)",
+    category: "Bülten",
+    date: "2026-05-15",
+    description: "Bahar dönemi teşkilat kampları, teknoloji atölyeleri ve yardım faaliyetleri özeti.",
+    coverImage: "",
+    pdfUrl: "#",
+  },
+  {
+    id: "pub-6",
+    title: "Ortaöğretim ve Lise Çalıştay Raporu",
+    category: "Faaliyet Raporu",
+    date: "2026-03-30",
+    description: "Liseli gençlerin gelişim ihtiyaçları ve ahlaki değerler eğitimi üzerine saha araştırması.",
+    coverImage: "",
+    pdfUrl: "#",
+  },
+];

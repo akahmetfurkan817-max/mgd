@@ -1,0 +1,135 @@
+import type { Leader, President } from "@/types";
+
+export const PRESIDENT: President = {
+  id: "gb",
+  name: "Ahmet ÖZVATAN",
+  title: "Genel Başkan",
+  photo: "/images/ahmet-ozvatan.jpg",
+  email: "baskan@milligenclik.org.tr",
+  xUrl: "https://x.com/milligenclikmgd",
+  instagramUrl: "https://www.instagram.com/milligenclikmgd/",
+  bio: `Ahmet Özvatan, 1983 yılında Bilecik'in Söğüt ilçesinde dünyaya geldi.
+
+İlk ve orta öğrenimini Bilecik İmam Hatip Ortaokulunda tamamladıktan sonra Sakarya İmam Hatip Lisesinden mezun oldu. Yükseköğrenimini Ankara Üniversitesi İlahiyat Fakültesinde tamamlayan Özvatan, eş zamanlı olarak Anadolu Üniversitesi İktisat Fakültesi Kamu Yönetimi Bölümünden mezun oldu. Halen akademik alanda yüksek lisans eğitimini sürdürmektedir.
+
+Gençlik yıllarından itibaren Milli Görüş davası ve sivil toplum kuruluşlarında aktif sorumluluklar üstlenen Ahmet Özvatan; Prof. Dr. Necmettin Erbakan Vakfı bünyesinde Bilecik İl Başkanlığı görevini yürüttü. Siyasi ve teşkilat çalışmalarında Ege Bölgesi Eğitim Başkanlığı görevini deruhte etti. 28. Dönem Milletvekili Genel Seçimlerinde Bilecik Milletvekili adayı oldu ve seçimlerin akabinde Genel Başkan Danışmanlığı görevini icra etti.
+
+Gençliğin ahlaki ve manevi inşasını gaye edinen Milli Görüş camiasının gençlik teşkilatlanması olan Milli Gençlik Derneği'nin (MGD) Genel Başkanlığı görevini sürdürmektedir.
+
+Evli ve 3 çocuk babasıdır.`,
+  message:
+    "Aziz gençler, Milli Gençlik Derneği; Dünyacı değil Ahiret öncelikli bir gençlik için, materyalist değil Maneviyatçı bir gençlik için, nefsine esir olmuş değil nefsini terbiye etmiş bir gençlik için, kuvveti değil hakkı üstün tutan bir neslin yetişmesi amacıyla kurulmuş kutlu bir çatıdır. 81 ilde kardeşlik ve dayanışma ile ülkemize hizmet etmeye kararlılıkla devam edeceğiz.",
+};
+
+export const LEADERS: Leader[] = [
+  {
+    id: "divan-1",
+    group: "divan",
+    name: "Ali SEYYAR",
+    title: "Teşkilat Başkanı",
+    photo: "/team/ali-seyyar.jpg",
+    email: "teskilat@milligenclik.org.tr",
+    xUrl: "https://x.com/milligenclikmgd",
+    instagramUrl: "https://www.instagram.com/milligenclikmgd/",
+    bio: "Milli Gençlik Derneği Teşkilat Başkanı olarak 81 il ve ilçe teşkilatlarının kuruluşu, saha çalışmaları ve teşkilat mensuplarının koordinasyonunu sevk ve idare etmektedir. Gençlik ve sivil toplum teşkilatlanmasında uzun yıllara dayanan deneyime sahiptir.",
+  },
+  {
+    id: "divan-2",
+    group: "divan",
+    name: "Metin GÜRCÜ",
+    title: "Genel Sekreter",
+    photo: "/team/metin-gurcu.jpg",
+    email: "genelsekreterlik@milligenclik.org.tr",
+    xUrl: "https://x.com/milligenclikmgd",
+    instagramUrl: "https://www.instagram.com/milligenclikmgd/",
+    bio: "Milli Gençlik Derneği Genel Sekreteri olarak Genel Merkez idari yapısı, kurumsal yazışmalar, kurullar arası koordinasyon ve dernek tüzüğünün uygulanması süreçlerini koordine etmektedir.",
+  },
+  {
+    id: "divan-3",
+    group: "divan",
+    name: "Özgür MERTGENÇ",
+    title: "Mali İşler Başkanı",
+    photo: "/team/ozgur-mertgenc.jpg",
+    email: "mali@milligenclik.org.tr",
+    xUrl: "https://x.com/milligenclikmgd",
+    instagramUrl: "https://www.instagram.com/milligenclikmgd/",
+    bio: "Milli Gençlik Derneği Mali İşler Başkanı olarak Genel Merkez ve teşkilatların bütçe yönetimi, mali şeffaflık, kaynak geliştirme ve iktisadi denetim mekanizmalarını yönetmektedir.",
+  },
+  {
+    id: "divan-4",
+    group: "divan",
+    name: "Harun PALA",
+    title: "Müesseseler Başkanı",
+    photo: "/team/harun-pala.jpg",
+    email: "muesseseler@milligenclik.org.tr",
+    xUrl: "https://x.com/milligenclikmgd",
+    instagramUrl: "https://www.instagram.com/milligenclikmgd/",
+    bio: "Milli Gençlik Derneği Müesseseler Başkanı olarak dernek bünyesindeki gençlik merkezleri, vakıf müesseseleri, yurtlar, etüt salonları ve sosyal tesislerin planlama ve işletimini koordine etmektedir.",
+  },
+  {
+    id: "divan-5",
+    group: "divan",
+    name: "Dr. Murat AKTAŞ",
+    title: "Eğitim Başkanı",
+    photo: "/team/murat-aktas.jpg",
+    email: "egitim@milligenclik.org.tr",
+    xUrl: "https://x.com/milligenclikmgd",
+    instagramUrl: "https://www.instagram.com/milligenclikmgd/",
+    bio: "Milli Gençlik Derneği Eğitim Başkanı olarak gençliğin ahlaki ve manevi şuuru için eğitim müfredatları, haftalık irfan halkaları, maarif kampları ve seminer programlarını yönetmektedir.",
+  },
+  {
+    id: "divan-6",
+    group: "divan",
+    name: "Musab SUNGUR",
+    title: "Tanıtım ve Medya Başkanı",
+    photo: "/team/musab-sungur.jpg",
+    email: "basin@milligenclik.org.tr",
+    xUrl: "https://x.com/milligenclikmgd",
+    instagramUrl: "https://www.instagram.com/milligenclikmgd/",
+    bio: "Milli Gençlik Derneği Tanıtım ve Medya Başkanı olarak basın ilişkileri, dijital yayıncılık, sosyal medya koordinasyonu, grafik prodüksiyon ve kamuoyu bilgilendirme faaliyetlerini yürütmektedir.",
+  },
+  {
+    id: "divan-7",
+    group: "divan",
+    name: "Şükrü Can ATAGÜN",
+    title: "Üniversiteler Başkanı",
+    photo: "/team/sukru-can-atagun.jpg",
+    email: "universite@milligenclik.org.tr",
+    xUrl: "https://x.com/milligenclikmgd",
+    instagramUrl: "https://www.instagram.com/milligenclikmgd/",
+    bio: "Milli Gençlik Derneği Üniversiteler Başkanı olarak Türkiye genelindeki üniversite kampüslerinde öğrenci toplulukları, akademik çalışmalar, kariyer programları ve gençlik faaliyetlerini koordine etmektedir.",
+  },
+  {
+    id: "divan-8",
+    group: "divan",
+    name: "Hakan BİRŞEN",
+    title: "Ortaöğretim Başkanı",
+    photo: "/team/hakan-birsen.jpg",
+    email: "ortaogretim@milligenclik.org.tr",
+    xUrl: "https://x.com/milligenclikmgd",
+    instagramUrl: "https://www.instagram.com/milligenclikmgd/",
+    bio: "Milli Gençlik Derneği Ortaöğretim Başkanı olarak lise gençliğine yönelik şuur dersleri, kitap okuma grupları, etüt çalışmaları, yaz ve kış gençlik kamplarının yürütülmesinden sorumludur.",
+  },
+  {
+    id: "divan-9",
+    group: "divan",
+    name: "Salih KAPUKAYA",
+    title: "Organizasyon ve Planlama Başkanı",
+    photo: "/team/salih-kapukaya.jpg",
+    email: "organizasyon@milligenclik.org.tr",
+    xUrl: "https://x.com/milligenclikmgd",
+    instagramUrl: "https://www.instagram.com/milligenclikmgd/",
+    bio: "Milli Gençlik Derneği Organizasyon ve Planlama Başkanı olarak Genel Merkez büyük kongreleri, salon programları, il buluşmaları, mitingler ve gençlik şölenlerinin saha planlamasını gerçekleştirmektedir.",
+  },
+  {
+    id: "divan-10",
+    group: "divan",
+    name: "Nurullah ÖZKUL",
+    title: "Kültür, Sanat ve Sosyal Faaliyetler Başkanı",
+    photo: "/team/nurullah-ozkul.jpg",
+    email: "kultur@milligenclik.org.tr",
+    xUrl: "https://x.com/milligenclikmgd",
+    instagramUrl: "https://www.instagram.com/milligenclikmgd/",
+    bio: "Milli Gençlik Derneği Kültür, Sanat ve Sosyal Faaliyetler Başkanı olarak gençlerin kültürel, edebi ve sportif gelişimine yönelik tiyatro, münazara, musiki ve sosyal dayanışma projelerini yönetmektedir.",
+  },
+];

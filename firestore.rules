@@ -1,0 +1,10 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Herkes okuyabilir (site canlı veri gösterir); yazma yalnızca sunucudan (Admin SDK).
+    match /{document=**} {
+      allow read: if true;
+      allow write: if false;
+    }
+  }
+}

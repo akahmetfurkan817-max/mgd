@@ -1,0 +1,44 @@
+import type { AdminSection, RoleId } from "@/types";
+
+export const ROLE_LABELS: Record<RoleId, string> = {
+  SUPER_ADMIN: "Süper Admin",
+  NEWS_EDITOR: "Haber Editörü",
+  ORG_MANAGER: "Teşkilat Sorumlusu",
+};
+
+export const ROLE_PERMISSIONS: Record<RoleId, readonly AdminSection[]> = {
+  SUPER_ADMIN: [
+    "layout",
+    "content",
+    "board",
+    "news",
+    "publications",
+    "social",
+    "applications",
+    "provinces",
+    "iban",
+  ],
+  NEWS_EDITOR: ["content", "news", "publications", "social"],
+  ORG_MANAGER: ["provinces", "applications"],
+};
+
+export function can(role: RoleId, section: AdminSection): boolean {
+  return ROLE_PERMISSIONS[role].includes(section);
+}
+
+export const ADMIN_SECTIONS: { id: AdminSection; label: string; href: string }[] = [
+  { id: "layout", label: "Sayfa Düzeni & Bloklar", href: "/admin/layout" },
+  { id: "content", label: "Canlı Metinler & Sayaçlar", href: "/admin/content" },
+  { id: "board", label: "Yönetim Kurulu & Kadro", href: "/admin/board" },
+  { id: "social", label: "Sosyal Medya (X & Instagram)", href: "/admin/social" },
+  { id: "news", label: "Haber Ekle / Düzenle", href: "/admin/news" },
+  { id: "publications", label: "Yayınlar & E-Kütüphane", href: "/admin/publications" },
+  { id: "applications", label: "Gönüllü Başvuruları", href: "/admin/applications" },
+  { id: "provinces", label: "81 İl Bilgisi Düzenle", href: "/admin/provinces" },
+  { id: "iban", label: "IBAN Ayarları", href: "/admin/iban" },
+];
+
+export function sectionFromPath(pathname: string): AdminSection | null {
+  const seg = pathname.split("/")[2];
+  return ADMIN_SECTIONS.find((s) => s.id === seg)?.id ?? null;
+}

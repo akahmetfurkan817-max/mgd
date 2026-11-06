@@ -1,0 +1,113 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+button,
+a,
+h1,
+h2,
+h3,
+h4,
+[role="button"] {
+  -webkit-tap-highlight-color: transparent !important;
+  user-select: none;
+  -webkit-user-select: none;
+  outline: none !important;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: #ffffff;
+  color: #0f172a;
+}
+
+/* Klavye erişilebilirliği: outline kapalı olduğundan odak halkası gölge ile verilir */
+button:focus-visible,
+a:focus-visible,
+[role="button"]:focus-visible {
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.45);
+}
+
+input,
+textarea,
+select {
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+@layer components {
+  .container-x {
+    @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+  }
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg bg-secondary px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-primary;
+  }
+  .btn-outline {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg border border-primary px-5 py-2.5 text-sm font-semibold text-primary transition hover:bg-primary hover:text-white;
+  }
+  .section-title {
+    @apply text-3xl font-bold tracking-tight text-primary-dark sm:text-4xl;
+  }
+}
+
+@keyframes floatSlow {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.04);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-float-slow {
+  animation: floatSlow 5s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 4s ease-in-out infinite;
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Next.js geliştirici hata bildirimi (sol alttaki '1 error' rozeti) gizleme */
+nextjs-portal,
+#nextjs-dev-overlay,
+[data-nextjs-dialog-overlay],
+[data-nextjs-toast],
+[data-nextjs-toast-wrapper] {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+

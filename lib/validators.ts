@@ -1,0 +1,149 @@
+import type { ApplicationStatus, IbanInfo, Leader, NewsCategory, NewsItem, President, Province, Publication, PublicationCategory, SocialPost, VolunteerApplication } from "@/types";
+
+type Obj = Record<string, unknown>;
+
+const isObj = (v: unknown): v is Obj => typeof v === "object" && v !== null && !Array.isArray(v);
+const str = (v: unknown, max = 5000): string => (typeof v === "string" ? v.trim().slice(0, max) : "");
+
+const CATEGORIES: readonly NewsCategory[] = ["Genel Merkez", "Üniversite", "Basın Açıklaması"];
+const PUBLICATION_CATEGORIES: readonly PublicationCategory[] = ["Bülten", "Faaliyet Raporu", "Dergi", "Kitapçık"];
+const APPLICATION_STATUSES: readonly ApplicationStatus[] = ["BEKLIYOR", "ILETISIME_GECILDI", "ONAYLANDI", "REDDEDILDI"];
+
+export function parseNews(v: unknown): NewsItem | null {
+  if (!isObj(v)) return null;
+  const title = str(v.title, 300);
+  const category = CATEGORIES.find((c) => c === v.category);
+  const date = str(v.date, 10);
+  if (!title || !category || !/^\d{4}-\d{2}-\d{2}$/.test(date)) return null;
+  return { id: str(v.id, 100), title, summary: str(v.summary, 2000), category, date };
+}
+
+export function parseProvince(v: unknown): Province | null {
+  if (!isObj(v)) return null;
+  const plate = Number(v.plate);
+  if (!Number.isInteger(plate) || plate < 1 || plate > 81) return null;
+  return {
+    plate,
+    name: str(v.name, 100),
+    chairName: str(v.chairName, 200),
+    chairPhoto: str(v.chairPhoto, 500),
+    address: str(v.address, 500),
+    phone: str(v.phone, 50),
+    email: str(v.email, 200),
+  };
+}
+
+function parsePersonBase(v: Obj) {
+  return {
+    id: str(v.id, 100),
+    name: str(v.name, 200),
+    title: str(v.title, 200),
+    photo: str(v.photo, 500),
+    bio: str(v.bio),
+  };
+}
+
+export function parseLeader(v: unknown): Leader | null {
+  if (!isObj(v)) return null;
+  const base = parsePersonBase(v);
+  const rawGroup = v.group === "divan" ? "divan" : (v.group === "birim" || v.group === "komisyon" ? "birim" : "yardimci");
+  if (!base.id || !base.name) return null;
+  return {
+    ...base,
+    group: rawGroup,
+    email: str(v.email, 150),
+    xUrl: str(v.xUrl, 300),
+    instagramUrl: str(v.instagramUrl, 300),
+  };
+}
+
+export function parsePresident(v: unknown): President | null {
+  if (!isObj(v)) return null;
+  const base = parsePersonBase(v);
+  if (!base.name) return null;
+  return {
+    ...base,
+    id: "baskan",
+    message: str(v.message),
+    email: str(v.email, 150),
+    xUrl: str(v.xUrl, 300),
+    instagramUrl: str(v.instagramUrl, 300),
+  };
+}
+
+export function parseIbanList(v: unknown): IbanInfo[] | null {
+  if (!Array.isArray(v)) return null;
+  const out: IbanInfo[] = [];
+  for (const item of v) {
+    if (!isObj(item)) return null;
+    const iban = str(item.iban, 60);
+    const bank = str(item.bank, 100);
+    if (!iban || !bank) return null;
+    out.push({ bank, iban, accountHolder: str(item.accountHolder, 200), note: str(item.note, 300) });
+  }
+  return out;
+}
+
+export function parsePublication(v: unknown): Publication | null {
+  if (!isObj(v)) return null;
+  const title = str(v.title, 300);
+  const category = PUBLICATION_CATEGORIES.find((c) => c === v.category);
+  const date = str(v.date, 10);
+  const description = str(v.description, 2000);
+  if (!title || !category) return null;
+  return {
+    id: str(v.id, 100),
+    title,
+    category,
+    date: date || new Date().toISOString().slice(0, 10),
+    description,
+    coverImage: str(v.coverImage, 500),
+    pdfUrl: str(v.pdfUrl, 500) || "#",
+  };
+}
+
+export function parseVolunteerApplication(v: unknown): VolunteerApplication | null {
+  if (!isObj(v)) return null;
+  const fullName = str(v.fullName, 150);
+  const phone = str(v.phone, 50);
+  const email = str(v.email, 150);
+  const city = str(v.city, 100);
+  const commission = str(v.commission, 100);
+  if (!fullName || !phone || !city) return null;
+  const status = APPLICATION_STATUSES.find((s) => s === v.status) ?? "BEKLIYOR";
+  return {
+    id: str(v.id, 100),
+    fullName,
+    phone,
+    email,
+    city,
+    university: str(v.university, 200),
+    commission: commission || "Genel Teşkilat",
+    status,
+    notes: str(v.notes, 1000),
+    createdAt: str(v.createdAt, 40) || new Date().toISOString(),
+  };
+}
+
+export function parseSocialPost(v: unknown): SocialPost | null {
+  if (!isObj(v)) return null;
+  const platform = v.platform === "instagram" ? "instagram" : "x";
+  const content = str(v.content, 3000);
+  const postUrl = str(v.postUrl, 500);
+  if (!content) return null;
+  return {
+    id: str(v.id, 100) || `sp-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+    platform,
+    authorName: str(v.authorName, 100) || "Milli Gençlik Derneği",
+    authorHandle: str(v.authorHandle, 50) || "@milligenclikmgd",
+    authorAvatar: str(v.authorAvatar, 500) || "/images/ahmet-ozvatan.jpg",
+    content,
+    imageUrl: str(v.imageUrl, 500),
+    postUrl: postUrl || (platform === "instagram" ? "https://www.instagram.com/milligenclikmgd/" : "https://x.com/milligenclikmgd"),
+    date: str(v.date, 40) || "Yeni",
+    likes: Number(v.likes) || 0,
+    shares: Number(v.shares) || 0,
+    comments: Number(v.comments) || 0,
+    createdAt: str(v.createdAt, 40) || new Date().toISOString(),
+  };
+}
