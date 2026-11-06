@@ -15,6 +15,7 @@ import {
   Type,
   UserCheck,
   Users,
+  Video,
 } from "lucide-react";
 import Logo from "@/components/layout/Logo";
 import { ADMIN_SECTIONS, ROLE_LABELS, can } from "@/lib/permissions";
@@ -30,6 +31,7 @@ const SECTION_ICONS: Record<AdminSection, typeof Newspaper> = {
   provinces: MapPin,
   iban: Landmark,
   social: Share2,
+  videos: Video,
 };
 
 export default function AdminSidebar({ user }: { user: AdminUser }) {

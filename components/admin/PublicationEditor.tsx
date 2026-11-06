@@ -110,6 +110,13 @@ export default function PublicationEditor() {
             />
 
             <Field
+              label="Kapak Fotoğrafı (URL)"
+              value={form.coverImage || ""}
+              onChange={(v) => setForm({ ...form, coverImage: v })}
+              placeholder="/images/... veya https://..."
+            />
+
+            <Field
               label="Açıklama / İçerik Özeti"
               multiline
               value={form.description}

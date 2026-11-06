@@ -12,6 +12,7 @@ import {
   parseProvince,
   parsePublication,
   parseSocialPost,
+  parseVideo,
   parseVolunteerApplication,
 } from "@/lib/validators";
 import type { AdminSection } from "@/types";
@@ -26,6 +27,7 @@ const SECTIONS: readonly AdminSection[] = [
   "layout",
   "content",
   "social",
+  "videos",
 ];
 
 const fail = (error: string, status: number) => NextResponse.json({ error }, { status });
@@ -140,13 +142,22 @@ export async function PUT(req: Request, { params }: { params: { section: string 
       await ref.set({ ...post, id: ref.id });
       return NextResponse.json({ ok: true, id: ref.id });
     }
+
+    case "videos": {
+      const b = body as { item?: unknown } | null;
+      const vid = parseVideo(b?.item ?? body);
+      if (!vid) return bad;
+      const ref = vid.id ? db.collection(COLLECTIONS.videos).doc(vid.id) : db.collection(COLLECTIONS.videos).doc();
+      await ref.set({ ...vid, id: ref.id });
+      return NextResponse.json({ ok: true, id: ref.id });
+    }
   }
 }
 
 export async function DELETE(req: Request, { params }: { params: { section: string } }) {
   const g = await guard(params.section);
   if ("error" in g) return g.error;
-  const allowed = ["news", "publications", "applications", "board", "social"];
+  const allowed = ["news", "publications", "applications", "board", "social", "videos"];
   if (!allowed.includes(g.section)) return fail("Silme bu bölümde desteklenmiyor.", 405);
   const id = new URL(req.url).searchParams.get("id");
   if (!id) return fail("id gerekli.", 400);
@@ -157,6 +168,7 @@ export async function DELETE(req: Request, { params }: { params: { section: stri
     applications: COLLECTIONS.applications,
     board: COLLECTIONS.board,
     social: COLLECTIONS.social,
+    videos: COLLECTIONS.videos,
   };
 
   await g.db.collection(colMap[g.section]).doc(id).delete();

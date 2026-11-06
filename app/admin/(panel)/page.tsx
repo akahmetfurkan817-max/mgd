@@ -13,6 +13,7 @@ import {
   Type,
   UserCheck,
   Users,
+  Video,
 } from "lucide-react";
 import type { AdminSection } from "@/types";
 
@@ -32,6 +33,10 @@ const SECTION_META: Record<AdminSection, { icon: typeof Newspaper; desc: string 
   news: {
     icon: Newspaper,
     desc: "Genel Merkez, Üniversite ve Basın Açıklamalarını yayınlayın.",
+  },
+  videos: {
+    icon: Video,
+    desc: "Video galerisi, YouTube videoları, süreleri ve kapak fotoğraflarını yönetin.",
   },
   applications: {
     icon: UserCheck,

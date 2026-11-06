@@ -1,4 +1,4 @@
-import type { ApplicationStatus, IbanInfo, Leader, NewsCategory, NewsItem, President, Province, Publication, PublicationCategory, SocialPost, VolunteerApplication } from "@/types";
+import type { ApplicationStatus, IbanInfo, Leader, NewsCategory, NewsItem, President, Province, Publication, PublicationCategory, SocialPost, VideoItem, VolunteerApplication } from "@/types";
 
 type Obj = Record<string, unknown>;
 
@@ -7,6 +7,12 @@ const str = (v: unknown, max = 5000): string => (typeof v === "string" ? v.trim(
 
 const CATEGORIES: readonly NewsCategory[] = ["Genel Merkez", "Üniversite", "Basın Açıklaması"];
 const PUBLICATION_CATEGORIES: readonly PublicationCategory[] = ["Bülten", "Faaliyet Raporu", "Dergi", "Kitapçık"];
+const VIDEO_CATEGORIES: readonly VideoItem["category"][] = [
+  "Genel Başkan Konuşması",
+  "Teşkilat & Kongre",
+  "Belgesel & Arşiv",
+  "Gençlik Buluşması",
+];
 const APPLICATION_STATUSES: readonly ApplicationStatus[] = ["BEKLIYOR", "ILETISIME_GECILDI", "ONAYLANDI", "REDDEDILDI"];
 
 export function parseNews(v: unknown): NewsItem | null {
@@ -15,7 +21,7 @@ export function parseNews(v: unknown): NewsItem | null {
   const category = CATEGORIES.find((c) => c === v.category);
   const date = str(v.date, 10);
   if (!title || !category || !/^\d{4}-\d{2}-\d{2}$/.test(date)) return null;
-  return { id: str(v.id, 100), title, summary: str(v.summary, 2000), category, date };
+  return { id: str(v.id, 100), title, summary: str(v.summary, 2000), category, date, image: str(v.image, 500) };
 }
 
 export function parseProvince(v: unknown): Province | null {
@@ -147,3 +153,22 @@ export function parseSocialPost(v: unknown): SocialPost | null {
     createdAt: str(v.createdAt, 40) || new Date().toISOString(),
   };
 }
+
+export function parseVideo(v: unknown): VideoItem | null {
+  if (!isObj(v)) return null;
+  const title = str(v.title, 300);
+  if (!title) return null;
+  const cat = VIDEO_CATEGORIES.find((c) => c === v.category) || "Genel Başkan Konuşması";
+  return {
+    id: str(v.id, 100),
+    title,
+    category: cat,
+    duration: str(v.duration, 50) || "10:00",
+    date: str(v.date, 50) || "Bugün",
+    thumbnail: str(v.thumbnail, 500) || "/images/basinda-biz/antalya-il.png",
+    youtubeId: str(v.youtubeId, 50) || "dQw4w9WgXcQ",
+    views: str(v.views, 50) || "1.000",
+    description: str(v.description, 2000),
+  };
+}
+

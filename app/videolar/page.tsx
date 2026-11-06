@@ -6,11 +6,12 @@ import Link from "next/link";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { ArrowLeft, Clock, Eye, Play, Video as VideoIcon } from "lucide-react";
-import { VIDEOS } from "@/data/videos";
+import { useVideos } from "@/hooks/useSiteData";
 import VideoModal from "@/components/modals/VideoModal";
 import type { VideoItem } from "@/types";
 
 export default function VideolarPage() {
+  const { data: videos } = useVideos();
   const [selectedVideo, setSelectedVideo] = useState<VideoItem | null>(null);
 
   return (
@@ -39,7 +40,7 @@ export default function VideolarPage() {
         <section className="py-12">
           <div className="container-x">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {VIDEOS.map((video) => (
+              {videos.map((video) => (
                 <div
                   key={video.id}
                   onClick={() => setSelectedVideo(video)}

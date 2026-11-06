@@ -14,11 +14,12 @@ export const ROLE_PERMISSIONS: Record<RoleId, readonly AdminSection[]> = {
     "news",
     "publications",
     "social",
+    "videos",
     "applications",
     "provinces",
     "iban",
   ],
-  NEWS_EDITOR: ["content", "news", "publications", "social"],
+  NEWS_EDITOR: ["content", "news", "publications", "social", "videos"],
   ORG_MANAGER: ["provinces", "applications"],
 };
 
@@ -31,6 +32,7 @@ export const ADMIN_SECTIONS: { id: AdminSection; label: string; href: string }[]
   { id: "content", label: "Canlı Metinler & Sayaçlar", href: "/admin/content" },
   { id: "board", label: "Yönetim Kurulu & Kadro", href: "/admin/board" },
   { id: "social", label: "Sosyal Medya (X & Instagram)", href: "/admin/social" },
+  { id: "videos", label: "Videolar & Video Galerisi", href: "/admin/videos" },
   { id: "news", label: "Haber Ekle / Düzenle", href: "/admin/news" },
   { id: "publications", label: "Yayınlar & E-Kütüphane", href: "/admin/publications" },
   { id: "applications", label: "Gönüllü Başvuruları", href: "/admin/applications" },

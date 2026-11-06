@@ -10,6 +10,7 @@ import { IBAN_LIST } from "@/data/iban";
 import { PUBLICATIONS } from "@/data/publications";
 import { SAMPLE_APPLICATIONS } from "@/data/applications";
 import { SOCIAL_POSTS } from "@/data/social";
+import { VIDEOS } from "@/data/videos";
 import { DEFAULT_SECTIONS, DEFAULT_SITE_SETTINGS } from "@/data/site-settings";
 import type {
   IbanInfo,
@@ -20,6 +21,7 @@ import type {
   Publication,
   SiteSettings,
   SocialPost,
+  VideoItem,
   VolunteerApplication,
 } from "@/types";
 
@@ -167,6 +169,15 @@ const combineSocialPosts = (remote: SocialPost[], seed: SocialPost[]): SocialPos
 
 export function useSocialPosts(): Live<SocialPost[]> {
   return useCollection<SocialPost>(COLLECTIONS.social, SOCIAL_POSTS, combineSocialPosts);
+}
+
+const combineVideos = (remote: VideoItem[], seed: VideoItem[]): VideoItem[] => {
+  if (!remote || remote.length === 0) return seed;
+  return remote;
+};
+
+export function useVideos(): Live<VideoItem[]> {
+  return useCollection<VideoItem>(COLLECTIONS.videos, VIDEOS, combineVideos);
 }
 
 export function useSiteSettings(): Live<SiteSettings> {

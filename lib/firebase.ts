@@ -23,6 +23,7 @@ export const COLLECTIONS = {
   publications: "yayinlar",
   gallery: "galeri",
   social: "sosyal_medya",
+  videos: "videolar",
 } as const;
 
 let app: FirebaseApp | null = null;

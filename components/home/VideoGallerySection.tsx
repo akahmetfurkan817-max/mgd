@@ -10,17 +10,18 @@ import {
   Play,
   Video as VideoIcon,
 } from "lucide-react";
-import { VIDEOS } from "@/data/videos";
+import { useVideos } from "@/hooks/useSiteData";
 import VideoModal from "@/components/modals/VideoModal";
 import type { VideoItem } from "@/types";
 
 export default function VideoGallerySection() {
+  const { data: videos } = useVideos();
   const [selectedVideo, setSelectedVideo] = useState<VideoItem | null>(null);
 
-  if (VIDEOS.length === 0) return null;
+  if (videos.length === 0) return null;
 
-  const featured = VIDEOS[0];
-  const rest = VIDEOS.slice(1, 2); // Show only 1 side video on homepage (total 2)
+  const featured = videos[0];
+  const rest = videos.slice(1, 2); // Show only 1 side video on homepage (total 2)
 
   return (
     <section id="videolar" className="relative py-16 bg-slate-950 text-white overflow-hidden border-b border-blue-900/30">
@@ -44,7 +45,7 @@ export default function VideoGallerySection() {
             href="/videolar"
             className="text-xs font-semibold text-blue-300 hover:text-white flex items-center gap-1.5 transition self-start sm:self-auto group"
           >
-            TÜM VİDEOLARI GÖRMEK İÇİN TIKLAYIN ({VIDEOS.length}) <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
+            TÜM VİDEOLARI GÖRMEK İÇİN TIKLAYIN ({videos.length}) <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
           </Link>
         </div>
 
@@ -156,7 +157,7 @@ export default function VideoGallerySection() {
                 </p>
               </div>
               <div className="inline-flex items-center gap-2 text-xs font-bold text-blue-300 group-hover:text-white transition">
-                <span>Tüm Videoları Görüntüle ({VIDEOS.length})</span>
+                <span>Tüm Videoları Görüntüle ({videos.length})</span>
                 <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
               </div>
             </Link>

@@ -9,7 +9,8 @@ export type AdminSection =
   | "publications"
   | "layout"
   | "content"
-  | "social";
+  | "social"
+  | "videos";
 
 export interface AdminUser {
   username: string;
