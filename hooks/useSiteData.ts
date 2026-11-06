@@ -12,6 +12,7 @@ import { SAMPLE_APPLICATIONS } from "@/data/applications";
 import { SOCIAL_POSTS } from "@/data/social";
 import { VIDEOS } from "@/data/videos";
 import { DEFAULT_SECTIONS, DEFAULT_SITE_SETTINGS } from "@/data/site-settings";
+import { HOME_SLIDES, type HomeSlideItem } from "@/data/slides";
 import type {
   IbanInfo,
   Leader,
@@ -190,6 +191,46 @@ export function useSiteSettings(): Live<SiteSettings> {
     },
     live,
   };
+}
+
+export function useSlides(): Live<HomeSlideItem[]> {
+  const [state, setState] = useState<Live<HomeSlideItem[]>>(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const cached = localStorage.getItem("mgd_slides");
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            return { data: parsed, live: true };
+          }
+        }
+      } catch {}
+    }
+    return { data: HOME_SLIDES, live: false };
+  });
+
+  useEffect(() => {
+    const handleUpdate = () => {
+      try {
+        const cached = localStorage.getItem("mgd_slides");
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          if (Array.isArray(parsed)) {
+            setState({ data: parsed, live: true });
+          }
+        }
+      } catch {}
+    };
+
+    window.addEventListener("storage", handleUpdate);
+    window.addEventListener("mgd_slides_updated", handleUpdate);
+    return () => {
+      window.removeEventListener("storage", handleUpdate);
+      window.removeEventListener("mgd_slides_updated", handleUpdate);
+    };
+  }, []);
+
+  return state;
 }
 
 const IBAN_SEED = { list: IBAN_LIST };

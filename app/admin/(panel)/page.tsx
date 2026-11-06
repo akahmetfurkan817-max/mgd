@@ -4,12 +4,14 @@ import Link from "next/link";
 import SeedButton from "@/components/admin/SeedButton";
 import {
   BookOpen,
+  Image as ImageIcon,
   Landmark,
   Layers,
   MapPin,
   Newspaper,
   Share2,
   ShieldAlert,
+  Sliders,
   Type,
   UserCheck,
   Users,
@@ -18,6 +20,14 @@ import {
 import type { AdminSection } from "@/types";
 
 const SECTION_META: Record<AdminSection, { icon: typeof Newspaper; desc: string }> = {
+  slides: {
+    icon: Sliders,
+    desc: "Ana sayfa manşetinde dönen afişleri, burs duyurularını ve kampanyaları yönetin.",
+  },
+  media: {
+    icon: ImageIcon,
+    desc: "Sitedeki tüm fotoğrafları inceleyin, yollarını kopyalayın ve galeriyi yönetin.",
+  },
   layout: {
     icon: Layers,
     desc: "Ana sayfadaki bölümlerin yerini sürükleyip taşıyın veya gizleyin.",

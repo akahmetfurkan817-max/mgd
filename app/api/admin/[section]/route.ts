@@ -18,6 +18,8 @@ import {
 import type { AdminSection } from "@/types";
 
 const SECTIONS: readonly AdminSection[] = [
+  "slides",
+  "media",
   "news",
   "provinces",
   "board",
@@ -52,6 +54,14 @@ export async function PUT(req: Request, { params }: { params: { section: string 
   const bad = fail("Geçersiz veri.", 400);
 
   switch (section) {
+    case "slides": {
+      const b = body as { list?: unknown } | unknown[] | null;
+      const list = Array.isArray(b) ? b : Array.isArray((b as any)?.list) ? (b as any).list : null;
+      if (!list) return bad;
+      await db.collection(COLLECTIONS.settings).doc("slides").set({ list }, { merge: true });
+      return NextResponse.json({ ok: true });
+    }
+
     case "layout": {
       const b = body as { sections?: unknown } | null;
       if (!Array.isArray(b?.sections)) return bad;

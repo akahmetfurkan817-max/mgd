@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
   BookOpen,
+  Image as ImageIcon,
   Landmark,
   Layers,
   LayoutDashboard,
@@ -22,6 +23,8 @@ import { ADMIN_SECTIONS, ROLE_LABELS, can } from "@/lib/permissions";
 import type { AdminSection, AdminUser } from "@/types";
 
 const SECTION_ICONS: Record<AdminSection, typeof Newspaper> = {
+  slides: Sliders,
+  media: ImageIcon,
   layout: Layers,
   content: Type,
   board: Users,

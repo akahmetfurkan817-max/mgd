@@ -4,12 +4,14 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight, ExternalLink, Sparkles } from "lucide-react";
-import { HOME_SLIDES, type HomeSlideItem } from "@/data/slides";
+import { useSlides } from "@/hooks/useSiteData";
+import type { HomeSlideItem } from "@/data/slides";
 
 export default function HomeSlider() {
+  const { data: slides } = useSlides();
   const [current, setCurrent] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
-  const total = HOME_SLIDES.length;
+  const total = slides.length;
 
   // Touch & Drag state
   const touchStartX = useRef<number | null>(null);
@@ -48,7 +50,7 @@ export default function HomeSlider() {
 
   if (total === 0) return null;
 
-  const slide: HomeSlideItem = HOME_SLIDES[current];
+  const slide: HomeSlideItem = slides[current] || slides[0];
 
   return (
     <section
@@ -69,7 +71,7 @@ export default function HomeSlider() {
         className="relative min-h-[460px] sm:min-h-[520px] lg:min-h-[580px] w-full flex items-center overflow-hidden"
         style={{ position: "relative", minHeight: "480px", overflow: "hidden" }}
       >
-        {HOME_SLIDES.map((item, idx) => (
+        {slides.map((item, idx) => (
           <div
             key={item.id}
             className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
@@ -152,7 +154,7 @@ export default function HomeSlider() {
           <div className="container-x flex items-center justify-between">
             {/* Dots */}
             <div className="flex items-center gap-2">
-              {HOME_SLIDES.map((_, i) => (
+              {slides.map((_, i) => (
                 <button
                   key={i}
                   type="button"

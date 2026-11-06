@@ -8,6 +8,8 @@ export const ROLE_LABELS: Record<RoleId, string> = {
 
 export const ROLE_PERMISSIONS: Record<RoleId, readonly AdminSection[]> = {
   SUPER_ADMIN: [
+    "slides",
+    "media",
     "layout",
     "content",
     "board",
@@ -19,7 +21,7 @@ export const ROLE_PERMISSIONS: Record<RoleId, readonly AdminSection[]> = {
     "provinces",
     "iban",
   ],
-  NEWS_EDITOR: ["content", "news", "publications", "social", "videos"],
+  NEWS_EDITOR: ["slides", "media", "content", "news", "publications", "social", "videos"],
   ORG_MANAGER: ["provinces", "applications"],
 };
 
@@ -28,6 +30,8 @@ export function can(role: RoleId, section: AdminSection): boolean {
 }
 
 export const ADMIN_SECTIONS: { id: AdminSection; label: string; href: string }[] = [
+  { id: "slides", label: "Manşet Slaytları & Afişler", href: "/admin/slides" },
+  { id: "media", label: "Medya & Fotoğraf Galerisi", href: "/admin/media" },
   { id: "layout", label: "Sayfa Düzeni & Bloklar", href: "/admin/layout" },
   { id: "content", label: "Canlı Metinler & Sayaçlar", href: "/admin/content" },
   { id: "board", label: "Yönetim Kurulu & Kadro", href: "/admin/board" },

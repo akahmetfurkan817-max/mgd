@@ -1,6 +1,8 @@
 export type RoleId = "SUPER_ADMIN" | "NEWS_EDITOR" | "ORG_MANAGER";
 
 export type AdminSection =
+  | "slides"
+  | "media"
   | "news"
   | "provinces"
   | "board"
@@ -11,6 +13,18 @@ export type AdminSection =
   | "content"
   | "social"
   | "videos";
+
+export interface HomeSlideItem {
+  id: string;
+  badge: string;
+  badgeColor?: string;
+  title: string;
+  subtitle: string;
+  image: string;
+  linkUrl: string;
+  buttonText: string;
+  date?: string;
+}
 
 export interface AdminUser {
   username: string;
