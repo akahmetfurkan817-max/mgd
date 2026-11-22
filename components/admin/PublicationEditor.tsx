@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { BookOpen, Calendar, Download, ExternalLink, Pencil, Plus, Trash2 } from "lucide-react";
 import { Card, Field, IDLE, PageHeader, SaveStatus, type SaveState } from "@/components/admin/ui";
+import ImagePickerField from "@/components/admin/ImagePickerField";
 import { usePublications } from "@/hooks/useSiteData";
 import { saveSection } from "@/lib/adminApi";
 import type { Publication, PublicationCategory } from "@/types";
@@ -109,11 +110,10 @@ export default function PublicationEditor() {
               onChange={(v) => setForm({ ...form, pdfUrl: v })}
             />
 
-            <Field
-              label="Kapak Fotoğrafı (URL)"
+            <ImagePickerField
+              label="Kapak Fotoğrafı"
               value={form.coverImage || ""}
-              onChange={(v) => setForm({ ...form, coverImage: v })}
-              placeholder="/images/... veya https://..."
+              onChange={(url) => setForm({ ...form, coverImage: url })}
             />
 
             <Field

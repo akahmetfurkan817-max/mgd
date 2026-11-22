@@ -1,37 +1,69 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { Mail, MapPin, MousePointerClick, Phone, Search } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Mail, MapPin, MousePointerClick, Phone, Search, X } from "lucide-react";
 import { MAP_PROVINCES, MAP_VIEWBOX } from "@/data/turkey-map";
 import { useProvinces } from "@/hooks/useSiteData";
 import Avatar from "@/components/ui/Avatar";
 import type { Province } from "@/types";
 
-function ProvinceCard({ province }: { province: Province }) {
+function ProvinceCard({ province, onClose }: { province: Province; onClose: () => void }) {
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-      <p className="text-xs font-semibold uppercase tracking-widest text-secondary">
-        {String(province.plate).padStart(2, "0")} · İl Teşkilatı
-      </p>
-      <h3 className="mt-1 text-2xl font-bold text-primary-dark">{province.name}</h3>
+    <div className="h-full rounded-2xl border border-slate-200 bg-white p-7 shadow-sm relative flex flex-col justify-between">
+      <button
+        type="button"
+        onClick={onClose}
+        aria-label="Kapat"
+        className="absolute right-4 top-4 rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-ink transition"
+      >
+        <X size={18} />
+      </button>
+      <div>
+        <p className="text-xs font-extrabold uppercase tracking-widest text-secondary">
+          {String(province.plate).padStart(2, "0")} · İl Teşkilatı
+        </p>
+        <h3 className="mt-1.5 font-display text-2xl sm:text-3xl font-extrabold text-primary-dark pr-8">
+          {province.name}
+        </h3>
 
-      <div className="mt-5 flex items-center gap-4">
-        <Avatar name={province.chairName} src={province.chairPhoto} size={80} />
-        <div>
-          <p className="text-xs text-slate-500">İl Başkanı</p>
-          <p className="text-lg font-semibold text-ink">{province.chairName}</p>
+        <div className="mt-6 flex items-center gap-4">
+          <Avatar name={province.chairName} src={province.chairPhoto} size={88} />
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">İl Başkanı</p>
+            <p className="mt-0.5 text-lg sm:text-xl font-bold text-ink">{province.chairName}</p>
+          </div>
         </div>
       </div>
 
-      <ul className="mt-5 space-y-3 text-sm text-slate-700">
-        <li className="flex gap-2">
-          <MapPin size={18} className="mt-0.5 shrink-0 text-secondary" /> {province.address}
+      <ul className="mt-6 space-y-3.5 text-sm sm:text-[15px] text-slate-700 pt-5 border-t border-slate-100">
+        <li>
+          <a
+            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${province.address} ${province.name}`)}`}
+            target="_blank"
+            rel="noreferrer"
+            className="flex gap-2 hover:text-primary transition-colors group"
+          >
+            <MapPin size={18} className="mt-0.5 shrink-0 text-secondary" />
+            <span className="group-hover:underline underline-offset-4">{province.address}</span>
+          </a>
         </li>
-        <li className="flex gap-2">
-          <Phone size={18} className="shrink-0 text-secondary" /> {province.phone}
+        <li>
+          <a
+            href={`tel:${province.phone.replace(/[^0-9+]/g, "")}`}
+            className="flex gap-2 hover:text-primary transition-colors group"
+          >
+            <Phone size={18} className="shrink-0 text-secondary" />
+            <span className="group-hover:underline underline-offset-4">{province.phone}</span>
+          </a>
         </li>
-        <li className="flex gap-2">
-          <Mail size={18} className="shrink-0 text-secondary" /> {province.email}
+        <li>
+          <a
+            href={`mailto:${province.email}`}
+            className="flex gap-2 hover:text-primary transition-colors group"
+          >
+            <Mail size={18} className="shrink-0 text-secondary" />
+            <span className="group-hover:underline underline-offset-4">{province.email}</span>
+          </a>
         </li>
       </ul>
     </div>
@@ -43,6 +75,30 @@ export default function TurkeyMap() {
   const [hovered, setHovered] = useState<number | null>(null);
   const [query, setQuery] = useState("");
   const { data: provinces } = useProvinces();
+  const cardRef = useRef<HTMLDivElement>(null);
+  const searchRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (selected === null) return;
+    const handleOutsideClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (!target) return;
+      // Harita üzerindeki il (path), bilgi kartı veya il arama kutusu dışına tıklandığında seçimi temizle
+      if (target.closest("path[data-province]")) return;
+      if (cardRef.current?.contains(target)) return;
+      if (searchRef.current?.contains(target)) return;
+      setSelected(null);
+    };
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setSelected(null);
+    };
+    document.addEventListener("mousedown", handleOutsideClick);
+    document.addEventListener("keydown", handleKey);
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+      document.removeEventListener("keydown", handleKey);
+    };
+  }, [selected]);
 
   const province = useMemo(() => provinces.find((p) => p.plate === selected) ?? null, [provinces, selected]);
   const results = useMemo(() => {
@@ -53,17 +109,27 @@ export default function TurkeyMap() {
   const hoverName = MAP_PROVINCES.find((p) => p.plate === hovered)?.name;
 
   return (
-    <section id="teskilat" className="bg-surface py-20">
+    <section id="teskilat" className="bg-white py-16 sm:py-20">
       <div className="container-x">
-        <div className="mb-10 text-center">
-          <h2 className="section-title">81 İlde Teşkilat</h2>
-          <p className="mt-3 text-slate-600">Haritadan bir il seçerek il başkanlığı bilgilerine ulaşın.</p>
+        <div className="mb-10 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+          <div>
+            <span className="text-xs sm:text-sm font-extrabold uppercase tracking-[0.2em] text-primary">
+              AYNI İDEAL, FARKLI ŞEHİRLER
+            </span>
+            <h2 className="mt-2 font-display text-3xl sm:text-5xl font-extrabold tracking-tight text-ink leading-[1.1]">
+              Size en yakın <span className="text-primary">Millî Gençlik.</span>
+            </h2>
+          </div>
+          <p className="text-sm sm:text-base text-slate-500 sm:text-right leading-relaxed font-medium">
+            Haritadan ilinizi seçin.
+            <br className="hidden sm:inline" /> Teşkilatınızla tanışın.
+          </p>
         </div>
 
-        <div className="grid gap-8 lg:grid-cols-5">
-          <div className="lg:col-span-3">
-            <div className="relative rounded-2xl border border-slate-200 bg-white p-3 shadow-sm sm:p-6">
-              <div className="relative mb-3 max-w-xs">
+        <div className="grid gap-6 lg:gap-8 lg:grid-cols-12 items-stretch">
+          <div className="lg:col-span-8">
+            <div className="relative h-full rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-7">
+              <div ref={searchRef} className="relative mb-3 max-w-xs">
                 <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                 <input
                   value={query}
@@ -99,21 +165,22 @@ export default function TurkeyMap() {
                   return (
                     <path
                       key={p.plate}
+                      data-province={p.plate}
                       d={p.d}
                       role="button"
                       tabIndex={0}
                       aria-label={p.name}
                       aria-pressed={active}
-                      onClick={() => setSelected(p.plate)}
+                      onClick={() => setSelected((prev) => (prev === p.plate ? null : p.plate))}
                       onKeyDown={(e) => {
                         if (e.key === "Enter" || e.key === " ") {
                           e.preventDefault();
-                          setSelected(p.plate);
+                          setSelected((prev) => (prev === p.plate ? null : p.plate));
                         }
                       }}
                       onMouseEnter={() => setHovered(p.plate)}
                       onMouseLeave={() => setHovered(null)}
-                      fill={active ? "#1E3A8A" : hover ? "#2563EB" : "#BFD3F8"}
+                      fill={active ? "#1B3B7B" : hover ? "#1D56B8" : "#C9DCF6"}
                       stroke="#FFFFFF"
                       strokeWidth={active ? 1.6 : 0.9}
                       strokeLinejoin="round"
@@ -126,9 +193,9 @@ export default function TurkeyMap() {
             </div>
           </div>
 
-          <div className="lg:col-span-2">
+          <div ref={cardRef} className="lg:col-span-4">
             {province ? (
-              <ProvinceCard province={province} />
+              <ProvinceCard province={province} onClose={() => setSelected(null)} />
             ) : (
               <div className="flex h-full min-h-[260px] flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-300 p-8 text-center text-slate-500">
                 <MousePointerClick size={36} className="mb-3 text-secondary" />

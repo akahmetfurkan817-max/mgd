@@ -3,13 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import {
-  ChevronRight,
-  Clock,
-  Eye,
-  Play,
-  Video as VideoIcon,
-} from "lucide-react";
+import { ArrowRight, Clock, Eye, Play } from "lucide-react";
 import { useVideos } from "@/hooks/useSiteData";
 import VideoModal from "@/components/modals/VideoModal";
 import type { VideoItem } from "@/types";
@@ -21,146 +15,156 @@ export default function VideoGallerySection() {
   if (videos.length === 0) return null;
 
   const featured = videos[0];
-  const rest = videos.slice(1, 2); // Show only 1 side video on homepage (total 2)
+  const rest = videos.slice(1, 4);
 
   return (
-    <section id="videolar" className="relative py-16 bg-slate-950 text-white overflow-hidden border-b border-blue-900/30">
-      {/* Background glow */}
-      <div className="absolute top-1/2 left-1/3 -translate-y-1/2 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
-
-      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-10 pb-4 border-b border-white/10">
-          <div className="flex items-center gap-3">
-            <div className="h-9 w-9 rounded-xl bg-red-600/20 border border-red-500/30 flex items-center justify-center text-red-400">
-              <VideoIcon size={18} />
+    <section id="videolar" className="bg-primary-dark py-20 lg:py-24 text-white border-b border-white/10">
+      <div className="container-x">
+        {/* Başlık */}
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-8 border-b border-white/10 mb-10">
+          <div>
+            <div className="section-eyebrow mb-3">
+              <span className="h-[1.5px] w-7 bg-gold" />
+              <span>Milli Gençlik TV</span>
             </div>
-            <div>
-              <span className="text-[11px] font-bold uppercase tracking-wider text-red-400">Görsel Medya Arşivi</span>
-              <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-white">Video Galeri</h2>
-            </div>
+            <h2 className="font-serif text-3xl sm:text-4xl font-bold tracking-tight text-white">
+              Video Galeri
+            </h2>
           </div>
 
           <Link
             href="/videolar"
-            className="text-xs font-semibold text-blue-300 hover:text-white flex items-center gap-1.5 transition self-start sm:self-auto group"
+            className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-gold-light hover:text-white transition-colors self-start sm:self-auto group"
           >
-            TÜM VİDEOLARI GÖRMEK İÇİN TIKLAYIN ({videos.length}) <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
+            <span>Tüm Videolar ({videos.length})</span>
+            <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
           </Link>
         </div>
 
-        {/* Video Grid: 1 Featured (Large) + 3 Compact */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          {/* Featured Video (7 cols) */}
+        {/* Video Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
+          {/* Öne Çıkan Video */}
           <div
+            role="button"
+            tabIndex={0}
             onClick={() => setSelectedVideo(featured)}
-            className="lg:col-span-7 group relative flex flex-col justify-end min-h-[380px] lg:min-h-[440px] rounded-2xl overflow-hidden shadow-2xl border border-white/10 cursor-pointer bg-slate-900"
+            onKeyDown={(e) => e.key === "Enter" && setSelectedVideo(featured)}
+            className="lg:col-span-7 group relative flex flex-col justify-end min-h-[360px] sm:min-h-[440px] rounded-2xl overflow-hidden border border-white/10 cursor-pointer bg-slate-900"
           >
             <Image
               src={featured.thumbnail}
               alt={featured.title}
               fill
-              sizes="(max-width: 1024px) 100vw, 60vw"
+              sizes="(max-width: 1024px) 100vw, 58vw"
               className="object-cover transition-transform duration-700 group-hover:scale-105"
+              unoptimized
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/50 to-transparent opacity-90" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#06101F] via-[#06101F]/45 to-transparent" />
 
-            {/* Play Button Center Overlay */}
+            {/* Oynat Butonu */}
             <div className="absolute inset-0 flex items-center justify-center">
-              <div className="h-16 w-16 rounded-full bg-red-600 group-hover:bg-red-500 text-white flex items-center justify-center shadow-2xl shadow-red-900/50 group-hover:scale-110 transition-transform duration-300">
-                <Play size={26} className="fill-white translate-x-0.5" />
+              <div className="flex h-16 w-16 items-center justify-center rounded-full border border-white/30 bg-white/95 text-primary-dark shadow-2xl transition-all duration-300 group-hover:scale-110 group-hover:bg-gold group-hover:text-white group-hover:border-gold">
+                <Play size={24} className="fill-current translate-x-0.5" />
               </div>
             </div>
 
-            {/* Bottom Content */}
-            <div className="relative p-6 sm:p-8 z-10 space-y-2">
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-red-600/80 text-white shadow-sm">
+            {/* Alt Bilgi */}
+            <div className="relative p-6 sm:p-8 z-10">
+              <div className="flex flex-wrap items-center gap-3 text-xs text-slate-300 mb-2.5">
+                <span className="font-bold uppercase tracking-wider text-gold-light">
                   {featured.category}
                 </span>
-                <span className="text-xs text-white/70 flex items-center gap-1">
+                <span className="text-white/25">•</span>
+                <span className="inline-flex items-center gap-1">
                   <Clock size={12} /> {featured.duration}
                 </span>
                 {featured.views && (
-                  <span className="text-xs text-white/70 flex items-center gap-1">
-                    <Eye size={12} /> {featured.views} izlenme
-                  </span>
+                  <>
+                    <span className="text-white/25">•</span>
+                    <span className="inline-flex items-center gap-1">
+                      <Eye size={12} /> {featured.views}
+                    </span>
+                  </>
                 )}
               </div>
 
-              <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-white leading-snug group-hover:text-blue-300 transition">
+              <h3 className="font-serif text-xl sm:text-2xl font-bold text-white leading-snug group-hover:text-gold-light transition-colors">
                 {featured.title}
               </h3>
-              <p className="text-xs text-slate-300 line-clamp-2 max-w-xl">
+              <p className="mt-2 text-xs sm:text-sm text-slate-300 line-clamp-2 max-w-xl">
                 {featured.description}
               </p>
             </div>
           </div>
 
-          {/* Side Videos (5 cols) */}
+          {/* Yan Video Listesi */}
           <div className="lg:col-span-5 flex flex-col justify-between gap-4">
             {rest.map((vid) => (
               <div
                 key={vid.id}
+                role="button"
+                tabIndex={0}
                 onClick={() => setSelectedVideo(vid)}
-                className="group flex gap-4 p-4 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-blue-400/30 transition cursor-pointer"
+                onKeyDown={(e) => e.key === "Enter" && setSelectedVideo(vid)}
+                className="group flex gap-4 p-3.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 hover:border-gold/40 transition-all cursor-pointer"
               >
-                <div className="relative h-28 w-40 rounded-xl overflow-hidden shrink-0 bg-slate-900">
+                <div className="relative h-24 w-36 sm:h-28 sm:w-40 rounded-lg overflow-hidden shrink-0 bg-slate-900">
                   <Image
                     src={vid.thumbnail}
                     alt={vid.title}
                     fill
                     sizes="160px"
-                    className="object-cover group-hover:scale-105 transition-transform duration-300"
+                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    unoptimized
                   />
-                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center group-hover:bg-black/20 transition">
-                    <div className="h-9 w-9 rounded-full bg-red-600/90 text-white flex items-center justify-center shadow-md group-hover:scale-110 transition">
-                      <Play size={15} className="fill-white translate-x-0.5" />
+                  <div className="absolute inset-0 bg-black/35 flex items-center justify-center">
+                    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-primary-dark transition-transform group-hover:scale-110 group-hover:bg-gold group-hover:text-white">
+                      <Play size={14} className="fill-current translate-x-0.5" />
                     </div>
                   </div>
-                  <span className="absolute bottom-1 right-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-black/80 text-white">
+                  <span className="absolute bottom-1.5 right-1.5 rounded bg-black/80 px-1.5 py-0.5 font-mono text-[10px] font-bold text-white">
                     {vid.duration}
                   </span>
                 </div>
 
-                <div className="flex-1 min-w-0 flex flex-col justify-between">
+                <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5">
                   <div>
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-blue-300">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-gold-light">
                       {vid.category}
                     </span>
-                    <h4 className="text-sm font-semibold text-slate-100 group-hover:text-blue-300 transition line-clamp-2 mt-0.5">
+                    <h4 className="mt-1 text-sm font-semibold text-white group-hover:text-gold-light transition-colors line-clamp-2 leading-snug">
                       {vid.title}
                     </h4>
                   </div>
                   <div className="flex items-center gap-2 text-[11px] text-slate-400 mt-2">
                     <span>{vid.date}</span>
-                    {vid.views && <span>• {vid.views} izlenme</span>}
+                    {vid.views && <span>• {vid.views}</span>}
                   </div>
                 </div>
               </div>
             ))}
 
-            {/* Archive Callout Card */}
-            <Link
-              href="/videolar"
-              className="group p-6 rounded-2xl bg-gradient-to-br from-blue-950/60 to-slate-900/80 border border-blue-500/20 hover:border-blue-400/50 transition flex flex-col justify-between gap-4"
-            >
-              <div>
-                <span className="text-[10px] font-bold uppercase tracking-widest text-blue-400">
-                  Milli Gençlik TV
+            {rest.length < 3 && (
+              <Link
+                href="/videolar"
+                className="group p-6 rounded-xl bg-white/[0.04] border border-white/10 hover:border-gold/40 transition-all flex flex-col justify-between gap-3"
+              >
+                <div>
+                  <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-gold-light">
+                    Görsel Arşiv
+                  </span>
+                  <h4 className="font-serif text-lg font-bold text-white mt-1">
+                    Tüm Konuşma ve Program Kayıtları
+                  </h4>
+                  <p className="text-xs text-slate-400 mt-1 leading-relaxed">
+                    Genel Başkan hitapları, teşkilat eğitimleri, gençlik şölenleri ve basın açıklamalarının tamamına ulaşın.
+                  </p>
+                </div>
+                <span className="inline-flex items-center gap-1.5 text-xs font-bold text-gold-light group-hover:text-white transition-colors">
+                  Arşive Git <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
                 </span>
-                <h4 className="text-base font-bold text-white mt-1 group-hover:text-blue-300 transition">
-                  Tüm Görsel & Video Arşivini Keşfedin
-                </h4>
-                <p className="text-xs text-slate-400 mt-1">
-                  Genel Başkanımızın hitapları, teşkilat eğitimleri, gençlik buluşmaları ve basın toplantılarının tüm video kayıtları.
-                </p>
-              </div>
-              <div className="inline-flex items-center gap-2 text-xs font-bold text-blue-300 group-hover:text-white transition">
-                <span>Tüm Videoları Görüntüle ({videos.length})</span>
-                <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
-              </div>
-            </Link>
+              </Link>
+            )}
           </div>
         </div>
       </div>

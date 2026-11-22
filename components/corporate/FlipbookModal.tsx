@@ -18,6 +18,7 @@ import {
   X,
 } from "lucide-react";
 import { CORPORATE_DOCS, type CorporateDoc, type CorporatePage } from "@/data/corporate";
+import { useSiteSettings } from "@/hooks/useSiteData";
 
 // Web Audio API ile gerçekçi kağıt / sayfa çevirme sesi sentezleyici (harici dosya gerektirmez)
 function playPageFlipSound(soundEnabled = true) {
@@ -117,7 +118,73 @@ export default function FlipbookModal({ docKey, onClose }: FlipbookModalProps) {
     };
   }, [docKey, handleNextPage, handlePrevPage, onClose]);
 
+  const { data: settings } = useSiteSettings();
+  const uploadedPdf =
+    docKey && settings.corporatePdfs
+      ? (settings.corporatePdfs as Record<string, string | undefined>)[docKey]
+      : undefined;
+
   if (!docKey || !doc) return null;
+
+  // Admin panelinden bu belge için PDF yüklendiyse doğrudan interaktif PDF okuyucuda aç
+  if (uploadedPdf) {
+    return (
+      <div
+        role="dialog"
+        aria-modal="true"
+        className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 md:p-6 bg-slate-950/85 backdrop-blur-md animate-fadeIn"
+        onClick={onClose}
+      >
+        <div
+          className={`relative flex flex-col bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden transition-all ${
+            isFullscreen ? "w-screen h-screen rounded-none" : "w-full max-w-5xl h-[90vh]"
+          }`}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="flex items-center justify-between px-4 sm:px-6 py-3.5 bg-primary text-white shrink-0">
+            <div className="flex items-center gap-3 min-w-0">
+              <BookOpen size={18} className="shrink-0 text-blue-200" />
+              <div className="min-w-0">
+                <h2 className="text-sm sm:text-base font-bold truncate">{doc.title}</h2>
+                <p className="text-[11px] text-blue-200 truncate">Resmî PDF Belgesi</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <a
+                href={uploadedPdf}
+                download
+                className="inline-flex items-center gap-1.5 rounded-lg bg-white/15 hover:bg-white/25 px-3 py-1.5 text-xs font-bold text-white transition"
+              >
+                <Download size={14} /> İndir
+              </a>
+              <button
+                type="button"
+                onClick={() => setIsFullscreen((f) => !f)}
+                className="p-2 rounded-lg hover:bg-white/15 text-white transition"
+                aria-label="Tam Ekran"
+              >
+                {isFullscreen ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
+              </button>
+              <button
+                type="button"
+                onClick={onClose}
+                className="p-2 rounded-lg hover:bg-white/15 text-white transition"
+                aria-label="Kapat"
+              >
+                <X size={18} />
+              </button>
+            </div>
+          </div>
+
+          <iframe
+            src={uploadedPdf}
+            title={doc.title}
+            className="w-full flex-1 border-0 bg-slate-100"
+          />
+        </div>
+      </div>
+    );
+  }
 
   const activePage: CorporatePage = doc.pages[currentPage - 1] || doc.pages[0];
 

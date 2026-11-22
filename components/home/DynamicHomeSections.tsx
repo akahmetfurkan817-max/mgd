@@ -8,6 +8,7 @@ import VisionSection from "@/components/home/VisionSection";
 import ErbakanSection from "@/components/home/ErbakanSection";
 import PresidentSection from "@/components/home/PresidentSection";
 import TeamGrid from "@/components/home/TeamGrid";
+import LeadershipCompact from "@/components/home/LeadershipCompact";
 import SocialMediaSection from "@/components/home/SocialMediaSection";
 import TurkeyMap from "@/components/home/TurkeyMap";
 import NewsShowcase from "@/components/home/NewsShowcase";
@@ -19,6 +20,7 @@ import VideoGallerySection from "@/components/home/VideoGallerySection";
 import PublicationsSection from "@/components/home/PublicationsSection";
 import GallerySection from "@/components/home/GallerySection";
 import { useSiteSettings } from "@/hooks/useSiteData";
+import { DEFAULT_SECTIONS } from "@/data/site-settings";
 import type { HomeSectionId } from "@/types";
 
 const SECTION_COMPONENTS: Record<HomeSectionId, () => ReactNode> = {
@@ -33,7 +35,7 @@ const SECTION_COMPONENTS: Record<HomeSectionId, () => ReactNode> = {
   vision: () => <VisionSection key="vision" />,
   erbakan: () => <ErbakanSection key="erbakan" />,
   president: () => <PresidentSection key="president" />,
-  team: () => <TeamGrid key="team" />,
+  team: () => <LeadershipCompact key="team" />,
   social: () => <SocialMediaSection key="social" />,
   map: () => <TurkeyMap key="map" />,
   news: () => <NewsShowcase key="news" />,
@@ -43,7 +45,13 @@ const SECTION_COMPONENTS: Record<HomeSectionId, () => ReactNode> = {
 
 export default function DynamicHomeSections() {
   const { data: settings } = useSiteSettings();
-  const sections = settings.sections || [];
+  const remoteSections = settings.sections || [];
+  // Eski 10+ bölümlü düzen yerine sade AGD tarzı düzeni kullan (admin yeni düzen kaydedene kadar)
+  const enabledCount = remoteSections.filter((s) => s.enabled).length;
+  const sections =
+    remoteSections.length > 0 && enabledCount <= 6
+      ? remoteSections
+      : DEFAULT_SECTIONS;
 
   return (
     <>

@@ -33,23 +33,20 @@ interface Live<T> {
 }
 
 function useCollection<T>(name: string, seed: T[], combine: (remote: T[], seed: T[]) => T[]): Live<T[]> {
-  const [state, setState] = useState<Live<T[]>>(() => {
-    if (typeof window !== "undefined") {
-      try {
-        const cached = localStorage.getItem(`mgd_col_${name}`);
-        if (cached) {
-          const parsed = JSON.parse(cached);
-          if (Array.isArray(parsed) && parsed.length > 0) {
-            return { data: combine(parsed, seed), live: true };
-          }
-        }
-      } catch {}
-    }
-    return { data: seed, live: false };
-  });
+  const [state, setState] = useState<Live<T[]>>({ data: seed, live: false });
 
   useEffect(() => {
     const cacheKey = `mgd_col_${name}`;
+    try {
+      const cached = localStorage.getItem(cacheKey);
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setState({ data: combine(parsed, seed), live: true });
+        }
+      }
+    } catch {}
+
     const db = getDb();
     if (!db) return;
     return onSnapshot(
@@ -69,23 +66,20 @@ function useCollection<T>(name: string, seed: T[], combine: (remote: T[], seed: 
 }
 
 function useDocument<T>(col: string, id: string, seed: T): Live<T> {
-  const [state, setState] = useState<Live<T>>(() => {
-    if (typeof window !== "undefined") {
-      try {
-        const cached = localStorage.getItem(`mgd_doc_${col}_${id}`);
-        if (cached) {
-          const parsed = JSON.parse(cached);
-          if (parsed && typeof parsed === "object") {
-            return { data: { ...seed, ...parsed }, live: true };
-          }
-        }
-      } catch {}
-    }
-    return { data: seed, live: false };
-  });
+  const [state, setState] = useState<Live<T>>({ data: seed, live: false });
 
   useEffect(() => {
     const cacheKey = `mgd_doc_${col}_${id}`;
+    try {
+      const cached = localStorage.getItem(cacheKey);
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (parsed && typeof parsed === "object") {
+          setState({ data: { ...seed, ...parsed }, live: true });
+        }
+      }
+    } catch {}
+
     const db = getDb();
     if (!db) return;
     return onSnapshot(
@@ -193,21 +187,11 @@ export function useSiteSettings(): Live<SiteSettings> {
   };
 }
 
+const SLIDES_SEED = { list: HOME_SLIDES };
+
 export function useSlides(): Live<HomeSlideItem[]> {
-  const [state, setState] = useState<Live<HomeSlideItem[]>>(() => {
-    if (typeof window !== "undefined") {
-      try {
-        const cached = localStorage.getItem("mgd_slides");
-        if (cached) {
-          const parsed = JSON.parse(cached);
-          if (Array.isArray(parsed) && parsed.length > 0) {
-            return { data: parsed, live: true };
-          }
-        }
-      } catch {}
-    }
-    return { data: HOME_SLIDES, live: false };
-  });
+  const remote = useDocument<{ list: HomeSlideItem[] }>(COLLECTIONS.settings, "slides", SLIDES_SEED);
+  const [localOverride, setLocalOverride] = useState<HomeSlideItem[] | null>(null);
 
   useEffect(() => {
     const handleUpdate = () => {
@@ -215,13 +199,14 @@ export function useSlides(): Live<HomeSlideItem[]> {
         const cached = localStorage.getItem("mgd_slides");
         if (cached) {
           const parsed = JSON.parse(cached);
-          if (Array.isArray(parsed)) {
-            setState({ data: parsed, live: true });
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            setLocalOverride(parsed);
           }
         }
       } catch {}
     };
 
+    handleUpdate();
     window.addEventListener("storage", handleUpdate);
     window.addEventListener("mgd_slides_updated", handleUpdate);
     return () => {
@@ -230,7 +215,14 @@ export function useSlides(): Live<HomeSlideItem[]> {
     };
   }, []);
 
-  return state;
+  // Firestore canlı veri geldiyse ve boş değilse onu kullan, aksi halde yerel güncel veriyi kullan
+  if (remote.live && Array.isArray(remote.data?.list) && remote.data.list.length > 0) {
+    return { data: remote.data.list, live: true };
+  }
+  if (localOverride && localOverride.length > 0) {
+    return { data: localOverride, live: true };
+  }
+  return { data: HOME_SLIDES, live: false };
 }
 
 const IBAN_SEED = { list: IBAN_LIST };

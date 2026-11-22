@@ -248,11 +248,39 @@ export interface ContactConfig {
   email: string;
   address: string;
   headerNotice?: string;
+  xUrl?: string;
+  instagramUrl?: string;
+  youtubeUrl?: string;
+}
+
+export interface ErbakanQuoteItem {
+  quote: string;
+  context: string;
+}
+
+export interface ErbakanConfig {
+  badge?: string;
+  title?: string;
+  subtitle?: string;
+  portrait?: string;
+  quotes?: ErbakanQuoteItem[];
 }
 
 export interface ThemeConfig {
   primaryColor?: string;
   secondaryColor?: string;
+}
+
+export interface ManagementCardsConfig {
+  showDormitory?: boolean;
+  dormitoryPhoto?: string;
+}
+
+export interface CorporatePdfsConfig {
+  tuzuk?: string;
+  hakkimizda?: string;
+  protokoller?: string;
+  kurumsalKimlik?: string;
 }
 
 export interface SiteSettings {
@@ -262,4 +290,7 @@ export interface SiteSettings {
   vision: VisionConfig;
   contact?: ContactConfig;
   theme?: ThemeConfig;
+  erbakan?: ErbakanConfig;
+  managementCards?: ManagementCardsConfig;
+  corporatePdfs?: CorporatePdfsConfig;
 }

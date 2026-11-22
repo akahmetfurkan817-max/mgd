@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Card, Field, IDLE, PageHeader, SaveStatus, type SaveState } from "@/components/admin/ui";
+import ImagePickerField from "@/components/admin/ImagePickerField";
 import { useProvinces } from "@/hooks/useSiteData";
 import { saveSection } from "@/lib/adminApi";
 import type { Province } from "@/types";
@@ -24,9 +25,15 @@ function ProvinceForm({ initial }: { initial: Province }) {
     <>
       <div className="grid gap-4 sm:grid-cols-2">
         <Field label="İl Başkanı" value={draft.chairName} onChange={(v) => update({ chairName: v })} />
-        <Field label="Fotoğraf Yolu (örn. /team/il-06.jpg)" value={draft.chairPhoto} onChange={(v) => update({ chairPhoto: v })} />
         <Field label="Telefon" value={draft.phone} onChange={(v) => update({ phone: v })} />
         <Field label="E-posta" type="email" value={draft.email} onChange={(v) => update({ email: v })} />
+        <div className="sm:col-span-2">
+          <ImagePickerField
+            label="İl Başkanı Fotoğrafı"
+            value={draft.chairPhoto}
+            onChange={(url) => update({ chairPhoto: url })}
+          />
+        </div>
         <div className="sm:col-span-2">
           <Field label="İl Binası Adresi" multiline value={draft.address} onChange={(v) => update({ address: v })} />
         </div>

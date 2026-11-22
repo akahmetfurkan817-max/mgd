@@ -19,7 +19,7 @@ export const BASINDA_BIZ_ITEMS: BasindaBizItem[] = [
     category: "Açılış & Teşkilat",
     date: "2026",
     location: "Gaziantep",
-    image: "/images/basinda-biz/gaziantep.png",
+    image: "/images/mgd/milli-genclik-dernegi-il-baskanlari-toplantisi-06092025.jpg",
     summary:
       "Milli Gençlik Derneği Gaziantep İl Başkanlığı hizmet binamız, genel merkez yöneticilerimiz ve bölge halkının yoğun katılımıyla dualarla açıldı.",
     content:
@@ -32,7 +32,7 @@ export const BASINDA_BIZ_ITEMS: BasindaBizItem[] = [
     category: "Teşkilat",
     date: "2026",
     location: "Anadolu Buluşmaları",
-    image: "/images/basinda-biz/teskilat.png",
+    image: "/images/mgd/11102025-il-baskanlari-toplantisi.jpg",
     summary:
       "Genel Başkanımız ve heyetimiz, il ve ilçe teşkilatlarımızı yerinde ziyaret ederek genç kardeşlerimizle istişare toplantıları gerçekleştirdi.",
     content:
@@ -45,7 +45,7 @@ export const BASINDA_BIZ_ITEMS: BasindaBizItem[] = [
     category: "Gençlik Buluşması",
     date: "2026",
     location: "Antalya",
-    image: "/images/basinda-biz/antalya-yayla.png",
+    image: "/images/mgd/haydi-milli-genclik.jpg",
     summary:
       "Torosların zirvesinde binlerce gencin bir araya geldiği spor müsabakaları, ezgi dinletileri ve kardeşlik atmosferiyle dolu muhteşem şölen.",
     content:
@@ -58,7 +58,7 @@ export const BASINDA_BIZ_ITEMS: BasindaBizItem[] = [
     category: "Açılış & Teşkilat",
     date: "2026",
     location: "Karabük",
-    image: "/images/basinda-biz/karabuk.png",
+    image: "/images/mgd/nicin-milli-genclik.jpg",
     summary:
       "Karabük il teşkilatımızın yeni hizmet binasının açılış kurdelesi, Genel Merkez heyetimiz ve kıymetli gönüldaşlarımızın iştirakiyle kesildi.",
     content:
@@ -71,7 +71,7 @@ export const BASINDA_BIZ_ITEMS: BasindaBizItem[] = [
     category: "Açılış & Teşkilat",
     date: "2026",
     location: "Tekirdağ",
-    image: "/images/basinda-biz/tekirdag.png",
+    image: "/images/mgd/once-ahlak-ve-maneviyat-diyebilen-bir-genclik.jpeg",
     summary:
       "Trakya bölgesinde milli gençlik rüzgarı estirecek olan Tekirdağ İl Hizmet Binamız dualar eşliğinde açılışını gerçekleştirdi.",
     content:
@@ -84,7 +84,7 @@ export const BASINDA_BIZ_ITEMS: BasindaBizItem[] = [
     category: "Açılış & Teşkilat",
     date: "2026",
     location: "Antalya",
-    image: "/images/basinda-biz/antalya-il.png",
+    image: "/images/mgd/06092025-milli-genclik-dernegi-il-baskanlar-toplantisi.jpg",
     summary:
       "Akdeniz'in incisi Antalya'da gençliğimize hizmet edecek yeni il merkez binamız büyük bir coşku ve katılımla hizmete girdi.",
     content:
@@ -97,7 +97,7 @@ export const BASINDA_BIZ_ITEMS: BasindaBizItem[] = [
     category: "Milli Şuur",
     date: "2026",
     location: "İstanbul",
-    image: "/images/basinda-biz/istanbul-fetih.png",
+    image: "/images/mgd/inanc-ihlas-ve-azmin-zaferi-istanbul-un-fethi-programi-24-mayis-2025-cumartesi.jpg",
     summary:
       "Çağ kapatıp çağ açan kutlu fethin 573. yıl dönümü, binlerce gencimizin katılımıyla Yahya Kemal Beyatlı Gösteri Merkezi'nde coşkuyla idrak edildi.",
     content:
@@ -110,16 +110,16 @@ export const BASINDA_BIZ_ITEMS: BasindaBizItem[] = [
     category: "Yaz Etkinlikleri",
     date: "2025-2026",
     location: "81 İl Teşkilatımızda",
-    image: "/images/basinda-biz/yaz_etkinlikleri_cartoon.png",
+    image: "/images/mgd/2025-2026-yaz-etkinliklerimiz.jpg",
     summary:
       "Geleceğimizin teminatı çocuklarımız için ahlak ve maneviyat, robotik kodlama, yüzme ve atölye çalışmalarıyla dolu unutulmaz yaz kampları.",
     content:
       "Milli Gençlik Derneği olarak geleceğimizin teminatı olan çocuklarımızın yaz tatillerini hem verimli hem de keyifli geçirmeleri için 2025-2026 Yaz Etkinlikleri kapsamında birçok program düzenledik. Bu etkinliklerde amacımız çocuklarımızın sadece boş vakitlerini doldurmaları değil; aynı zamanda ahlaki ve manevi değerlerle yetişmeleri, bununla birlikte fen eğitimi, kodlama ve yabancı dil gibi çağın gerekliliklerini kazanmaları oldu. İl başkanlıklarımızın öncülüğünde ve gönüllü kardeşlerimizin büyük emekleriyle hayata geçirilen bu yaz etkinlikleri, çocuklarımızın kişisel gelişimlerine önemli katkılar sağladı. Çeşitli dersler, oyunlar, atölye çalışmaları ve sosyal faaliyetlerle dolu geçen programlarımız öğrencilerimizin hem öğrenmesini hem eğlenmesini mümkün kıldı.",
     galleryImages: [
-      "/images/basinda-biz/yaz_kamp_1.png",
-      "/images/basinda-biz/yaz_kamp_2.png",
-      "/images/basinda-biz/yaz_kamp_3.png",
-      "/images/basinda-biz/yaz_kamp_4.png",
+      "/images/mgd/2025-2026-yaz-etkinliklerimiz.jpg",
+      "/images/mgd/haydi-milli-genclik.jpg",
+      "/images/mgd/06092025-milli-genclik-dernegi-il-baskanlar-toplantisi.jpg",
+      "/images/mgd/11102025-il-baskanlari-toplantisi.jpg",
     ],
   },
 ];

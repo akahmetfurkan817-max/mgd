@@ -35,7 +35,7 @@ export const NEWS: NewsItem[] = [
       "Genel Merkez Eğitim ve Burs Komisyonumuz tarafından titizlikle yürütülen değerlendirmeler neticesinde; 81 ilden binlerce üniversite öğrencimizin burs hak sahipliği sonuçları ilan edilmiştir. T.C. Kimlik numaranız ile sorgulama yapabilirsiniz.",
     category: "Duyurular & Burs",
     date: "2026-11-05",
-    image: "/images/basinda-biz/antalya-il.png",
+    image: "/images/slider/burs-universite.jpg",
   },
   {
     id: "n-burs-2",
@@ -44,7 +44,7 @@ export const NEWS: NewsItem[] = [
       "Üniversiteye yeni yerleşen ve barınma güçlüğü çeken kardeşlerimize yönelik yurt tahsisi ve karşılıksız beslenme desteği başvuruları devam etmektedir.",
     category: "Duyurular & Burs",
     date: "2026-11-01",
-    image: "/images/basinda-biz/yaz-etkinlikleri.png",
+    image: "/images/mgd/once-ahlak-ve-maneviyat-diyebilen-bir-genclik.jpeg",
   },
   {
     id: "n1",
@@ -53,7 +53,7 @@ export const NEWS: NewsItem[] = [
       "Milli Görüş hareketinin kurucusu Prof. Dr. Necmettin Erbakan, doğumunun 100. yılı dolayısıyla Konya’da düzenlenen muazzam bir programla anıldı. Genel Başkanımız Ahmet Özvatan önemli mesajlar verdi.",
     category: "Genel Merkez",
     date: "2026-11-02",
-    image: "/images/basinda-biz/istanbul-fetih.png",
+    image: "/images/erbakan_banner.png",
   },
   {
     id: "n-prog-1",
@@ -62,7 +62,7 @@ export const NEWS: NewsItem[] = [
       "Ankara Haliç ve Nazım Hikmet Kongre Merkezlerinde icra edilecek dev gençlik şöleninde ezgiler, tiyatro gösterileri, teknoloji stantları ve Genel Başkanımızın tarihi hitabı yer alacak.",
     category: "Programlar",
     date: "2026-10-30",
-    image: "/images/basinda-biz/antalya-yayla.png",
+    image: "/images/mgd/haydi-milli-genclik.jpg",
   },
   {
     id: "n2",
@@ -71,7 +71,7 @@ export const NEWS: NewsItem[] = [
       "“Gençliği ihmal edenler, geleceklerini imha ederler. Bizler 81 ilde tek bir gencimizi dahi ifsat şebekelerinin insafına terk etmeyeceğiz. Türkiye'nin asıl gücü inançlı evlatlarıdır.”",
     category: "Basın Açıklaması",
     date: "2026-10-28",
-    image: "/images/ahmet-ozvatan.jpg",
+    image: "/images/mgd/11102025-il-baskanlari-toplantisi.jpg",
   },
   {
     id: "n-tesk-1",
@@ -80,7 +80,7 @@ export const NEWS: NewsItem[] = [
       "Teşkilatlanma Başkanlığımızın koordinasyonunda 81 il başkanlığı binamızda yüzlerce genç kardeşimizin katılımıyla ilk okuma halkası dersleri dualarla başladı.",
     category: "Teşkilattan Haberler",
     date: "2026-10-22",
-    image: "/images/basinda-biz/teskilat.png",
+    image: "/images/mgd/nicin-milli-genclik.jpg",
   },
   {
     id: "n3",
@@ -89,7 +89,7 @@ export const NEWS: NewsItem[] = [
       "Teşkilatlanma seferberliğimiz kapsamında üç büyük şehrimizde gençlik eğitim merkezlerimiz ve il başkanlığı binalarımız dualarla açıldı.",
     category: "Teşkilattan Haberler",
     date: "2026-10-18",
-    image: "/images/basinda-biz/gaziantep.png",
+    image: "/images/mgd/milli-genclik-dernegi-il-baskanlari-toplantisi-06092025.jpg",
   },
   {
     id: "n4",
@@ -98,7 +98,7 @@ export const NEWS: NewsItem[] = [
       "Üniversite Teşkilatları Başkanlığımız, yeni akademik yılda genç mühendis, hekim ve ilahiyatçı kardeşlerimiz için araştırma atölyeleri kurdu.",
     category: "Üniversite",
     date: "2026-10-10",
-    image: "/images/basinda-biz/yaz-etkinlikleri.png",
+    image: "/images/mgd/2025-2026-yaz-etkinliklerimiz.jpg",
   },
   {
     id: "n5",
@@ -107,6 +107,6 @@ export const NEWS: NewsItem[] = [
       "Kıbrıs Barış Harekâtı'nın mimarı Erbakan Hocamızın mirası KKTC ve deniz yetki alanlarımız konusundaki tavizsiz duruşumuz kamuoyuyla paylaşıldı.",
     category: "Basın Açıklaması",
     date: "2026-09-24",
-    image: "/images/basinda-biz/antalya-yayla.png",
+    image: "/images/erbakan_portrait.png",
   },
 ];

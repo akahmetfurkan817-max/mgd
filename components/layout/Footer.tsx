@@ -2,78 +2,83 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import {
-  BookOpen,
-  Calendar,
-  CheckCircle2,
-  FileCheck,
-  FileText,
-  HeartHandshake,
-  Landmark,
-  Mail,
-  MapPin,
-  Newspaper,
-  Phone,
-  Send,
-  ShieldCheck,
-  Sparkles,
-  Users,
-  Video,
-} from "lucide-react";
+import { CheckCircle2, Mail, MapPin, Phone, Send, ShieldCheck } from "lucide-react";
 import Logo from "@/components/layout/Logo";
 import { useDonate } from "@/components/donate/DonateProvider";
-import CorporateModal from "@/components/modals/CorporateModal";
+import { useSiteSettings } from "@/hooks/useSiteData";
+import FlipbookModal from "@/components/corporate/FlipbookModal";
 
 export default function Footer() {
   const { openDonate } = useDonate();
+  const { data: settings } = useSiteSettings();
   const [activeCorporateDoc, setActiveCorporateDoc] = useState<string | null>(null);
   const [newsletterEmail, setNewsletterEmail] = useState("");
+  const [submitting, setSubmitting] = useState(false);
   const [subscribed, setSubscribed] = useState(false);
 
-  const handleNewsletter = (e: React.FormEvent) => {
+  const contact = settings.contact || {
+    phone: "0 (312) 472 54 54",
+    email: "iletisim@milligenclik.org.tr",
+    address: "Genel Merkez: Milli Gençlik Cad. Çankaya / Ankara",
+    xUrl: "https://x.com/milligenclikmgd",
+    instagramUrl: "https://www.instagram.com/milligenclikmgd/",
+  };
+
+  const handleNewsletter = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newsletterEmail || !newsletterEmail.includes("@")) {
-      alert("Lütfen geçerli bir e-posta adresi yazınız.");
-      return;
+    if (!newsletterEmail || !newsletterEmail.includes("@")) return;
+    setSubmitting(true);
+    try {
+      const res = await fetch("/api/newsletter", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: newsletterEmail }),
+      });
+      if (res.ok) {
+        setSubscribed(true);
+        setNewsletterEmail("");
+        setTimeout(() => setSubscribed(false), 4500);
+      }
+    } finally {
+      setSubmitting(false);
     }
-    setSubscribed(true);
-    setNewsletterEmail("");
-    setTimeout(() => setSubscribed(false), 4000);
   };
 
   return (
     <>
-      <footer id="iletisim" className="bg-[#060e20] text-slate-300 border-t border-blue-950">
-        {/* Top Newsletter Bar */}
-        <div className="border-b border-white/10 bg-[#0A192F]/80 py-8">
-          <div className="container-x flex flex-col md:flex-row items-center justify-between gap-6">
-            <div>
-              <span className="text-[11px] font-bold uppercase tracking-wider text-blue-400">
+      <footer id="iletisim" className="bg-primary-dark text-slate-300 border-t border-white/10">
+        {/* E-Bülten Şeridi */}
+        <div className="border-b border-white/10 bg-primary">
+          <div className="container-x py-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+            <div className="max-w-xl">
+              <span className="text-[11px] font-extrabold uppercase tracking-[0.2em] text-blue-200">
                 E-Bülten Aboneliği
               </span>
-              <h3 className="text-lg font-bold text-white mt-0.5">
-                Faaliyetlerimizden ve Raporlarımızdan Haberdar Olun
+              <h3 className="font-display text-xl sm:text-2xl font-extrabold text-white mt-1.5">
+                Faaliyetlerimizden ve Duyurularımızdan Haberdar Olun
               </h3>
-              <p className="text-xs text-slate-400 mt-1">
-                Haftalık bültenler ve genel başkan basın açıklamaları e-posta adresinize gelsin.
+              <p className="text-xs sm:text-sm text-blue-100/80 mt-1">
+                Haftalık teşkilat bültenleri, burs duyuruları ve genel merkez açıklamaları e-posta adresinize gelsin.
               </p>
             </div>
 
-            <form onSubmit={handleNewsletter} className="w-full md:w-auto flex items-center gap-2">
+            <form onSubmit={handleNewsletter} className="w-full lg:w-auto flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
               <input
                 type="email"
+                required
                 value={newsletterEmail}
                 onChange={(e) => setNewsletterEmail(e.target.value)}
-                placeholder="E-posta adresiniz..."
-                className="w-full md:w-72 px-4 py-2.5 rounded-xl bg-white/10 border border-white/10 text-white placeholder-slate-400 text-xs focus:outline-none focus:border-secondary"
+                placeholder="E-posta adresiniz"
+                className="w-full sm:w-72 px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-blue-200/70 text-sm focus:outline-none focus:border-white transition-colors"
               />
               <button
                 type="submit"
-                className="px-5 py-2.5 rounded-xl bg-primary hover:bg-secondary text-white text-xs font-bold transition flex items-center gap-1.5 shrink-0 shadow-md"
+                disabled={submitting}
+                className="px-6 py-3 rounded-xl bg-white hover:bg-slate-100 text-primary text-xs font-extrabold uppercase tracking-wider transition flex items-center justify-center gap-2 shrink-0 disabled:opacity-60"
               >
                 {subscribed ? (
                   <>
-                    <CheckCircle2 size={14} className="text-emerald-300" /> Kaydedildi
+                    <CheckCircle2 size={15} /> Kaydedildi
                   </>
                 ) : (
                   <>
@@ -85,156 +90,136 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Main Footer Links Columns */}
-        <div className="container-x grid gap-10 py-16 grid-cols-1 md:grid-cols-2 lg:grid-cols-5">
-          {/* Col 1: About & Logo */}
-          <div className="lg:col-span-2 space-y-4">
+        {/* Ana Footer Sütunları */}
+        <div className="container-x grid gap-10 py-16 grid-cols-1 md:grid-cols-2 lg:grid-cols-12">
+          {/* Kurumsal Özet */}
+          <div className="lg:col-span-4 space-y-5">
             <Logo light />
-            <p className="text-xs leading-relaxed text-blue-100/80 max-w-sm">
-              Milli Gençlik Derneği; &ldquo;Önce Ahlak ve Maneviyat&rdquo; şiarıyla 81 ilde, yüzlerce üniversite kampüsünde ve ilçede gençliğin ilim, irfan, teknoloji ve aksiyon merkezi olarak faaliyet göstermektedir.
+            <p className="text-sm leading-relaxed text-slate-400 max-w-sm">
+              Milli Gençlik Derneği; &ldquo;Önce Ahlak ve Maneviyat&rdquo; düsturuyla 81 ilde, üniversite kampüslerinde ve ilçelerde gençliğin ilim, irfan ve aksiyon merkezi olarak faaliyet göstermektedir.
             </p>
 
-            <div className="flex items-center gap-2 text-xs text-blue-200 bg-white/5 p-3 rounded-xl border border-white/5">
-              <ShieldCheck size={18} className="text-secondary shrink-0" />
+            <div className="flex items-start gap-2.5 text-xs text-slate-300 bg-white/[0.04] p-3.5 rounded-lg border border-white/10">
+              <ShieldCheck size={17} className="text-gold-light shrink-0 mt-0.5" />
               <span>T.C. İçişleri Bakanlığı Sivil Toplumla İlişkiler Genel Müdürlüğü Kayıtlı Resmî STK</span>
             </div>
 
-            {/* Social Media Links */}
-            <div className="pt-2">
-              <p className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Resmî Sosyal Medya</p>
-              <div className="flex items-center gap-2">
-                <a
-                  href="https://x.com/milligenclikmgd"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/15 text-xs font-semibold text-white transition border border-white/10"
-                >
-                  X (Twitter)
-                </a>
-                <a
-                  href="https://www.instagram.com/milligenclikmgd/"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="px-3 py-1.5 rounded-lg bg-gradient-to-r from-purple-600/30 to-pink-600/30 hover:from-purple-600 hover:to-pink-600 text-xs font-semibold text-white transition border border-white/10"
-                >
-                  Instagram
-                </a>
-              </div>
+            <div className="flex items-center gap-2.5 pt-1">
+              <a
+                href={contact.xUrl || "https://x.com/milligenclikmgd"}
+                target="_blank"
+                rel="noreferrer"
+                className="px-3.5 py-2 rounded-lg bg-white/[0.06] hover:bg-white/15 text-xs font-semibold text-white transition border border-white/10"
+              >
+                X (Twitter)
+              </a>
+              <a
+                href={contact.instagramUrl || "https://www.instagram.com/milligenclikmgd/"}
+                target="_blank"
+                rel="noreferrer"
+                className="px-3.5 py-2 rounded-lg bg-white/[0.06] hover:bg-white/15 text-xs font-semibold text-white transition border border-white/10"
+              >
+                Instagram
+              </a>
             </div>
           </div>
 
-          {/* Col 2: Kurumsal */}
-          <div>
-            <h4 className="mb-4 font-bold text-white text-xs uppercase tracking-wider border-b border-white/10 pb-2">
+          {/* Kurumsal */}
+          <div className="lg:col-span-2">
+            <h4 className="mb-4 font-bold text-white text-xs uppercase tracking-[0.18em]">
               Kurumsal
             </h4>
-            <ul className="space-y-2 text-xs">
+            <ul className="space-y-2.5 text-sm text-slate-400">
               <li>
-                <button
-                  type="button"
-                  onClick={() => setActiveCorporateDoc("tuzuk")}
-                  className="hover:text-blue-300 transition text-left"
-                >
+                <button type="button" onClick={() => setActiveCorporateDoc("tuzuk")} className="hover:text-white transition-colors text-left">
                   Dernek Tüzüğü
                 </button>
               </li>
               <li>
-                <button
-                  type="button"
-                  onClick={() => setActiveCorporateDoc("program")}
-                  className="hover:text-blue-300 transition text-left"
-                >
+                <Link href="/etkinlikler" className="hover:text-white transition-colors">
                   Teşkilat Programı
+                </Link>
+              </li>
+              <li>
+                <button type="button" onClick={() => setActiveCorporateDoc("kurumsalKimlik")} className="hover:text-white transition-colors text-left">
+                  Kurumsal Kimlik
                 </button>
               </li>
               <li>
-                <button
-                  type="button"
-                  onClick={() => setActiveCorporateDoc("gelirGider")}
-                  className="hover:text-blue-300 transition text-left"
-                >
-                  Gelir - Gider & Mali Şeffaflık
-                </button>
-              </li>
-              <li>
-                <button
-                  type="button"
-                  onClick={() => setActiveCorporateDoc("kurumsalKimlik")}
-                  className="hover:text-blue-300 transition text-left"
-                >
-                  Kurumsal Kimlik & Logo
-                </button>
-              </li>
-              <li>
-                <button
-                  type="button"
-                  onClick={openDonate}
-                  className="hover:text-blue-300 transition text-left font-semibold text-secondary"
-                >
-                  Banka Hesap Numaraları (İBAN)
+                <button type="button" onClick={openDonate} className="text-gold-light hover:text-white transition-colors text-left font-semibold">
+                  Banka Hesapları (İBAN)
                 </button>
               </li>
             </ul>
           </div>
 
-          {/* Col 3: Kadro & Faaliyetler */}
-          <div>
-            <h4 className="mb-4 font-bold text-white text-xs uppercase tracking-wider border-b border-white/10 pb-2">
-              Kadro & Faaliyetler
+          {/* Kadro & Faaliyetler */}
+          <div className="lg:col-span-3">
+            <h4 className="mb-4 font-bold text-white text-xs uppercase tracking-[0.18em]">
+              Kadro &amp; Faaliyetler
             </h4>
-            <ul className="space-y-2 text-xs">
-              <li><a href="/#yonetim" className="hover:text-blue-300 transition">Genel Başkanımız</a></li>
-              <li><a href="/#baskanlik-divani" className="hover:text-blue-300 transition">Başkanlık Divanı</a></li>
-              <li><a href="/#teskilat" className="hover:text-blue-300 transition">81 İl Teşkilat Haritası</a></li>
-              <li><a href="/#program-takvimi" className="hover:text-blue-300 transition">Program Takvimi</a></li>
-              <li><a href="/#ilkeler" className="hover:text-blue-300 transition">Milli Görüş İlkeleri</a></li>
-              <li><a href="/#erbakan" className="hover:text-blue-300 transition">Prof. Dr. Necmettin Erbakan</a></li>
+            <ul className="space-y-2.5 text-sm text-slate-400">
+              <li><Link href="/#yonetim" className="hover:text-white transition-colors">Genel Başkanımız</Link></li>
+              <li><Link href="/haberler" className="hover:text-white transition-colors">Haberler &amp; Burs Duyuruları</Link></li>
+              <li><Link href="/faaliyetler" className="hover:text-white transition-colors">Teşkilat Faaliyetleri</Link></li>
+              <li><Link href="/etkinlikler" className="hover:text-white transition-colors">Program Takvimi</Link></li>
+              <li><Link href="/yayinlar" className="hover:text-white transition-colors">E-Kütüphane &amp; Yayınlar</Link></li>
+              <li><Link href="/#erbakan" className="hover:text-white transition-colors">Prof. Dr. Necmettin Erbakan</Link></li>
             </ul>
           </div>
 
-          {/* Col 4: İletişim & Genel Merkez */}
-          <div>
-            <h4 className="mb-4 font-bold text-white text-xs uppercase tracking-wider border-b border-white/10 pb-2">
-              İletişim & Genel Merkez
+          {/* İletişim */}
+          <div className="lg:col-span-3">
+            <h4 className="mb-4 font-bold text-white text-xs uppercase tracking-[0.18em]">
+              İletişim &amp; Genel Merkez
             </h4>
-            <ul className="space-y-3 text-xs">
-              <li className="flex gap-2">
-                <MapPin size={16} className="shrink-0 text-secondary mt-0.5" />
-                <span>Genel Merkez: Milli Gençlik Cad. Çankaya / Ankara</span>
+            <ul className="space-y-3.5 text-sm text-slate-400">
+              <li className="flex gap-2.5">
+                <MapPin size={16} className="shrink-0 text-gold-light mt-0.5" />
+                <a
+                  href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(contact.address)}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="hover:text-white transition-colors underline-offset-4 hover:underline"
+                >
+                  {contact.address}
+                </a>
               </li>
-              <li className="flex gap-2">
-                <Phone size={16} className="shrink-0 text-secondary" />
-                <span>0 (312) 472 54 54</span>
+              <li className="flex gap-2.5">
+                <Phone size={16} className="shrink-0 text-gold-light mt-0.5" />
+                <a href={`tel:${contact.phone.replace(/[^0-9+]/g, "")}`} className="hover:text-white transition-colors">
+                  {contact.phone}
+                </a>
               </li>
-              <li className="flex gap-2">
-                <Mail size={16} className="shrink-0 text-secondary" />
-                <span>iletisim@milligenclik.org.tr</span>
+              <li className="flex gap-2.5">
+                <Mail size={16} className="shrink-0 text-gold-light mt-0.5" />
+                <a href={`mailto:${contact.email}`} className="hover:text-white transition-colors">
+                  {contact.email}
+                </a>
               </li>
               <li className="pt-2">
                 <Link
                   href="/admin"
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-900/40 hover:bg-blue-900/70 text-blue-200 text-xs font-semibold transition border border-blue-800/40"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/[0.06] hover:bg-white/15 text-slate-200 text-xs font-semibold transition border border-white/10"
                 >
-                  <span>Yönetim Paneli Girişi →</span>
+                  <span>Yönetim Paneli</span>
+                  <span>→</span>
                 </Link>
               </li>
             </ul>
           </div>
         </div>
 
-        {/* Bottom Copyright */}
-        <div className="border-t border-white/10 py-6 text-center text-xs text-blue-200/50">
+        {/* Alt Telif */}
+        <div className="border-t border-white/10 py-6 text-xs text-slate-500">
           <div className="container-x flex flex-col sm:flex-row items-center justify-between gap-2">
             <span>© {new Date().getFullYear()} Milli Gençlik Derneği (MGD). Tüm hakları saklıdır.</span>
-            <span>Yeniden Büyük Türkiye • Yeni Bir Dünya Düzeni</span>
+            <span className="text-slate-400">Önce Ahlak ve Maneviyat</span>
           </div>
         </div>
       </footer>
 
-      <CorporateModal
-        docKey={activeCorporateDoc}
-        onClose={() => setActiveCorporateDoc(null)}
-      />
+      <FlipbookModal docKey={activeCorporateDoc} onClose={() => setActiveCorporateDoc(null)} />
     </>
   );
 }

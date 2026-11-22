@@ -2,37 +2,38 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --mgd-primary: #1B3B7B;
+  --mgd-primary-dark: #122854;
+  --mgd-secondary: #1D56B8;
+}
+
 * {
   -webkit-tap-highlight-color: transparent !important;
 }
 
 button,
 a,
-h1,
-h2,
-h3,
-h4,
 [role="button"] {
   -webkit-tap-highlight-color: transparent !important;
-  user-select: none;
-  -webkit-user-select: none;
-  outline: none !important;
+  outline: none;
 }
 
 html {
   scroll-behavior: smooth;
+  overflow-x: clip;
 }
 
 body {
   background: #ffffff;
-  color: #0f172a;
+  color: #0f1e3c;
+  overflow-x: clip;
 }
 
-/* Klavye erişilebilirliği: outline kapalı olduğundan odak halkası gölge ile verilir */
 button:focus-visible,
 a:focus-visible,
 [role="button"]:focus-visible {
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.45);
+  box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px rgba(29, 86, 184, 0.5);
 }
 
 input,
@@ -44,43 +45,45 @@ select {
 
 @layer components {
   .container-x {
-    @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+    @apply mx-auto w-full max-w-[1280px] px-4 sm:px-6 lg:px-8;
   }
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 rounded-lg bg-secondary px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-primary;
+    @apply inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-bold text-white transition-all duration-200 hover:bg-secondary active:scale-[0.98];
   }
   .btn-outline {
-    @apply inline-flex items-center justify-center gap-2 rounded-lg border border-primary px-5 py-2.5 text-sm font-semibold text-primary transition hover:bg-primary hover:text-white;
+    @apply inline-flex items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-5 py-2.5 text-sm font-bold text-ink transition-all duration-200 hover:border-primary hover:text-primary active:scale-[0.98];
+  }
+  .section-eyebrow {
+    @apply inline-flex items-center gap-2 text-[11px] font-extrabold uppercase tracking-[0.18em];
+    color: #1B3B7B;
   }
   .section-title {
-    @apply text-3xl font-bold tracking-tight text-primary-dark sm:text-4xl;
+    @apply font-display text-3xl font-extrabold tracking-tight text-ink sm:text-4xl leading-[1.15];
   }
 }
 
-@keyframes floatSlow {
-  0%, 100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-8px);
-  }
-}
-
-@keyframes pulseGlow {
-  0%, 100% {
-    opacity: 0.5;
+@keyframes kenBurns {
+  0% {
     transform: scale(1);
   }
-  50% {
-    opacity: 0.9;
-    transform: scale(1.04);
+  100% {
+    transform: scale(1.06);
+  }
+}
+
+@keyframes slideProgress {
+  0% {
+    transform: scaleX(0);
+  }
+  100% {
+    transform: scaleX(1);
   }
 }
 
 @keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: translateY(18px);
+    transform: translateY(14px);
   }
   to {
     opacity: 1;
@@ -88,19 +91,45 @@ select {
   }
 }
 
-.animate-float-slow {
-  animation: floatSlow 5s ease-in-out infinite;
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
-.animate-pulse-glow {
-  animation: pulseGlow 4s ease-in-out infinite;
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.animate-ken-burns {
+  animation: kenBurns 8s ease-out forwards;
+}
+
+.animate-slide-progress {
+  transform-origin: left center;
+  animation: slideProgress var(--slide-duration, 6500ms) linear forwards;
 }
 
 .animate-fade-in-up {
-  animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: fadeInUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
-/* Next.js geliştirici hata bildirimi (sol alttaki '1 error' rozeti) gizleme */
+.animate-fadeIn {
+  animation: fadeIn 0.2s ease-out forwards;
+}
+
+.animate-slideInRight {
+  animation: slideInRight 0.28s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
 nextjs-portal,
 #nextjs-dev-overlay,
 [data-nextjs-dialog-overlay],
@@ -110,4 +139,3 @@ nextjs-portal,
   visibility: hidden !important;
   pointer-events: none !important;
 }
-

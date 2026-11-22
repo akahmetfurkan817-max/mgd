@@ -4,6 +4,8 @@ import { useState } from "react";
 import Link from "next/link";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import PresidentSection from "@/components/home/PresidentSection";
+import TeamGrid from "@/components/home/TeamGrid";
 import FlipbookModal from "@/components/corporate/FlipbookModal";
 import { CORPORATE_DOCS, PROTOCOL_PARTNERS } from "@/data/corporate";
 import {
@@ -221,6 +223,10 @@ export default function KurumsalPage() {
             </div>
           </div>
         </section>
+
+        {/* Genel Başkan ve Başkanlık Divanı */}
+        <PresidentSection />
+        <TeamGrid />
       </main>
 
       <Footer />

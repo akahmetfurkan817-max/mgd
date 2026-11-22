@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { BookOpen, CheckCircle2, ChevronRight, Compass, Heart, Quote, Sparkles } from "lucide-react";
+import { useSiteSettings } from "@/hooks/useSiteData";
 
-const ERBAKAN_QUOTES = [
+const DEFAULT_ERBAKAN_QUOTES = [
   {
     quote: "Bir milletin asıl gücü; tankı, topu, tüfeği değil; inançlı ve imanlı evlatlarıdır.",
     context: "Gençlik Şuuru ve Maneviyat Üzerine",
@@ -47,79 +47,74 @@ const HISTORIC_MILESTONES = [
 ];
 
 export default function ErbakanSection() {
+  const { data: settings } = useSiteSettings();
+  const erbakan = settings.erbakan;
+  const quotes = erbakan?.quotes && erbakan.quotes.length > 0 ? erbakan.quotes : DEFAULT_ERBAKAN_QUOTES;
+
   const [activeQuoteIdx, setActiveQuoteIdx] = useState(0);
+  const safeIdx = activeQuoteIdx < quotes.length ? activeQuoteIdx : 0;
 
   return (
-    <section id="erbakan" className="relative py-24 bg-gradient-to-b from-slate-900 via-primary-dark to-slate-900 text-white overflow-hidden">
-      {/* Arka plan dekorları */}
-      <div className="pointer-events-none absolute left-0 top-0 h-96 w-96 rounded-full bg-blue-500/10 blur-3xl" />
-      <div className="pointer-events-none absolute right-0 bottom-0 h-96 w-96 rounded-full bg-indigo-500/10 blur-3xl" />
-
-      <div className="container-x relative">
-        {/* Üst Başlık */}
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-blue-200 border border-white/10 mb-4 backdrop-blur">
-            <Sparkles size={14} className="text-yellow-400" /> Milli Görüş Lideri
+    <section id="erbakan" className="bg-[#081529] py-20 lg:py-24 text-white border-b border-white/10">
+      <div className="container-x">
+        {/* Başlık */}
+        <div className="max-w-3xl pb-10 border-b border-white/10">
+          <div className="section-eyebrow mb-3">
+            <span className="h-[1.5px] w-7 bg-gold" />
+            <span>{erbakan?.badge || "Milli Görüş Lideri"}</span>
           </div>
-          <h2 className="text-3xl font-extrabold sm:text-4xl lg:text-5xl tracking-tight">
-            Prof. Dr. Necmettin Erbakan
+          <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white">
+            {erbakan?.title || "Prof. Dr. Necmettin Erbakan"}
           </h2>
-          <p className="mt-3 text-lg text-blue-100/90 font-medium">
-            54. T.C. Başbakanı • Milli Gençlik Davamızın Mimarı ve Rehberi (1926 – 2011)
+          <p className="mt-3 text-sm sm:text-base text-slate-300">
+            {erbakan?.subtitle || "54. T.C. Başbakanı • Milli Gençlik Davamızın Mimarı ve Rehberi (1926 – 2011)"}
           </p>
         </div>
 
-        {/* Ana İçerik Grid: Portre ve Alıntı / Vizyon Kartı */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center mb-16">
-          {/* Sol Kolon: Erbakan Hoca Resmi ve Rozet */}
-          <div className="lg:col-span-5 flex justify-center">
-            <div className="relative group max-w-sm w-full">
-              <div className="absolute -inset-1.5 rounded-3xl bg-gradient-to-r from-blue-500 to-indigo-600 opacity-40 blur-lg transition duration-500 group-hover:opacity-75" />
-              <div className="relative overflow-hidden rounded-3xl border-2 border-white/20 bg-slate-950 p-3 shadow-2xl">
-                <div className="relative aspect-[4/5] w-full overflow-hidden rounded-2xl bg-slate-800">
-                  <Image
-                    src="/images/erbakan_portrait.png"
-                    alt="Prof. Dr. Necmettin Erbakan"
-                    fill
-                    sizes="(max-width: 768px) 100vw, 400px"
-                    className="object-cover object-top transition duration-700 group-hover:scale-105"
-                    unoptimized
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-80" />
-                  <div className="absolute bottom-4 left-4 right-4 text-center">
-                    <p className="text-sm font-bold text-white tracking-wide">
-                      “Bir Çiçekle Bahar Olmaz;
-                    </p>
-                    <p className="text-xs text-blue-200 font-medium">
-                      Ama Her Bahar Bir Çiçekle Başlar.”
-                    </p>
-                  </div>
+        {/* Portre & Alıntı */}
+        <div className="mt-12 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
+          <div className="lg:col-span-5">
+            <div className="relative mx-auto max-w-sm lg:max-w-none overflow-hidden rounded-2xl border border-white/15 bg-slate-950">
+              <div className="relative aspect-[4/4.8] w-full">
+                <Image
+                  src={erbakan?.portrait || "/images/erbakan_portrait.png"}
+                  alt="Prof. Dr. Necmettin Erbakan"
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 40vw"
+                  className="object-cover object-top"
+                  unoptimized
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#06101F] via-transparent to-transparent" />
+                <div className="absolute bottom-5 inset-x-5 text-center">
+                  <p className="font-serif text-base italic text-white">
+                    &ldquo;Bir çiçekle bahar olmaz; ama her bahar bir çiçekle başlar.&rdquo;
+                  </p>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Sağ Kolon: Erbakan Hoca'nın Dava İlkeleri ve Alıntı Slider */}
-          <div className="lg:col-span-7 flex flex-col justify-between">
-            {/* Dinamik Alıntı Kutusu */}
-            <div className="rounded-2xl border border-white/15 bg-white/10 p-6 sm:p-8 backdrop-blur-md shadow-xl mb-6">
-              <Quote size={36} className="text-blue-300 mb-3 opacity-75" />
-              <p className="text-xl sm:text-2xl font-bold leading-relaxed text-white">
-                “{ERBAKAN_QUOTES[activeQuoteIdx].quote}”
+          <div className="lg:col-span-7 flex flex-col gap-6">
+            {/* Alıntı Kutusu */}
+            <div className="rounded-2xl border border-white/15 bg-white/[0.04] p-7 sm:p-9">
+              <div className="font-serif text-5xl leading-none text-gold/50 select-none mb-2">&ldquo;</div>
+              <p className="font-serif text-xl sm:text-2xl lg:text-[27px] leading-relaxed text-white">
+                {quotes[safeIdx].quote}
               </p>
-              <div className="mt-4 flex items-center justify-between border-t border-white/10 pt-4">
-                <span className="text-xs font-semibold text-blue-200">
-                  {ERBAKAN_QUOTES[activeQuoteIdx].context}
+
+              <div className="mt-6 pt-5 border-t border-white/10 flex flex-wrap items-center justify-between gap-4">
+                <span className="text-xs font-semibold uppercase tracking-wider text-gold-light">
+                  {quotes[safeIdx].context}
                 </span>
-                <div className="flex gap-2">
-                  {ERBAKAN_QUOTES.map((_, i) => (
+                <div className="flex items-center gap-2">
+                  {quotes.map((_, i) => (
                     <button
                       key={i}
                       type="button"
                       onClick={() => setActiveQuoteIdx(i)}
                       aria-label={`Alıntı ${i + 1}`}
-                      className={`h-2 rounded-full transition-all ${
-                        i === activeQuoteIdx ? "w-8 bg-blue-300" : "w-2 bg-white/30"
+                      className={`h-1.5 rounded-full transition-all ${
+                        i === safeIdx ? "w-8 bg-gold" : "w-2 bg-white/25 hover:bg-white/50"
                       }`}
                     />
                   ))}
@@ -127,28 +122,26 @@ export default function ErbakanSection() {
               </div>
             </div>
 
-            {/* Üç Temel Sütun */}
+            {/* Üç Temel Hedef */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div className="rounded-xl border border-white/10 bg-white/5 p-4 backdrop-blur hover:bg-white/10 transition">
-                <Heart size={20} className="text-red-400 mb-2" />
-                <h4 className="text-sm font-bold text-white">Önce Ahlak & Maneviyat</h4>
-                <p className="text-xs text-blue-100/80 mt-1 leading-relaxed">
-                  Kalbi vatan, millet ve Allah aşkıyla çarpan temiz bir gençlik.
+              <div className="rounded-xl border border-white/10 bg-white/[0.03] p-5">
+                <span className="font-mono text-[11px] font-bold text-gold-light">01</span>
+                <h4 className="mt-2 text-sm font-bold text-white">Önce Ahlak &amp; Maneviyat</h4>
+                <p className="mt-1.5 text-xs text-slate-400 leading-relaxed">
+                  Kalbi vatan, millet ve Allah aşkıyla çarpan şuurlu bir gençlik.
                 </p>
               </div>
-
-              <div className="rounded-xl border border-white/10 bg-white/5 p-4 backdrop-blur hover:bg-white/10 transition">
-                <Compass size={20} className="text-emerald-400 mb-2" />
-                <h4 className="text-sm font-bold text-white">Yeniden Büyük Türkiye</h4>
-                <p className="text-xs text-blue-100/80 mt-1 leading-relaxed">
+              <div className="rounded-xl border border-white/10 bg-white/[0.03] p-5">
+                <span className="font-mono text-[11px] font-bold text-gold-light">02</span>
+                <h4 className="mt-2 text-sm font-bold text-white">Yeniden Büyük Türkiye</h4>
+                <p className="mt-1.5 text-xs text-slate-400 leading-relaxed">
                   Sanayisiyle, teknolojisiyle ve adil düzeniyle lider Türkiye ideali.
                 </p>
               </div>
-
-              <div className="rounded-xl border border-white/10 bg-white/5 p-4 backdrop-blur hover:bg-white/10 transition">
-                <BookOpen size={20} className="text-amber-400 mb-2" />
-                <h4 className="text-sm font-bold text-white">Yeni Bir Dünya</h4>
-                <p className="text-xs text-blue-100/80 mt-1 leading-relaxed">
+              <div className="rounded-xl border border-white/10 bg-white/[0.03] p-5">
+                <span className="font-mono text-[11px] font-bold text-gold-light">03</span>
+                <h4 className="mt-2 text-sm font-bold text-white">Yeni Bir Dünya</h4>
+                <p className="mt-1.5 text-xs text-slate-400 leading-relaxed">
                   Zulmün ve sömürünün bittiği, barış ve adaletin hâkim olduğu cihan.
                 </p>
               </div>
@@ -156,22 +149,22 @@ export default function ErbakanSection() {
           </div>
         </div>
 
-        {/* Tarihi Dönüm Noktaları Kronolojisi */}
-        <div className="border-t border-white/10 pt-12">
-          <h3 className="text-xl font-bold text-center mb-8 text-blue-100">
-            Milli Gençlik Davasının Tarihi Dönüm Noktaları
-          </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Kronoloji */}
+        <div className="mt-14 pt-12 border-t border-white/10">
+          <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-gold-light mb-6">
+            Tarihi Dönüm Noktaları
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {HISTORIC_MILESTONES.map((m) => (
               <div
                 key={m.year}
-                className="rounded-xl border border-white/10 bg-white/5 p-5 backdrop-blur hover:border-blue-400/50 transition duration-300"
+                className="rounded-xl border border-white/10 bg-white/[0.03] p-6 transition-colors hover:border-gold/40"
               >
-                <span className="inline-block text-2xl font-black text-blue-300 font-mono mb-1">
+                <span className="font-serif text-3xl font-bold text-gold-light">
                   {m.year}
                 </span>
-                <h4 className="text-base font-bold text-white mb-1.5">{m.title}</h4>
-                <p className="text-xs text-blue-100/80 leading-relaxed">{m.desc}</p>
+                <h4 className="mt-2.5 text-base font-bold text-white">{m.title}</h4>
+                <p className="mt-2 text-xs text-slate-400 leading-relaxed">{m.desc}</p>
               </div>
             ))}
           </div>

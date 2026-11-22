@@ -9,7 +9,7 @@ export const SOCIAL_POSTS: SocialPost[] = [
     authorAvatar: "/images/ahmet-ozvatan.jpg",
     content:
       "Genel Başkanımız Sayın Ahmet Özvatan öncülüğünde Genel Merkez Yönetim Kurulu toplantımızı gerçekleştirdik. 81 ilimizde 'Önce Ahlak ve Maneviyat' düsturuyla gençliğimizin geleceği için var gücümüzle çalışmaya devam ediyoruz. #MilliGençlik #MGD",
-    imageUrl: "/images/basinda-biz/teskilat.png",
+    imageUrl: "/images/mgd/11102025-il-baskanlari-toplantisi.jpg",
     postUrl: "https://x.com/milligenclikmgd",
     date: "Dün",
     likes: 284,
@@ -25,7 +25,7 @@ export const SOCIAL_POSTS: SocialPost[] = [
     authorAvatar: "/images/ahmet-ozvatan.jpg",
     content:
       "2025-2026 Yaz Etkinliklerimiz 81 il teşkilatımızın katılımıyla coşkuyla tamamlandı! Robotik kodlama, ahlak ve maneviyat dersleri, okçuluk ve yüzme atölyeleriyle dolu dolu bir dönem geçirdik. Emeği geçen tüm teşkilat mensuplarımıza teşekkür ederiz. 🇹🇷 #YazEtkinlikleri #MilliGençlik",
-    imageUrl: "/images/basinda-biz/yaz_etkinlikleri_cartoon.png",
+    imageUrl: "/images/mgd/2025-2026-yaz-etkinliklerimiz.jpg",
     postUrl: "https://www.instagram.com/milligenclikmgd/",
     date: "3 gün önce",
     likes: 1450,
@@ -57,7 +57,7 @@ export const SOCIAL_POSTS: SocialPost[] = [
     authorAvatar: "/images/ahmet-ozvatan.jpg",
     content:
       "Gaziantep İl Binamızın açılışını Genel Merkez heyetimiz ve bölge halkımızın yoğun katılımıyla dualarla gerçekleştirdik. Gaziantep gençliğine hayırlı ve bereketli olsun! 📍 #Gaziantep #MilliGençlik #Teşkilat",
-    imageUrl: "/images/basinda-biz/gaziantep.png",
+    imageUrl: "/images/mgd/06092025-milli-genclik-dernegi-il-baskanlar-toplantisi.jpg",
     postUrl: "https://www.instagram.com/milligenclikmgd/",
     date: "1 hafta önce",
     likes: 920,
@@ -73,7 +73,7 @@ export const SOCIAL_POSTS: SocialPost[] = [
     authorAvatar: "/images/ahmet-ozvatan.jpg",
     content:
       "Üniversite Teşkilatımız yeni dönem kampüs kayıt ve tanışma stantlarını açtı. Sen de Milli Gençlik ailesine katıl, geleceğini inşa et! Başvuru profilimizdeki linkte. #Üniversite #Gençlik",
-    imageUrl: "/images/basinda-biz/antalya-yayla.png",
+    imageUrl: "/images/mgd/nicin-milli-genclik.jpg",
     postUrl: "https://x.com/milligenclikmgd",
     date: "2 hafta önce",
     likes: 412,
@@ -89,7 +89,7 @@ export const SOCIAL_POSTS: SocialPost[] = [
     authorAvatar: "/images/ahmet-ozvatan.jpg",
     content:
       "İstanbul'un Fethi'nin 573. yıl dönümü münasebetiyle binlerce gencimizin katılımıyla gerçekleştirdiğimiz Fetih Şöleni'nden unutulmaz kareler! 🚩 #FetihŞöleni #İstanbulunFethi #MGD",
-    imageUrl: "/images/basinda-biz/istanbul-fetih.png",
+    imageUrl: "/images/mgd/inanc-ihlas-ve-azmin-zaferi-istanbul-un-fethi-programi-24-mayis-2025-cumartesi.jpg",
     postUrl: "https://www.instagram.com/milligenclikmgd/",
     date: "2 hafta önce",
     likes: 1830,
