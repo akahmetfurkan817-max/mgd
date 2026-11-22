@@ -11,7 +11,8 @@ export type AdminSection =
   | "publications"
   | "layout"
   | "content"
-  | "videos";
+  | "videos"
+  | "pioneers";
 
 export interface HomeSlideItem {
   id: string;

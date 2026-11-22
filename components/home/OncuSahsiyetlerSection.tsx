@@ -2,10 +2,11 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, BookOpen, ChevronRight, Film, Quote, Sparkles, UserCheck } from "lucide-react";
-import { ONCU_SAHSIYETLER } from "@/data/oncu-sahsiyetler";
+import { ArrowRight, BookOpen, ChevronRight, Film, Quote, Sparkles } from "lucide-react";
+import { useOncuSahsiyetler } from "@/hooks/useSiteData";
 
 export default function OncuSahsiyetlerSection() {
+  const { data: pioneers } = useOncuSahsiyetler();
   return (
     <section id="oncu-sahsiyetler" className="relative py-20 bg-gradient-to-b from-slate-900 via-[#0A192F] to-slate-950 text-white overflow-hidden border-b border-blue-900/30">
       {/* Arka Plan Glow */}
@@ -35,9 +36,9 @@ export default function OncuSahsiyetlerSection() {
           </Link>
         </div>
 
-        {/* 2 Büyük Profil Kartı: Prof. Dr. Necmettin Erbakan & Adnan Demirtürk */}
+        {/* Profil Kartları */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {ONCU_SAHSIYETLER.map((leader) => (
+          {pioneers.map((leader) => (
             <div
               key={leader.id}
               className="group relative flex flex-col justify-between rounded-3xl bg-slate-900/90 border border-white/10 p-6 sm:p-8 shadow-2xl hover:border-secondary/50 hover:shadow-secondary/10 transition-all duration-300"

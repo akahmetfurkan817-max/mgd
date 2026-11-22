@@ -13,6 +13,7 @@ import { SOCIAL_POSTS } from "@/data/social";
 import { VIDEOS } from "@/data/videos";
 import { DEFAULT_SECTIONS, DEFAULT_SITE_SETTINGS } from "@/data/site-settings";
 import { HOME_SLIDES, type HomeSlideItem } from "@/data/slides";
+import { ONCU_SAHSIYETLER, type OncuSahsiyet } from "@/data/oncu-sahsiyetler";
 import type {
   IbanInfo,
   Leader,
@@ -226,3 +227,16 @@ export function useSlides(): Live<HomeSlideItem[]> {
 }
 
 const IBAN_SEED = { list: IBAN_LIST };
+const PIONEERS_SEED = { list: ONCU_SAHSIYETLER };
+
+export function useOncuSahsiyetler(): Live<OncuSahsiyet[]> {
+  const { data, live } = useDocument<{ list: OncuSahsiyet[] }>(
+    COLLECTIONS.settings,
+    "oncu_sahsiyetler",
+    PIONEERS_SEED,
+  );
+  return {
+    data: Array.isArray(data?.list) && data.list.length > 0 ? data.list : ONCU_SAHSIYETLER,
+    live,
+  };
+}

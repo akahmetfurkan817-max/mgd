@@ -1,4 +1,5 @@
 import type { ApplicationStatus, IbanInfo, Leader, NewsCategory, NewsItem, President, Province, Publication, PublicationCategory, SocialPost, VideoItem, VolunteerApplication } from "@/types";
+import type { OncuSahsiyet, SahsiyetBook, SahsiyetPhoto, SahsiyetVideo } from "@/data/oncu-sahsiyetler";
 
 type Obj = Record<string, unknown>;
 
@@ -177,5 +178,93 @@ export function parseVideo(v: unknown): VideoItem | null {
     views: str(v.views, 50) || "1.000",
     description: str(v.description, 2000),
   };
+}
+
+export function parseOncuSahsiyetList(v: unknown): OncuSahsiyet[] | null {
+  if (!Array.isArray(v)) return null;
+  const out: OncuSahsiyet[] = [];
+
+  for (const raw of v) {
+    if (!isObj(raw)) return null;
+    const name = str(raw.name, 200);
+    if (!name) return null;
+
+    const id = str(raw.id, 100) || `sahsiyet-${Date.now()}-${out.length}`;
+
+    const bioSections = Array.isArray(raw.bioSections)
+      ? raw.bioSections
+          .filter(isObj)
+          .map((b) => ({
+            heading: str(b.heading, 300),
+            content: str(b.content, 5000),
+          }))
+          .filter((b) => b.heading || b.content)
+      : [];
+
+    const quotes = Array.isArray(raw.quotes)
+      ? raw.quotes.map((q) => str(q, 1000)).filter(Boolean)
+      : [];
+
+    const videos: SahsiyetVideo[] = Array.isArray(raw.videos)
+      ? raw.videos
+          .filter(isObj)
+          .map((vid, idx) => ({
+            id: str(vid.id, 100) || `v-${id}-${idx}-${Date.now()}`,
+            title: str(vid.title, 300),
+            youtubeId: str(vid.youtubeId, 100),
+            duration: str(vid.duration, 50) || "00:00",
+            date: str(vid.date, 100),
+            category: str(vid.category, 100) || "Arşiv",
+            description: str(vid.description, 2000),
+            ...(str(vid.thumbnail, 500) ? { thumbnail: str(vid.thumbnail, 500) } : {}),
+          }))
+          .filter((vid) => Boolean(vid.title))
+      : [];
+
+    const photos: SahsiyetPhoto[] = Array.isArray(raw.photos)
+      ? raw.photos
+          .filter(isObj)
+          .map((p, idx) => ({
+            id: str(p.id, 100) || `p-${id}-${idx}-${Date.now()}`,
+            url: str(p.url, 1000),
+            caption: str(p.caption, 500),
+            ...(str(p.year, 50) ? { year: str(p.year, 50) } : {}),
+          }))
+          .filter((p) => Boolean(p.url))
+      : [];
+
+    const books: SahsiyetBook[] = Array.isArray(raw.books)
+      ? raw.books
+          .filter(isObj)
+          .map((bk, idx) => ({
+            id: str(bk.id, 100) || `b-${id}-${idx}-${Date.now()}`,
+            title: str(bk.title, 300),
+            author: str(bk.author, 200) || name,
+            year: str(bk.year, 50),
+            coverImage: str(bk.coverImage, 1000) || "/images/mgd/0001.jpg",
+            description: str(bk.description, 2000),
+            totalPages: Math.max(0, Number(bk.totalPages) || 0),
+            pdfUrl: str(bk.pdfUrl, 1000),
+          }))
+          .filter((bk) => Boolean(bk.title))
+      : [];
+
+    out.push({
+      id,
+      name,
+      title: str(raw.title, 300),
+      period: str(raw.period, 100),
+      portrait: str(raw.portrait, 1000) || "/images/erbakan_portrait.png",
+      badge: str(raw.badge, 200),
+      motto: str(raw.motto, 1000),
+      bioSections,
+      quotes,
+      videos,
+      photos,
+      books,
+    });
+  }
+
+  return out;
 }
 

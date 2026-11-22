@@ -8,6 +8,7 @@ import {
   parseIbanList,
   parseLeader,
   parseNews,
+  parseOncuSahsiyetList,
   parsePresident,
   parseProvince,
   parsePublication,
@@ -29,6 +30,7 @@ const SECTIONS: readonly AdminSection[] = [
   "layout",
   "content",
   "videos",
+  "pioneers",
 ];
 
 const fail = (error: string, status: number) => NextResponse.json({ error }, { status });
@@ -150,6 +152,15 @@ export async function PUT(req: Request, { params }: { params: { section: string 
       const ref = vid.id ? db.collection(COLLECTIONS.videos).doc(vid.id) : db.collection(COLLECTIONS.videos).doc();
       await ref.set({ ...vid, id: ref.id });
       return NextResponse.json({ ok: true, id: ref.id });
+    }
+
+    case "pioneers": {
+      const b = body as { list?: unknown } | unknown[] | null;
+      const rawList = Array.isArray(b) ? b : b?.list;
+      const list = parseOncuSahsiyetList(rawList);
+      if (!list) return bad;
+      await db.collection(COLLECTIONS.settings).doc("oncu_sahsiyetler").set({ list });
+      return NextResponse.json({ ok: true });
     }
   }
 }

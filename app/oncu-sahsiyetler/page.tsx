@@ -6,7 +6,8 @@ import Link from "next/link";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import VideoModal from "@/components/modals/VideoModal";
-import { ONCU_SAHSIYETLER, type OncuSahsiyet, type SahsiyetBook, type SahsiyetPhoto, type SahsiyetVideo } from "@/data/oncu-sahsiyetler";
+import { type SahsiyetPhoto, type SahsiyetVideo } from "@/data/oncu-sahsiyetler";
+import { useOncuSahsiyetler } from "@/hooks/useSiteData";
 import {
   ArrowLeft,
   BookOpen,
@@ -26,13 +27,18 @@ import {
 import type { VideoItem } from "@/types";
 
 export default function OncuSahsiyetlerPage() {
+  const { data: pioneers } = useOncuSahsiyetler();
   const [selectedLeaderId, setSelectedLeaderId] = useState<string>("erbakan");
   const [activeTab, setActiveTab] = useState<"bio" | "videos" | "photos" | "books">("bio");
   const [playingVideo, setPlayingVideo] = useState<VideoItem | null>(null);
   const [previewPhoto, setPreviewPhoto] = useState<SahsiyetPhoto | null>(null);
 
   const leader =
-    ONCU_SAHSIYETLER.find((l) => l.id === selectedLeaderId) || ONCU_SAHSIYETLER[0];
+    pioneers.find((l) => l.id === selectedLeaderId) || pioneers[0];
+
+  const getVideoThumb = (vid: SahsiyetVideo) =>
+    vid.thumbnail ||
+    (vid.youtubeId ? `https://img.youtube.com/vi/${vid.youtubeId}/hqdefault.jpg` : leader.portrait);
 
   const handlePlayVideo = (vid: SahsiyetVideo) => {
     setPlayingVideo({
@@ -41,7 +47,7 @@ export default function OncuSahsiyetlerPage() {
       category: "Belgesel & Arşiv",
       duration: vid.duration,
       date: vid.date,
-      thumbnail: "/images/basinda-biz/antalya-il.png",
+      thumbnail: getVideoThumb(vid),
       youtubeId: vid.youtubeId,
       description: vid.description,
     });
@@ -80,11 +86,11 @@ export default function OncuSahsiyetlerPage() {
           </div>
         </section>
 
-        {/* Lider Seçim Sekmeleri (Erbakan & Adnan Demirtürk) */}
+        {/* Lider Seçim Sekmeleri */}
         <section className="py-8 bg-white border-b border-slate-200">
           <div className="container-x">
             <div className="flex flex-wrap items-center gap-3">
-              {ONCU_SAHSIYETLER.map((item) => (
+              {pioneers.map((item) => (
                 <button
                   key={item.id}
                   type="button"
@@ -93,7 +99,7 @@ export default function OncuSahsiyetlerPage() {
                     setActiveTab("bio");
                   }}
                   className={`flex items-center gap-3 px-5 py-3 rounded-2xl font-bold text-sm transition-all duration-200 ${
-                    selectedLeaderId === item.id
+                    leader.id === item.id
                       ? "bg-primary text-white shadow-lg shadow-primary/25 scale-[1.02]"
                       : "bg-slate-50 text-slate-700 border border-slate-200 hover:bg-slate-100"
                   }`}
@@ -102,7 +108,7 @@ export default function OncuSahsiyetlerPage() {
                   <span>{item.name}</span>
                   <span
                     className={`text-[10px] px-2 py-0.5 rounded-full ${
-                      selectedLeaderId === item.id
+                      leader.id === item.id
                         ? "bg-white/20 text-blue-100"
                         : "bg-slate-200 text-slate-600"
                     }`}
@@ -250,6 +256,11 @@ export default function OncuSahsiyetlerPage() {
 
             {/* SEKME 2: VİDEO ARŞİVİ */}
             {activeTab === "videos" && (
+              leader.videos.length === 0 ? (
+                <div className="bg-white rounded-3xl border border-slate-200 p-10 text-center text-sm text-slate-500">
+                  Bu şahsiyet için henüz video eklenmemiş.
+                </div>
+              ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {leader.videos.map((vid) => (
                   <div
@@ -260,7 +271,7 @@ export default function OncuSahsiyetlerPage() {
                     <div>
                       <div className="relative aspect-video w-full bg-slate-950 overflow-hidden">
                         <Image
-                          src={leader.portrait}
+                          src={getVideoThumb(vid)}
                           alt={vid.title}
                           fill
                           className="object-cover group-hover:scale-105 transition-transform duration-300 opacity-90"
@@ -299,10 +310,16 @@ export default function OncuSahsiyetlerPage() {
                   </div>
                 ))}
               </div>
+              )
             )}
 
             {/* SEKME 3: FOTOĞRAF GALERİSİ */}
             {activeTab === "photos" && (
+              leader.photos.length === 0 ? (
+                <div className="bg-white rounded-3xl border border-slate-200 p-10 text-center text-sm text-slate-500">
+                  Bu şahsiyet için henüz fotoğraf eklenmemiş.
+                </div>
+              ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {leader.photos.map((photo) => (
                   <div
@@ -332,10 +349,16 @@ export default function OncuSahsiyetlerPage() {
                   </div>
                 ))}
               </div>
+              )
             )}
 
             {/* SEKME 4: KİTAPLAR & PDF ESERLER */}
             {activeTab === "books" && (
+              leader.books.length === 0 ? (
+                <div className="bg-white rounded-3xl border border-slate-200 p-10 text-center text-sm text-slate-500">
+                  Bu şahsiyet için henüz kitap veya PDF eser eklenmemiş.
+                </div>
+              ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {leader.books.map((book) => (
                   <div
@@ -355,7 +378,7 @@ export default function OncuSahsiyetlerPage() {
                         </div>
                         <div>
                           <span className="text-[10px] font-bold text-slate-400 font-mono block">
-                            {book.year} • {book.totalPages} Sayfa
+                            {book.year}{book.totalPages > 0 ? ` • ${book.totalPages} Sayfa` : ""}
                           </span>
                           <h4 className="text-base font-bold text-slate-900 mt-0.5 leading-snug">
                             {book.title}
@@ -372,17 +395,25 @@ export default function OncuSahsiyetlerPage() {
                     </div>
 
                     <div className="flex items-center gap-2 pt-4 border-t border-slate-100">
-                      <button
-                        type="button"
-                        onClick={() => window.print()}
-                        className="flex-1 inline-flex items-center justify-center gap-1.5 py-2.5 px-4 rounded-xl bg-primary text-white font-bold text-xs shadow hover:bg-primary-dark transition active:scale-95"
-                      >
-                        <Download size={14} /> PDF Olarak İndir
-                      </button>
+                      {book.pdfUrl && book.pdfUrl !== "#" ? (
+                        <a
+                          href={book.pdfUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex-1 inline-flex items-center justify-center gap-1.5 py-2.5 px-4 rounded-xl bg-primary text-white font-bold text-xs shadow hover:bg-primary-dark transition active:scale-95"
+                        >
+                          <Download size={14} /> PDF İncele / İndir
+                        </a>
+                      ) : (
+                        <span className="flex-1 inline-flex items-center justify-center gap-1.5 py-2.5 px-4 rounded-xl bg-slate-100 text-slate-400 font-bold text-xs cursor-not-allowed">
+                          <Download size={14} /> PDF Henüz Eklenmedi
+                        </span>
+                      )}
                     </div>
                   </div>
                 ))}
               </div>
+              )
             )}
           </div>
         </section>

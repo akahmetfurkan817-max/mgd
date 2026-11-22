@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
+  Award,
   BookOpen,
   ExternalLink,
   Image as ImageIcon,
@@ -31,6 +32,7 @@ const SECTION_ICONS: Record<AdminSection, typeof Newspaper> = {
   layout: Layers,
   content: Type,
   board: Users,
+  pioneers: Award,
   news: Newspaper,
   publications: BookOpen,
   applications: UserCheck,

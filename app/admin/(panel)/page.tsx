@@ -3,6 +3,7 @@ import { ADMIN_SECTIONS, ROLE_LABELS, can } from "@/lib/permissions";
 import Link from "next/link";
 import SeedButton from "@/components/admin/SeedButton";
 import {
+  Award,
   BookOpen,
   Image as ImageIcon,
   Landmark,
@@ -39,6 +40,10 @@ const SECTION_META: Record<AdminSection, { icon: typeof Newspaper; desc: string 
   board: {
     icon: Users,
     desc: "Genel Başkan ve Başkanlık Divanı kadrosunu yönetin.",
+  },
+  pioneers: {
+    icon: Award,
+    desc: "Öncü Şahsiyetlerin videolarını, fotoğraf galerilerini, kitap/PDF eserlerini ve biyografilerini yönetin.",
   },
   news: {
     icon: Newspaper,

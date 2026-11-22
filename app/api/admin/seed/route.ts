@@ -10,6 +10,7 @@ import { IBAN_LIST } from "@/data/iban";
 import { PUBLICATIONS } from "@/data/publications";
 import { SAMPLE_APPLICATIONS } from "@/data/applications";
 import { DEFAULT_SITE_SETTINGS } from "@/data/site-settings";
+import { ONCU_SAHSIYETLER } from "@/data/oncu-sahsiyetler";
 
 /** Örnek verileri Firestore'a yükler (yalnızca SuperAdmin). Var olan kayıtların üzerine yazar. */
 export async function POST() {
@@ -29,6 +30,7 @@ export async function POST() {
   batch.set(db.collection(COLLECTIONS.settings).doc("baskan"), PRESIDENT);
   batch.set(db.collection(COLLECTIONS.settings).doc("iban"), { list: IBAN_LIST });
   batch.set(db.collection(COLLECTIONS.settings).doc("site"), DEFAULT_SITE_SETTINGS);
+  batch.set(db.collection(COLLECTIONS.settings).doc("oncu_sahsiyetler"), { list: ONCU_SAHSIYETLER });
   PUBLICATIONS.forEach((pub) => batch.set(db.collection(COLLECTIONS.publications).doc(pub.id), pub));
   SAMPLE_APPLICATIONS.forEach((app) => batch.set(db.collection(COLLECTIONS.applications).doc(app.id), app));
   await batch.commit();

@@ -17,6 +17,7 @@ export interface SahsiyetVideo {
   date: string;
   category: string;
   description: string;
+  thumbnail?: string;
 }
 
 export interface SahsiyetPhoto {
