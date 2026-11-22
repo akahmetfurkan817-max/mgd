@@ -1,5 +1,6 @@
-import { cert, getApp, getApps, initializeApp, type ServiceAccount } from "firebase-admin/app";
+import { cert, getApp, getApps, initializeApp, type App, type ServiceAccount } from "firebase-admin/app";
 import { getFirestore, type Firestore as AdminFirestore } from "firebase-admin/firestore";
+import { getStorage } from "firebase-admin/storage";
 import { collection, deleteDoc, doc, setDoc, writeBatch } from "firebase/firestore";
 import { getDb, isFirebaseConfigured } from "@/lib/firebase";
 
@@ -22,6 +23,32 @@ export interface UnifiedDb {
 
 let adminDb: AdminFirestore | null = null;
 
+function getAdminApp(): App | null {
+  const raw = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
+  if (!raw || raw.trim().length === 0) return null;
+  if (getApps().length) return getApp();
+  const account = JSON.parse(raw) as ServiceAccount & { private_key?: string };
+  if (account.private_key) account.private_key = account.private_key.replace(/\\n/g, "\n");
+  const storageBucket = process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET?.trim() || undefined;
+  return initializeApp({
+    credential: cert(account),
+    ...(storageBucket ? { storageBucket } : {}),
+  });
+}
+
+export function getAdminStorageBucket() {
+  const bucketName = process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET?.trim();
+  if (!bucketName) return null;
+  try {
+    const app = getAdminApp();
+    if (!app) return null;
+    return getStorage(app).bucket(bucketName);
+  } catch (e) {
+    console.warn("Firebase Storage başlatılamadı:", e);
+    return null;
+  }
+}
+
 /**
  * Yazma işlemleri öncelikle FIREBASE_SERVICE_ACCOUNT_KEY ile (Admin SDK),
  * bulunmadığı takdirde web yapılandırması (Client SDK adapter) üzerinden yürütülür.
@@ -32,9 +59,8 @@ export function getAdminDb(): UnifiedDb | null {
   if (raw && raw.trim().length > 0) {
     try {
       if (!adminDb) {
-        const account = JSON.parse(raw) as ServiceAccount & { private_key?: string };
-        if (account.private_key) account.private_key = account.private_key.replace(/\\n/g, "\n");
-        const app = getApps().length ? getApp() : initializeApp({ credential: cert(account) });
+        const app = getAdminApp();
+        if (!app) return null;
         const instance = getFirestore(app);
         instance.settings({ ignoreUndefinedProperties: true });
         adminDb = instance;

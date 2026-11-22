@@ -105,8 +105,10 @@ export default function MediaManager() {
     return true;
   });
 
+  const stripCacheBuster = (p: string) => (p.startsWith("http") ? p : p.split("?")[0]);
+
   const copyToClipboard = (path: string) => {
-    const clean = path.split("?")[0];
+    const clean = stripCacheBuster(path);
     if (typeof navigator !== "undefined" && navigator.clipboard) {
       navigator.clipboard.writeText(clean);
       setCopiedPath(path);
@@ -163,7 +165,7 @@ export default function MediaManager() {
 
     setUploading(true);
     try {
-      const cleanTarget = replacingPath.split("?")[0];
+      const cleanTarget = stripCacheBuster(replacingPath);
       const formData = new FormData();
       formData.append("file", file);
       formData.append("targetPath", cleanTarget);
@@ -172,13 +174,13 @@ export default function MediaManager() {
       const data = await res.json();
 
       if (data.ok && data.url) {
-        if (cleanTarget.startsWith("/uploads/")) {
+        if (cleanTarget.startsWith("/uploads/") || cleanTarget.startsWith("http")) {
           setUploadedItems((prev) =>
-            prev.map((it) => (it.path.split("?")[0] === cleanTarget ? { ...it, path: data.url } : it)),
+            prev.map((it) => (stripCacheBuster(it.path) === cleanTarget ? { ...it, path: data.url } : it)),
           );
         } else {
           setDefaultItems((prev) =>
-            prev.map((it) => (it.path.split("?")[0] === cleanTarget ? { ...it, path: data.url } : it)),
+            prev.map((it) => (stripCacheBuster(it.path) === cleanTarget ? { ...it, path: data.url } : it)),
           );
         }
         notify("ok", "Fotoğraf başarıyla değiştirildi ve yayına alındı.");
@@ -198,7 +200,7 @@ export default function MediaManager() {
     if (item.category !== "uploaded") return;
     if (!window.confirm(`"${item.name}" fotoğrafını kalıcı olarak silmek istediğinize emin misiniz?`)) return;
 
-    const clean = item.path.split("?")[0];
+    const clean = stripCacheBuster(item.path);
     setDeletingPath(clean);
     try {
       const res = await fetch(`/api/admin/upload?path=${encodeURIComponent(clean)}`, {
@@ -206,8 +208,8 @@ export default function MediaManager() {
       });
       const data = await res.json();
       if (data.ok) {
-        setUploadedItems((prev) => prev.filter((x) => x.path.split("?")[0] !== clean));
-        if (previewItem?.path.split("?")[0] === clean) setPreviewItem(null);
+        setUploadedItems((prev) => prev.filter((x) => stripCacheBuster(x.path) !== clean));
+        if (previewItem && stripCacheBuster(previewItem.path) === clean) setPreviewItem(null);
         notify("ok", "Fotoğraf başarıyla silindi.");
       } else {
         notify("err", data.error || "Fotoğraf silinemedi.");
