@@ -161,15 +161,15 @@ export default function Header() {
               <Logo light />
             </Link>
 
-            {/* Masaüstü: Üstten Sarkan Temiz & Düz Lacivert MGD Logo Kalkanı */}
+            {/* Masaüstü: Üstten Sarkan Resmî MGD Logo Kalkanı (Birebir #253573 Zemin & Resmî Amblem) */}
             <div className="relative hidden lg:block w-[138px] xl:w-[148px] h-[72px] shrink-0">
               <Link
                 href="/"
                 aria-label="Milli Gençlik Derneği Ana Sayfa"
-                className={`group absolute left-0 right-0 z-50 flex flex-col items-center justify-center bg-[#1D3572] transition-all duration-300 ${
+                className={`group absolute left-0 right-0 z-50 flex items-center justify-center bg-[#253573] transition-all duration-300 ${
                   scrolled
                     ? "top-0 h-[82px] rounded-b-2xl shadow-[0_12px_28px_-8px_rgba(4,12,32,0.6)]"
-                    : "-top-10 h-[142px] rounded-b-[20px] shadow-[0_18px_36px_-10px_rgba(4,12,32,0.65)] hover:bg-[#223D82]"
+                    : "-top-10 h-[142px] rounded-b-[20px] shadow-[0_18px_36px_-10px_rgba(4,12,32,0.65)]"
                 }`}
                 style={
                   scrolled
@@ -178,31 +178,19 @@ export default function Header() {
                 }
               >
                 <div
-                  className={`relative z-10 flex flex-col items-center justify-center transition-all duration-300 ${
-                    scrolled ? "gap-1 pt-0.5" : "gap-2 pt-2 pb-3"
+                  className={`relative z-10 transition-all duration-300 group-hover:scale-105 ${
+                    scrolled ? "h-16 w-16" : "h-[104px] w-[104px] mb-2"
                   }`}
                 >
-                  <div
-                    className={`relative transition-all duration-300 group-hover:scale-105 ${
-                      scrolled ? "h-10 w-10" : "h-16 w-16"
-                    }`}
-                  >
-                    <Image
-                      src="/images/logo-symbol-light.png"
-                      alt="Milli Gençlik Derneği"
-                      fill
-                      sizes="68px"
-                      className="object-contain"
-                      priority
-                    />
-                  </div>
-                  <span
-                    className={`font-display font-extrabold tracking-[0.12em] text-white uppercase leading-none transition-all duration-300 ${
-                      scrolled ? "text-[9.5px]" : "text-[11.5px]"
-                    }`}
-                  >
-                    MİLLİ GENÇLİK
-                  </span>
+                  <Image
+                    src="/images/mgd-shield-logo.jpg"
+                    alt="Milli Gençlik Derneği"
+                    fill
+                    sizes="108px"
+                    className="object-contain"
+                    priority
+                    unoptimized
+                  />
                 </div>
               </Link>
             </div>
