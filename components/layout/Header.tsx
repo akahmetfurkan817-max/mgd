@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -84,9 +85,9 @@ export default function Header() {
   return (
     <>
       {/* Üst Kurumsal Bilgi & Sosyal Medya Barı (Bizi Takip Et!) */}
-      <div className="bg-[#0B1E42] text-white/85 border-b border-white/10">
+      <div className="relative z-30 bg-[#0B1E42] text-white/85 border-b border-white/10">
         <div className="mx-auto w-full max-w-[1380px] px-4 sm:px-6 flex h-10 items-center justify-between gap-3 text-[11.5px]">
-          <div className="hidden md:flex items-center gap-4">
+          <div className="hidden md:flex items-center gap-4 lg:pl-[156px] xl:pl-[168px]">
             <Link
               href="/etkinlikler"
               className="inline-flex items-center gap-1.5 text-white/90 hover:text-white font-semibold transition-colors"
@@ -153,11 +154,65 @@ export default function Header() {
         } text-white`}
       >
         <div className="mx-auto w-full max-w-[1380px] px-4 sm:px-6 flex h-[72px] items-center justify-between gap-2">
-          {/* Sol: Logo + Ayırıcı + Menü */}
+          {/* Sol: Premium Sarkan MGD Logo Rozeti + Ayırıcı + Menü */}
           <div className="flex items-center gap-3 xl:gap-4 min-w-0">
-            <Link href="/" aria-label="MGD Ana Sayfa" className="shrink-0">
+            {/* Mobil & Tablet Yatay Logo */}
+            <Link href="/" aria-label="MGD Ana Sayfa" className="shrink-0 lg:hidden">
               <Logo light />
             </Link>
+
+            {/* Masaüstü: Üstten Sarkan Soft & Premium MGD Logo Kalkanı */}
+            <div className="relative hidden lg:block w-[136px] xl:w-[146px] h-[72px] shrink-0">
+              <Link
+                href="/"
+                aria-label="Milli Gençlik Derneği Ana Sayfa"
+                className={`group absolute left-0 right-0 z-50 flex flex-col items-center justify-center overflow-hidden border-x border-b border-white/20 bg-gradient-to-b from-[#173E86] via-[#102E68] to-[#091D44] transition-all duration-300 ${
+                  scrolled
+                    ? "top-0 h-[82px] rounded-b-2xl shadow-[0_12px_28px_-8px_rgba(4,12,32,0.65)]"
+                    : "-top-10 h-[140px] rounded-b-[24px] shadow-[0_20px_42px_-10px_rgba(4,12,32,0.75)] hover:brightness-110"
+                }`}
+                style={
+                  scrolled
+                    ? undefined
+                    : { clipPath: "polygon(0 0, 100% 0, 100% 91%, 0 100%)" }
+                }
+              >
+                {/* Çok hafif İslami geometrik motif dokusu */}
+                <span className="pointer-events-none absolute inset-0 islamic-pattern-bg opacity-45" />
+                {/* Üst yumuşak ışık parlaması */}
+                <span className="pointer-events-none absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-white/[0.12] to-transparent" />
+                {/* Alt zarif altın şerit */}
+                <span className="pointer-events-none absolute inset-x-4 bottom-2 h-[2px] rounded-full bg-gradient-to-r from-transparent via-gold/80 to-transparent opacity-80" />
+
+                <div
+                  className={`relative z-10 flex flex-col items-center justify-center transition-all duration-300 ${
+                    scrolled ? "gap-0.5 pt-0.5" : "gap-1.5 pt-2 pb-3"
+                  }`}
+                >
+                  <div
+                    className={`relative transition-all duration-300 group-hover:scale-105 ${
+                      scrolled ? "h-9 w-9" : "h-14 w-14"
+                    }`}
+                  >
+                    <Image
+                      src="/images/logo-symbol-light.png"
+                      alt="Milli Gençlik Derneği"
+                      fill
+                      sizes="60px"
+                      className="object-contain drop-shadow-[0_4px_12px_rgba(0,0,0,0.35)]"
+                      priority
+                    />
+                  </div>
+                  <span
+                    className={`font-display font-extrabold tracking-[0.14em] text-white uppercase leading-none transition-all duration-300 ${
+                      scrolled ? "text-[9.5px]" : "text-[11px]"
+                    }`}
+                  >
+                    MİLLİ GENÇLİK
+                  </span>
+                </div>
+              </Link>
+            </div>
 
             <span className="hidden xl:block h-6 w-px bg-white/15 shrink-0" />
 

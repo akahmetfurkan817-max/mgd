@@ -109,8 +109,26 @@ export default function TurkeyMap() {
   const hoverName = MAP_PROVINCES.find((p) => p.plate === hovered)?.name;
 
   return (
-    <section id="teskilat" className="bg-white py-16 sm:py-20">
-      <div className="container-x">
+    <section id="teskilat" className="relative overflow-hidden bg-white py-16 sm:py-20">
+      {/* Sağ & Sol Kenar Boşluklarında Zarif İslami Geometrik Motif */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none hidden xl:block absolute inset-y-0 left-0 w-36 2xl:w-52 islamic-pattern-light"
+        style={{
+          maskImage: "linear-gradient(to right, rgba(0,0,0,0.85), transparent)",
+          WebkitMaskImage: "linear-gradient(to right, rgba(0,0,0,0.85), transparent)",
+        }}
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none hidden xl:block absolute inset-y-0 right-0 w-36 2xl:w-52 islamic-pattern-light"
+        style={{
+          maskImage: "linear-gradient(to left, rgba(0,0,0,0.85), transparent)",
+          WebkitMaskImage: "linear-gradient(to left, rgba(0,0,0,0.85), transparent)",
+        }}
+      />
+
+      <div className="container-x relative z-10">
         <div className="mb-10 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
           <div>
             <span className="text-xs sm:text-sm font-extrabold uppercase tracking-[0.2em] text-primary">

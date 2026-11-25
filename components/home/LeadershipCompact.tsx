@@ -93,8 +93,26 @@ export default function LeadershipCompact() {
   ];
 
   return (
-    <section id="yonetim" className="bg-slate-50/80 py-16 sm:py-20 border-y border-slate-200/70">
-      <div className="container-x">
+    <section id="yonetim" className="relative overflow-hidden bg-slate-50/80 py-16 sm:py-20 border-y border-slate-200/70">
+      {/* Sağ & Sol Kenar Boşluklarında Zarif İslami Geometrik Motif */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none hidden xl:block absolute inset-y-0 left-0 w-36 2xl:w-52 islamic-pattern-light"
+        style={{
+          maskImage: "linear-gradient(to right, rgba(0,0,0,0.85), transparent)",
+          WebkitMaskImage: "linear-gradient(to right, rgba(0,0,0,0.85), transparent)",
+        }}
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none hidden xl:block absolute inset-y-0 right-0 w-36 2xl:w-52 islamic-pattern-light"
+        style={{
+          maskImage: "linear-gradient(to left, rgba(0,0,0,0.85), transparent)",
+          WebkitMaskImage: "linear-gradient(to left, rgba(0,0,0,0.85), transparent)",
+        }}
+      />
+
+      <div className="container-x relative z-10">
         {/* Bölüm Başlığı */}
         <div className="mb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
           <div>
@@ -141,16 +159,13 @@ export default function LeadershipCompact() {
 
             {/* Genel Başkan Bilgisi ve Aksiyonlar */}
             <div className="md:col-span-8 lg:col-span-9 text-center md:text-left">
-              <span className="inline-flex items-center rounded-full bg-gold/20 border border-gold/40 px-3.5 py-1 text-[11px] font-extrabold uppercase tracking-[0.16em] text-gold-light">
-                MGD Genel Başkanı
+              <span className="inline-flex items-center rounded-full bg-gold/20 border border-gold/40 px-3.5 py-1 text-[11px] font-extrabold uppercase tracking-[0.14em] text-gold-light">
+                {president.title || "Milli Gençlik Derneği Genel Başkanı"}
               </span>
 
               <h3 className="mt-3 font-display text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-white">
                 {president.name}
               </h3>
-              <p className="mt-1 text-sm font-semibold text-blue-200/90">
-                {president.title || "Milli Gençlik Derneği Genel Başkanı"}
-              </p>
 
               {(president.message || president.bio) && (
                 <p className="mt-4 max-w-2xl text-xs sm:text-sm leading-relaxed text-slate-200/90 line-clamp-3 mx-auto md:mx-0">
