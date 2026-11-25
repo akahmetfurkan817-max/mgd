@@ -46,7 +46,7 @@ export default function ArchiveEditor() {
         setForm((prev) => ({
           ...prev,
           fileUrl: data.url!,
-          downloadUrl: prev.downloadUrl || data.url!,
+          downloadUrl: data.url!,
         }));
       } else {
         setState({ status: "error", message: data.error || "Dosya yüklenemedi." });
@@ -57,11 +57,23 @@ export default function ArchiveEditor() {
     }
   };
 
+  const normalizeLink = (raw: string) => {
+    const trimmed = raw.trim();
+    if (!trimmed) return "";
+    if (trimmed.startsWith("/") || /^https?:\/\//i.test(trimmed)) return trimmed;
+    return `https://${trimmed}`;
+  };
+
   const save = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.title.trim() || !form.fileUrl.trim()) return;
+    const cleanUrl = normalizeLink(form.fileUrl);
+    if (!form.title.trim() || !cleanUrl) return;
     setState({ status: "saving" });
-    const res = await saveSection("archive", form);
+    const res = await saveSection("archive", {
+      ...form,
+      fileUrl: cleanUrl,
+      downloadUrl: normalizeLink(form.downloadUrl || cleanUrl),
+    });
     if (res.ok) {
       setForm(empty());
       setState({ status: "saved" });
@@ -147,7 +159,7 @@ export default function ArchiveEditor() {
                 <input
                   ref={fileInputRef}
                   type="file"
-                  accept="application/pdf,.pdf,image/*,.zip"
+                  accept="application/pdf,.pdf,image/*"
                   className="hidden"
                   onChange={handleFileUpload}
                 />

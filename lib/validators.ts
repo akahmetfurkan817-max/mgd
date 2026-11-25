@@ -151,8 +151,8 @@ export function parsePublication(v: unknown): Publication | null {
     category,
     date: date || new Date().toISOString().slice(0, 10),
     description,
-    coverImage: str(v.coverImage, 500),
-    pdfUrl: str(v.pdfUrl, 500) || "#",
+    coverImage: str(v.coverImage, 1000),
+    pdfUrl: str(v.pdfUrl, 1000) || "#",
   };
 }
 

@@ -1,11 +1,13 @@
 "use client";
 
-import { useState } from "react";
-import { BookOpen, Calendar, Download, ExternalLink, Pencil, Plus, Trash2 } from "lucide-react";
+import { useRef, useState } from "react";
+import Image from "next/image";
+import { BookOpen, Loader2, Pencil, Plus, Trash2, Upload } from "lucide-react";
 import { Card, Field, IDLE, PageHeader, SaveStatus, type SaveState } from "@/components/admin/ui";
 import ImagePickerField from "@/components/admin/ImagePickerField";
 import { usePublications } from "@/hooks/useSiteData";
 import { saveSection } from "@/lib/adminApi";
+import { uploadMedia } from "@/lib/uploadMedia";
 import type { Publication, PublicationCategory } from "@/types";
 
 const CATEGORIES: PublicationCategory[] = ["Bülten", "Faaliyet Raporu", "Dergi", "Kitapçık"];
@@ -24,6 +26,25 @@ export default function PublicationEditor() {
   const { data: publications } = usePublications();
   const [form, setForm] = useState<Publication>(empty());
   const [state, setState] = useState<SaveState>(IDLE);
+  const [uploadingPdf, setUploadingPdf] = useState(false);
+  const pdfInputRef = useRef<HTMLInputElement>(null);
+
+  const handlePdfUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingPdf(true);
+    try {
+      const data = await uploadMedia(file, { skipOptimize: true });
+      if (data.ok && data.url) {
+        setForm((prev) => ({ ...prev, pdfUrl: data.url! }));
+      } else {
+        setState({ status: "error", message: data.error || "PDF yüklenemedi." });
+      }
+    } finally {
+      setUploadingPdf(false);
+      if (e.target) e.target.value = "";
+    }
+  };
 
   const save = async () => {
     if (!form.title.trim()) return;
@@ -104,11 +125,34 @@ export default function PublicationEditor() {
               />
             </div>
 
-            <Field
-              label="PDF Belge Bağlantısı (URL)"
-              value={form.pdfUrl || ""}
-              onChange={(v) => setForm({ ...form, pdfUrl: v })}
-            />
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between gap-2">
+                <label className="text-xs font-semibold text-slate-600">PDF Belge Bağlantısı (URL)</label>
+                <button
+                  type="button"
+                  onClick={() => pdfInputRef.current?.click()}
+                  disabled={uploadingPdf}
+                  className="inline-flex items-center gap-1 rounded-lg border border-emerald-300 bg-emerald-50 px-2.5 py-1 text-[11px] font-bold text-emerald-700 hover:bg-emerald-600 hover:text-white transition disabled:opacity-50"
+                >
+                  {uploadingPdf ? <Loader2 size={12} className="animate-spin" /> : <Upload size={12} />}
+                  <span>{uploadingPdf ? "Yükleniyor..." : "PDF Yükle"}</span>
+                </button>
+              </div>
+              <input
+                ref={pdfInputRef}
+                type="file"
+                accept="application/pdf,.pdf"
+                className="hidden"
+                onChange={handlePdfUpload}
+              />
+              <input
+                type="text"
+                value={form.pdfUrl || ""}
+                onChange={(e) => setForm({ ...form, pdfUrl: e.target.value })}
+                placeholder="https://... veya yukarıdan PDF yükleyin"
+                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-secondary focus:outline-none"
+              />
+            </div>
 
             <ImagePickerField
               label="Kapak Fotoğrafı"
@@ -159,6 +203,15 @@ export default function PublicationEditor() {
           <ul className="divide-y divide-slate-100 max-h-[600px] overflow-y-auto pr-1">
             {publications.map((pub) => (
               <li key={pub.id} className="flex items-start justify-between gap-3 py-3.5">
+                {pub.coverImage ? (
+                  <div className="relative h-14 w-12 shrink-0 overflow-hidden rounded-lg border border-slate-200 bg-slate-900">
+                    <Image src={pub.coverImage} alt={pub.title} fill className="object-cover" unoptimized />
+                  </div>
+                ) : (
+                  <div className="flex h-14 w-12 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-primary-dark text-gold-light">
+                    <BookOpen size={18} />
+                  </div>
+                )}
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
                     <span className="rounded bg-blue-50 px-2 py-0.5 text-[11px] font-semibold text-secondary">

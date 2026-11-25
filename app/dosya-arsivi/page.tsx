@@ -104,7 +104,11 @@ export default function DosyaArsiviPage() {
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7">
               {filtered.map((item, idx) => {
-                const targetUrl = item.fileUrl || item.downloadUrl || "#";
+                const rawUrl = (item.fileUrl || item.downloadUrl || "#").trim();
+                const targetUrl =
+                  rawUrl === "#" || rawUrl.startsWith("/") || /^https?:\/\//i.test(rawUrl)
+                    ? rawUrl
+                    : `https://${rawUrl}`;
                 const isExternal = /^https?:\/\//i.test(targetUrl);
 
                 return (

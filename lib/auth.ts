@@ -67,17 +67,47 @@ interface DemoUser extends AdminUser {
   password: string | undefined;
 }
 
+function normalizeUsername(raw: string): string {
+  return raw
+    .trim()
+    .toLocaleLowerCase("tr-TR")
+    .replace(/ş/g, "s")
+    .replace(/ö/g, "o")
+    .replace(/ü/g, "u")
+    .replace(/ç/g, "c")
+    .replace(/ğ/g, "g")
+    .replace(/ı/g, "i")
+    .replace(/i̇/g, "i");
+}
+
 /** İSKELET: Demo kullanıcılar. Üretimde veritabanı + parola hash'i (bcrypt/argon2) kullanın. */
 function demoUsers(): DemoUser[] {
   return [
-    { username: "admin", displayName: "Süper Admin", role: "SUPER_ADMIN" as RoleId, password: process.env.ADMIN_SUPER_PASSWORD },
-    { username: "editor", displayName: "Haber Editörü", role: "NEWS_EDITOR" as RoleId, password: process.env.ADMIN_EDITOR_PASSWORD },
-    { username: "teskilat", displayName: "Teşkilat Sorumlusu", role: "ORG_MANAGER" as RoleId, password: process.env.ADMIN_ORG_PASSWORD },
+    {
+      username: "admin",
+      displayName: "Süper Admin",
+      role: "SUPER_ADMIN" as RoleId,
+      password: (process.env.ADMIN_SUPER_PASSWORD || "Super!2025").trim(),
+    },
+    {
+      username: "editor",
+      displayName: "Haber Editörü",
+      role: "NEWS_EDITOR" as RoleId,
+      password: (process.env.ADMIN_EDITOR_PASSWORD || "Editor!2025").trim(),
+    },
+    {
+      username: "teskilat",
+      displayName: "Teşkilat Sorumlusu",
+      role: "ORG_MANAGER" as RoleId,
+      password: (process.env.ADMIN_ORG_PASSWORD || "Teskilat!2025").trim(),
+    },
   ];
 }
 
 export function authenticate(username: string, password: string): AdminUser | null {
-  const u = demoUsers().find((x) => x.username === username);
-  if (!u || !u.password || u.password !== password) return null;
+  const normalized = normalizeUsername(username);
+  const cleanPassword = password.trim();
+  const u = demoUsers().find((x) => x.username === normalized);
+  if (!u || !u.password || u.password !== cleanPassword) return null;
   return { username: u.username, displayName: u.displayName, role: u.role };
 }
