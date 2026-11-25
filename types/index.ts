@@ -308,6 +308,7 @@ export interface ThemeConfig {
 }
 
 export interface ManagementCardsConfig {
+  showQuickCards?: boolean;
   showDormitory?: boolean;
   dormitoryPhoto?: string;
 }

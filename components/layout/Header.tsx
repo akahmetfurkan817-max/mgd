@@ -161,43 +161,48 @@ export default function Header() {
               <Logo light />
             </Link>
 
-            {/* Masaüstü: Üstten Sarkan Soft & Premium MGD Logo Kalkanı */}
-            <div className="relative hidden lg:block w-[136px] xl:w-[146px] h-[72px] shrink-0">
+            {/* Masaüstü: Üstten Sarkan Temiz & Düz Lacivert MGD Logo Kalkanı */}
+            <div className="relative hidden lg:block w-[138px] xl:w-[148px] h-[72px] shrink-0">
               <Link
                 href="/"
                 aria-label="Milli Gençlik Derneği Ana Sayfa"
-                className={`group absolute left-0 right-0 z-50 flex flex-col items-center justify-center overflow-hidden border-x border-b border-white/20 bg-gradient-to-b from-[#1F3776] via-[#1B326B] to-[#112350] transition-all duration-300 ${
+                className={`group absolute left-0 right-0 z-50 flex flex-col items-center justify-center bg-[#1D3572] transition-all duration-300 ${
                   scrolled
-                    ? "top-0 h-[84px] rounded-b-2xl shadow-[0_12px_28px_-8px_rgba(4,12,32,0.65)]"
-                    : "-top-10 h-[142px] rounded-b-[24px] shadow-[0_20px_42px_-10px_rgba(4,12,32,0.75)] hover:brightness-110"
+                    ? "top-0 h-[82px] rounded-b-2xl shadow-[0_12px_28px_-8px_rgba(4,12,32,0.6)]"
+                    : "-top-10 h-[142px] rounded-b-[20px] shadow-[0_18px_36px_-10px_rgba(4,12,32,0.65)] hover:bg-[#223D82]"
                 }`}
                 style={
                   scrolled
                     ? undefined
-                    : { clipPath: "polygon(0 0, 100% 0, 100% 91%, 0 100%)" }
+                    : { clipPath: "polygon(0 0, 100% 0, 100% 90%, 0 100%)" }
                 }
               >
-                {/* Çok hafif İslami geometrik motif dokusu */}
-                <span className="pointer-events-none absolute inset-0 islamic-pattern-bg opacity-35" />
-                {/* Üst yumuşak ışık parlaması */}
-                <span className="pointer-events-none absolute inset-x-0 top-0 h-14 bg-gradient-to-b from-white/[0.1] to-transparent" />
-                {/* Alt zarif altın şerit */}
-                <span className="pointer-events-none absolute inset-x-4 bottom-2 h-[2px] rounded-full bg-gradient-to-r from-transparent via-gold/80 to-transparent opacity-80" />
-
                 <div
-                  className={`relative z-10 flex items-center justify-center transition-all duration-300 ${
-                    scrolled ? "h-16 w-16" : "h-24 w-24 mb-2"
+                  className={`relative z-10 flex flex-col items-center justify-center transition-all duration-300 ${
+                    scrolled ? "gap-1 pt-0.5" : "gap-2 pt-2 pb-3"
                   }`}
                 >
-                  <Image
-                    src="/images/mgd-shield-logo.jpg"
-                    alt="Milli Gençlik Derneği"
-                    fill
-                    sizes="96px"
-                    className="object-contain mix-blend-lighten transition-transform duration-300 group-hover:scale-105"
-                    priority
-                    unoptimized
-                  />
+                  <div
+                    className={`relative transition-all duration-300 group-hover:scale-105 ${
+                      scrolled ? "h-10 w-10" : "h-16 w-16"
+                    }`}
+                  >
+                    <Image
+                      src="/images/logo-symbol-light.png"
+                      alt="Milli Gençlik Derneği"
+                      fill
+                      sizes="68px"
+                      className="object-contain"
+                      priority
+                    />
+                  </div>
+                  <span
+                    className={`font-display font-extrabold tracking-[0.12em] text-white uppercase leading-none transition-all duration-300 ${
+                      scrolled ? "text-[9.5px]" : "text-[11.5px]"
+                    }`}
+                  >
+                    MİLLİ GENÇLİK
+                  </span>
                 </div>
               </Link>
             </div>

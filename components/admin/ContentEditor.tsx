@@ -84,6 +84,7 @@ export default function ContentEditor() {
     quotes: settings.erbakan?.quotes?.length ? settings.erbakan.quotes : DEFAULT_ERBAKAN.quotes,
   });
   const [managementCards, setManagementCards] = useState<ManagementCardsConfig>({
+    showQuickCards: Boolean(settings.managementCards?.showQuickCards),
     showDormitory: Boolean(settings.managementCards?.showDormitory),
     dormitoryPhoto: settings.managementCards?.dormitoryPhoto || "",
   });
@@ -187,13 +188,35 @@ export default function ContentEditor() {
 
       <SaveStatus state={state} />
 
-      {/* 1. Yönetim Kartı Kontrolleri (Ev ve Yurt Sorumluları) */}
+      {/* 1. Yönetim Kartı Kontrolleri */}
       <Card>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4 mb-4">
+          <div>
+            <h2 className="text-base font-bold text-primary-dark">Ana Sayfa Yönetim Bölümü — Alt Kısayol Kartları</h2>
+            <p className="text-xs text-slate-500 mt-0.5">
+              Pasif olduğunda ana sayfada yalnızca Genel Başkan vitrini görünür; aktif edildiğinde altında Başkanlık Divanı, Şube Başkanları, Komisyonlar, Tüzüğümüz ve Dosya Arşivi kartları açılır.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() =>
+              setManagementCards((prev) => ({ ...prev, showQuickCards: !prev.showQuickCards }))
+            }
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition shrink-0 ${
+              managementCards.showQuickCards
+                ? "bg-emerald-600 text-white hover:bg-emerald-700"
+                : "bg-slate-200 text-slate-700 hover:bg-slate-300"
+            }`}
+          >
+            {managementCards.showQuickCards ? "Aktif (Kartlar Görünüyor)" : "Pasif (Sadece Genel Başkan)"}
+          </button>
+        </div>
+
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4 mb-5">
           <div>
-            <h2 className="text-base font-bold text-primary-dark">Ana Sayfa Yönetim Kartları — Ev ve Yurt Sorumluları</h2>
+            <h3 className="text-sm font-bold text-primary-dark">Ev ve Yurt Sorumluları Kartı</h3>
             <p className="text-xs text-slate-500 mt-0.5">
-              İstediğiniz zaman tek tuşla aktif edip kapatabilir ve dilerseniz kart arka planına fotoğraf ekleyebilirsiniz.
+              Alt kısayol kartları açıkken Ev ve Yurt Sorumluları kartını tek tuşla aktif edip fotoğraf ekleyebilirsiniz.
             </p>
           </div>
           <button

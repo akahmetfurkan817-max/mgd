@@ -34,7 +34,7 @@ const COMMISSION_CARDS = [
     subtitle: "Üniversite ve burs çalışmaları",
     href: "/haberler?cat=Duyurular%20%26%20Burs",
     icon: GraduationCap,
-    bgClass: "bg-white text-[#1B4EA3] hover:bg-blue-50/70",
+    bgClass: "bg-white text-[#1B4EA3] hover:bg-white",
     iconBgClass: "bg-[#1B4EA3]/10 text-[#1B4EA3] border border-[#1B4EA3]/20 group-hover:bg-[#1B4EA3] group-hover:text-white",
     titleClass: "text-[#1B4EA3]",
     subtitleClass: "text-[#1B4EA3]/80",

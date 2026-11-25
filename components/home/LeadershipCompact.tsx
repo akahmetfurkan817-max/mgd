@@ -23,6 +23,7 @@ export default function LeadershipCompact() {
   const { data: settings } = useSiteSettings();
   const [activeDoc, setActiveDoc] = useState<string | null>(null);
 
+  const showQuickCards = Boolean(settings.managementCards?.showQuickCards);
   const showDormitory = Boolean(settings.managementCards?.showDormitory);
   const dormitoryPhoto = settings.managementCards?.dormitoryPhoto || "";
   const presidentSlug = slugify(president.name) || "ahmet-ozvatan";
@@ -94,24 +95,6 @@ export default function LeadershipCompact() {
 
   return (
     <section id="yonetim" className="relative overflow-hidden bg-slate-50/80 py-16 sm:py-20 border-y border-slate-200/70">
-      {/* Sağ & Sol Kenar Boşluklarında Zarif İslami Geometrik Motif */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none hidden xl:block absolute inset-y-0 left-0 w-36 2xl:w-52 islamic-pattern-light"
-        style={{
-          maskImage: "linear-gradient(to right, rgba(0,0,0,0.85), transparent)",
-          WebkitMaskImage: "linear-gradient(to right, rgba(0,0,0,0.85), transparent)",
-        }}
-      />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none hidden xl:block absolute inset-y-0 right-0 w-36 2xl:w-52 islamic-pattern-light"
-        style={{
-          maskImage: "linear-gradient(to left, rgba(0,0,0,0.85), transparent)",
-          WebkitMaskImage: "linear-gradient(to left, rgba(0,0,0,0.85), transparent)",
-        }}
-      />
-
       <div className="container-x relative z-10">
         {/* Bölüm Başlığı */}
         <div className="mb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
@@ -134,7 +117,11 @@ export default function LeadershipCompact() {
         </div>
 
         {/* Üst Vurgu: Genel Başkan Yatay Editoryal Kart */}
-        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#071832] via-[#0B254A] to-[#12366B] text-white shadow-xl border border-white/10 mb-6">
+        <div
+          className={`relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#071832] via-[#0B254A] to-[#12366B] text-white shadow-xl border border-white/10 ${
+            showQuickCards ? "mb-6" : ""
+          }`}
+        >
           <div className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-gold/15 blur-3xl" />
           <div className="pointer-events-none absolute -left-24 -bottom-24 h-64 w-64 rounded-full bg-blue-400/10 blur-3xl" />
 
@@ -191,7 +178,8 @@ export default function LeadershipCompact() {
           </div>
         </div>
 
-        {/* Alt Kurumsal Erişim Kartları — Özgün Açık Zeminli Mimari Grid */}
+        {/* Alt Kurumsal Erişim Kartları — Admin Panelinden Açılıp Kapatılabilir */}
+        {showQuickCards && (
         <div
           className={`grid grid-cols-1 sm:grid-cols-2 gap-4 ${
             quickItems.length >= 6 ? "lg:grid-cols-3" : "lg:grid-cols-5"
@@ -251,6 +239,7 @@ export default function LeadershipCompact() {
             );
           })}
         </div>
+        )}
       </div>
 
       <FlipbookModal docKey={activeDoc} onClose={() => setActiveDoc(null)} />
