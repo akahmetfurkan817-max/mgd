@@ -12,6 +12,7 @@ import {
   Users,
 } from "lucide-react";
 import { useLeaders, usePresident, useSiteSettings } from "@/hooks/useSiteData";
+import { slugify } from "@/lib/slug";
 import FlipbookModal from "@/components/corporate/FlipbookModal";
 
 export default function LeadershipCompact() {
@@ -38,7 +39,7 @@ export default function LeadershipCompact() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-5 items-stretch">
           {/* Sol: Genel Başkan Portre Kartı (4 sütun) */}
           <Link
-            href="/kurumsal#yonetim"
+            href={`/baskanlik-divani/${slugify(president.name) || "ahmet-ozvatan"}`}
             className="lg:col-span-4 group relative block min-h-[360px] sm:min-h-[410px] overflow-hidden rounded-2xl bg-[#0A365C] shadow-sm transition-transform duration-300 hover:-translate-y-1 hover:shadow-xl"
           >
             <Image
@@ -65,7 +66,7 @@ export default function LeadershipCompact() {
             {/* Üst Sıra: Koyu Lacivert (#0A365C) */}
             <div className={`grid grid-cols-1 gap-4 sm:gap-5 flex-1 ${showDormitory ? "sm:grid-cols-3" : "sm:grid-cols-2"}`}>
               <Link
-                href="/kurumsal#baskanlik-divani"
+                href="/baskanlik-divani"
                 className="group flex flex-col justify-between min-h-[168px] sm:min-h-[195px] rounded-2xl bg-[#0A365C] p-6 text-white transition-all duration-200 hover:-translate-y-1 hover:bg-[#0D4270] hover:shadow-lg"
               >
                 <Users size={26} strokeWidth={1.6} className="text-[#4DA8DA]" />
@@ -158,7 +159,7 @@ export default function LeadershipCompact() {
               </button>
 
               <Link
-                href="/yayinlar"
+                href="/dosya-arsivi"
                 className="group flex flex-col justify-between min-h-[168px] sm:min-h-[195px] rounded-2xl bg-[#006BB6] p-6 text-white transition-all duration-200 hover:-translate-y-1 hover:bg-[#0078CC] hover:shadow-lg"
               >
                 <Folder size={26} strokeWidth={1.6} className="text-white/90" />

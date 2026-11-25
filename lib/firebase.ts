@@ -24,6 +24,7 @@ export const COLLECTIONS = {
   gallery: "galeri",
   social: "sosyal_medya",
   videos: "videolar",
+  archive: "dosya_arsivi",
 } as const;
 
 let app: FirebaseApp | null = null;

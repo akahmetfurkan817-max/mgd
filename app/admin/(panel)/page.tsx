@@ -5,6 +5,7 @@ import SeedButton from "@/components/admin/SeedButton";
 import {
   Award,
   BookOpen,
+  FolderArchive,
   Image as ImageIcon,
   Landmark,
   Layers,
@@ -48,6 +49,10 @@ const SECTION_META: Record<AdminSection, { icon: typeof Newspaper; desc: string 
   news: {
     icon: Newspaper,
     desc: "Genel Merkez, Üniversite ve Basın Açıklamalarını yayınlayın.",
+  },
+  archive: {
+    icon: FolderArchive,
+    desc: "Konsept, rapor, broşür, yayın ve kurumsal medya dosya arşivini yönetin.",
   },
   videos: {
     icon: Video,

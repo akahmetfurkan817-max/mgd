@@ -19,6 +19,7 @@ import CalendarEventsSection from "@/components/home/CalendarEventsSection";
 import VideoGallerySection from "@/components/home/VideoGallerySection";
 import PublicationsSection from "@/components/home/PublicationsSection";
 import GallerySection from "@/components/home/GallerySection";
+import ScrollReveal from "@/components/ui/ScrollReveal";
 import { useSiteSettings } from "@/hooks/useSiteData";
 import { DEFAULT_SECTIONS } from "@/data/site-settings";
 import type { HomeSectionId } from "@/types";
@@ -46,21 +47,28 @@ const SECTION_COMPONENTS: Record<HomeSectionId, () => ReactNode> = {
 export default function DynamicHomeSections() {
   const { data: settings } = useSiteSettings();
   const remoteSections = settings.sections || [];
-  // Eski 10+ bölümlü düzen yerine sade AGD tarzı düzeni kullan (admin yeni düzen kaydedene kadar)
   const enabledCount = remoteSections.filter((s) => s.enabled).length;
   const sections =
-    remoteSections.length > 0 && enabledCount <= 6
+    remoteSections.length > 0 && enabledCount <= 8
       ? remoteSections
       : DEFAULT_SECTIONS;
 
+  const activeSections = sections.filter((sec) => sec.enabled);
+
   return (
     <>
-      {sections
-        .filter((sec) => sec.enabled)
-        .map((sec) => {
-          const renderFn = SECTION_COMPONENTS[sec.id];
-          return renderFn ? renderFn() : null;
-        })}
+      {activeSections.map((sec, idx) => {
+        const renderFn = SECTION_COMPONENTS[sec.id];
+        if (!renderFn) return null;
+        if (idx === 0 && sec.id === "sliderNews") {
+          return renderFn();
+        }
+        return (
+          <ScrollReveal key={sec.id} delay={40} y={32} duration={800}>
+            {renderFn()}
+          </ScrollReveal>
+        );
+      })}
     </>
   );
 }

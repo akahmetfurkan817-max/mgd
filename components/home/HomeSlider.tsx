@@ -12,7 +12,7 @@ import {
   Pause,
   Play,
 } from "lucide-react";
-import { useSlides } from "@/hooks/useSiteData";
+import { useSiteSettings, useSlides } from "@/hooks/useSiteData";
 import type { HomeSlideItem } from "@/data/slides";
 
 const AUTOPLAY_MS = 6500;
@@ -23,17 +23,25 @@ const COMMISSION_CARDS = [
     subtitle: "Ortaöğretim çalışmaları",
     href: "/faaliyetler",
     icon: FileText,
+    bgClass: "bg-gradient-to-br from-[#163675] via-[#1B4EA3] to-[#1D56B8] hover:brightness-110",
+    iconBgClass: "bg-white/15 text-white border border-white/20 group-hover:bg-white group-hover:text-[#1B4EA3]",
+    subtitleClass: "text-blue-100/85",
   },
   {
     title: "Üniversiteler",
     subtitle: "Üniversite ve burs çalışmaları",
-    href: "/haberler#burs-basvuru",
+    href: "/haberler?cat=Duyurular%20%26%20Burs",
     icon: GraduationCap,
+    bgClass: "bg-gradient-to-br from-[#22262E] via-[#2B303A] to-[#343A46] hover:brightness-110",
+    iconBgClass: "bg-white/12 text-white border border-white/15 group-hover:bg-white group-hover:text-[#23272F]",
+    subtitleClass: "text-slate-300",
   },
 ];
 
 export default function HomeSlider() {
   const { data: slides } = useSlides();
+  const { data: settings } = useSiteSettings();
+  const sliderZoomEnabled = Boolean(settings.sliderZoomEnabled);
   const total = slides.length;
 
   const [current, setCurrent] = useState(0);
@@ -192,6 +200,7 @@ export default function HomeSlider() {
             {slides.map((item: HomeSlideItem, idx: number) => {
               const isActive = idx === current;
               const parallaxPx = isActive && isDragging ? dragOffset * -0.14 : 0;
+              const hasText = Boolean(item.title?.trim() || item.subtitle?.trim() || item.buttonText?.trim());
 
               return (
                 <div
@@ -208,52 +217,67 @@ export default function HomeSlider() {
                   >
                     <Image
                       src={item.image || "/images/slider/yeniden-milli-genclik.jpg"}
-                      alt={item.title}
+                      alt={item.title || "Milli Gençlik Derneği"}
                       fill
                       sizes="100vw"
                       draggable={false}
-                      className={`object-cover object-center ${isActive ? "animate-ken-burns" : "scale-100"}`}
+                      className={`object-cover object-center ${
+                        isActive && sliderZoomEnabled ? "animate-ken-burns" : "scale-100"
+                      }`}
                       priority={idx === 0}
                       unoptimized
                     />
-                    {/* Kurumsal Mavi Degrade Katmanı */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-[#0C2B63]/92 via-[#153B7D]/65 to-[#153B7D]/15" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#0C2B63]/70 via-transparent to-transparent" />
+                    {/* Kurumsal Mavi Degrade Katmanı (metin varsa okunaklılık için) */}
+                    {hasText ? (
+                      <>
+                        <div className="absolute inset-0 bg-gradient-to-r from-[#0C2B63]/90 via-[#153B7D]/60 to-[#153B7D]/15" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#0C2B63]/65 via-transparent to-transparent" />
+                      </>
+                    ) : (
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#0C2B63]/35 via-transparent to-transparent" />
+                    )}
                   </div>
 
-                  {/* Slayt Metinleri */}
-                  <div className="container-x relative z-20 pt-10 pb-28 sm:pt-12 sm:pb-32">
-                    <div
-                      className={`max-w-2xl sm:pl-14 lg:pl-16 transition-all duration-700 ${
-                        isActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4 pointer-events-none"
-                      }`}
-                    >
-                      <h1 className="font-display text-3xl sm:text-5xl lg:text-[56px] font-extrabold tracking-[-0.025em] text-white leading-[1.08] drop-shadow-sm">
-                        {item.title}
-                      </h1>
+                  {/* Slayt Metinleri (Sadece doldurulmuşsa görünür) */}
+                  {hasText && (
+                    <div className="container-x relative z-20 pt-10 pb-28 sm:pt-12 sm:pb-32">
+                      <div
+                        className={`max-w-2xl sm:pl-14 lg:pl-16 transition-all duration-700 ${
+                          isActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4 pointer-events-none"
+                        }`}
+                      >
+                        {item.title?.trim() && (
+                          <h1 className="font-display text-3xl sm:text-5xl lg:text-[56px] font-extrabold tracking-[-0.025em] text-white leading-[1.08] drop-shadow-sm">
+                            {item.title}
+                          </h1>
+                        )}
 
-                      <p className="mt-4 text-sm sm:text-base lg:text-[17px] text-white/90 leading-relaxed max-w-xl font-medium">
-                        {item.subtitle}
-                      </p>
+                        {item.subtitle?.trim() && (
+                          <p className="mt-4 text-sm sm:text-base lg:text-[17px] text-white/90 leading-relaxed max-w-xl font-medium">
+                            {item.subtitle}
+                          </p>
+                        )}
 
-                      {/* Bölünmüş Beyaz + Mavi Ok Aksiyon Butonu */}
-                      <div className="mt-7">
-                        <Link
-                          href={item.linkUrl || "/kurumsal"}
-                          draggable={false}
-                          onPointerDown={(e) => e.stopPropagation()}
-                          className="group inline-flex items-stretch overflow-hidden rounded-xl bg-white shadow-xl transition-transform duration-200 hover:-translate-y-0.5 active:scale-[0.98]"
-                        >
-                          <span className="flex items-center px-6 py-3.5 text-sm font-bold text-ink">
-                            {(item.buttonText || "Derneğimizi Tanıyın").replace(/\s*→\s*$/, "")}
-                          </span>
-                          <span className="flex items-center justify-center bg-secondary px-4 text-white transition-colors group-hover:bg-primary">
-                            <ArrowRight size={17} className="transition-transform group-hover:translate-x-0.5" />
-                          </span>
-                        </Link>
+                        {item.buttonText?.trim() && (
+                          <div className="mt-7">
+                            <Link
+                              href={item.linkUrl || "/kurumsal"}
+                              draggable={false}
+                              onPointerDown={(e) => e.stopPropagation()}
+                              className="group inline-flex items-stretch overflow-hidden rounded-xl bg-white shadow-xl transition-transform duration-200 hover:-translate-y-0.5 active:scale-[0.98]"
+                            >
+                              <span className="flex items-center px-6 py-3.5 text-sm font-bold text-ink">
+                                {item.buttonText.replace(/\s*→\s*$/, "")}
+                              </span>
+                              <span className="flex items-center justify-center bg-secondary px-4 text-white transition-colors group-hover:bg-primary">
+                                <ArrowRight size={17} className="transition-transform group-hover:translate-x-0.5" />
+                              </span>
+                            </Link>
+                          </div>
+                        )}
                       </div>
                     </div>
-                  </div>
+                  )}
                 </div>
               );
             })}
@@ -331,29 +355,37 @@ export default function HomeSlider() {
         </div>
       </div>
 
-      {/* Slayt Altına Binen Yüzer Komisyon Kartı (Ortaöğretim • Üniversiteler) */}
+      {/* Slayt Altına Binen Yüzer Komisyon Kartı (Ortaöğretim: Mavi • Üniversiteler: Antrasit Gri) */}
       <div className="container-x relative z-30 -mt-12 sm:-mt-14 pb-6">
-        <div className="rounded-2xl bg-white border border-slate-100 shadow-[0_14px_40px_-12px_rgba(15,30,60,0.14)] overflow-hidden">
-          <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-slate-100">
+        <div className="rounded-2xl shadow-[0_18px_45px_-12px_rgba(10,25,60,0.28)] overflow-hidden border border-white/15">
+          <div className="grid grid-cols-1 md:grid-cols-2">
             {COMMISSION_CARDS.map((card) => {
               const Icon = card.icon;
               return (
                 <Link
                   key={card.title}
                   href={card.href}
-                  className="group flex items-center justify-center gap-4 px-6 sm:px-10 py-6 sm:py-7 transition-colors hover:bg-surface/70"
+                  className={`group flex items-center justify-between md:justify-center gap-4 px-5 sm:px-10 py-5 sm:py-7 text-white transition-all duration-300 ${card.bgClass}`}
                 >
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-blue-50/80 text-secondary transition-colors group-hover:bg-primary group-hover:text-white">
-                    <Icon size={24} strokeWidth={1.75} />
+                  <div className="flex items-center gap-4 min-w-0">
+                    <div
+                      className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl transition-all duration-300 ${card.iconBgClass}`}
+                    >
+                      <Icon size={23} strokeWidth={1.8} />
+                    </div>
+                    <div className="min-w-0 text-left">
+                      <h2 className="font-display text-base sm:text-lg font-extrabold text-white tracking-tight">
+                        {card.title}
+                      </h2>
+                      <p className={`text-xs sm:text-sm font-medium truncate ${card.subtitleClass}`}>
+                        {card.subtitle}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <h2 className="font-display text-base sm:text-lg font-extrabold text-ink group-hover:text-primary transition-colors">
-                      {card.title}
-                    </h2>
-                    <p className="text-xs sm:text-sm text-slate-500 font-medium">
-                      {card.subtitle}
-                    </p>
-                  </div>
+                  <ArrowRight
+                    size={18}
+                    className="shrink-0 text-white/70 transition-transform duration-300 group-hover:translate-x-1 group-hover:text-white md:ml-4"
+                  />
                 </Link>
               );
             })}

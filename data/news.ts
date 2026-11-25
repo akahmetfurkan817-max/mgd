@@ -109,4 +109,40 @@ export const NEWS: NewsItem[] = [
     date: "2026-09-24",
     image: "/images/erbakan_portrait.png",
   },
+  {
+    id: "n6",
+    title: "İstanbul'un Fethi 573. Yıl Dönümü Gençlik Buluşması Coşkuyla İcra Edildi",
+    summary:
+      "81 ilden binlerce gencimizin katılımıyla gerçekleştirilen Fetih programında ahlak, şuur ve medeniyet vurgusu ön plana çıktı.",
+    category: "Programlar",
+    date: "2026-05-29",
+    image: "/images/mgd/inanc-ihlas-ve-azmin-zaferi-istanbul-un-fethi-programi-24-mayis-2025-cumartesi.jpg",
+  },
+  {
+    id: "n7",
+    title: "Ortaöğretim Gençlik Kampları ve Liderlik Atölyeleri Kayıtları Başladı",
+    summary:
+      "Lise öğrencilerimizin yaz dönemini ilim, spor, kitap okuma halkaları ve kardeşlik ikliminde geçireceği Türkiye geneli kamplarımıza başvurular açıldı.",
+    category: "Teşkilattan Haberler",
+    date: "2026-09-18",
+    image: "/images/mgd/2025-2026-yaz-etkinliklerimiz.jpg",
+  },
+  {
+    id: "n8",
+    title: "Milli Gençlik 2026 Eğitim ve Gençlik Politikaları Raporu Yayınlandı",
+    summary:
+      "AR-GE Komisyonumuz tarafından hazırlanan kapsamlı gençlik, istihdam ve değerler eğitimi raporu kamuoyu ve ilgili kurumlarla paylaşıldı.",
+    category: "Basın Bildirisi & Rapor",
+    date: "2026-09-12",
+    image: "/images/mgd/fiili-icraate-gecmek-gerekir.jpg",
+  },
+  {
+    id: "n9",
+    title: "Milli Gençlik Dergisi Yeni Sayısı ve E-Kütüphane Eserleri Yayında",
+    summary:
+      "Fikir, kültür ve gençlik eksenli makalelerle hazırlanan yeni sayımız ile öncü şahsiyetler külliyatı dijital kütüphanemize eklendi.",
+    category: "Yayınlar & Kütüphane",
+    date: "2026-09-05",
+    image: "/images/mgd/0001.jpg",
+  },
 ];

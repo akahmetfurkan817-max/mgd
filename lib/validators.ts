@@ -1,4 +1,4 @@
-import type { ApplicationStatus, IbanInfo, Leader, NewsCategory, NewsItem, President, Province, Publication, PublicationCategory, SocialPost, VideoItem, VolunteerApplication } from "@/types";
+import type { ApplicationStatus, ArchiveCategory, ArchiveItem, IbanInfo, Leader, NewsCategory, NewsItem, President, Province, Publication, PublicationCategory, SocialPost, VideoCategory, VideoItem, VolunteerApplication } from "@/types";
 import type { OncuSahsiyet, SahsiyetBook, SahsiyetPhoto, SahsiyetVideo } from "@/data/oncu-sahsiyetler";
 
 type Obj = Record<string, unknown>;
@@ -13,13 +13,25 @@ const CATEGORIES: readonly NewsCategory[] = [
   "Duyurular & Burs",
   "Programlar",
   "Teşkilattan Haberler",
+  "Yayınlar & Kütüphane",
+  "Basın Bildirisi & Rapor",
+];
+const ARCHIVE_CATEGORIES: readonly ArchiveCategory[] = [
+  "Konsept",
+  "Raporlar",
+  "Broşürler",
+  "Yayınlar",
+  "Kurumsal Medya",
 ];
 const PUBLICATION_CATEGORIES: readonly PublicationCategory[] = ["Bülten", "Faaliyet Raporu", "Dergi", "Kitapçık"];
-const VIDEO_CATEGORIES: readonly VideoItem["category"][] = [
+const VIDEO_CATEGORIES: readonly VideoCategory[] = [
   "Genel Başkan Konuşması",
   "Teşkilat & Kongre",
   "Belgesel & Arşiv",
   "Gençlik Buluşması",
+  "Erbakan Hoca Videoları",
+  "Fatih Erbakan Videoları",
+  "MGD TV",
 ];
 const APPLICATION_STATUSES: readonly ApplicationStatus[] = ["BEKLIYOR", "ILETISIME_GECILDI", "ONAYLANDI", "REDDEDILDI"];
 
@@ -29,7 +41,35 @@ export function parseNews(v: unknown): NewsItem | null {
   const category = CATEGORIES.find((c) => c === v.category);
   const date = str(v.date, 10);
   if (!title || !category || !/^\d{4}-\d{2}-\d{2}$/.test(date)) return null;
-  return { id: str(v.id, 100), title, summary: str(v.summary, 2000), category, date, image: str(v.image, 500) };
+  const content = str(v.content, 20000);
+  return {
+    id: str(v.id, 100),
+    title,
+    summary: str(v.summary, 2000),
+    ...(content ? { content } : {}),
+    category,
+    date,
+    image: str(v.image, 500),
+  };
+}
+
+export function parseArchiveItem(v: unknown): ArchiveItem | null {
+  if (!isObj(v)) return null;
+  const title = str(v.title, 300);
+  const category = ARCHIVE_CATEGORIES.find((c) => c === v.category) || "Konsept";
+  const fileUrl = str(v.fileUrl, 1000);
+  if (!title || !fileUrl) return null;
+  const downloadUrl = str(v.downloadUrl, 1000);
+  return {
+    id: str(v.id, 100),
+    title,
+    category,
+    date: str(v.date, 20) || new Date().toISOString().slice(0, 10),
+    coverImage: str(v.coverImage, 1000),
+    fileUrl,
+    ...(downloadUrl ? { downloadUrl } : {}),
+    description: str(v.description, 2000),
+  };
 }
 
 export function parseProvince(v: unknown): Province | null {
@@ -249,12 +289,14 @@ export function parseOncuSahsiyetList(v: unknown): OncuSahsiyet[] | null {
           .filter((bk) => Boolean(bk.title))
       : [];
 
+    const bgImg = str(raw.backgroundImage, 1000);
     out.push({
       id,
       name,
       title: str(raw.title, 300),
       period: str(raw.period, 100),
-      portrait: str(raw.portrait, 1000) || "/images/erbakan_portrait.png",
+      portrait: str(raw.portrait, 1000),
+      ...(bgImg ? { backgroundImage: bgImg } : {}),
       badge: str(raw.badge, 200),
       motto: str(raw.motto, 1000),
       bioSections,

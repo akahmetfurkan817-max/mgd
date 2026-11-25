@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 import { Card } from "@/components/admin/ui";
 import ImagePickerField from "@/components/admin/ImagePickerField";
-import { useSlides } from "@/hooks/useSiteData";
+import { useSiteSettings, useSlides } from "@/hooks/useSiteData";
 import { saveSection } from "@/lib/adminApi";
 import { HOME_SLIDES, type HomeSlideItem } from "@/data/slides";
 
@@ -45,8 +45,31 @@ const EMPTY_FORM: HomeSlideItem = {
 
 export default function SlideEditor() {
   const { data: liveSlides, live } = useSlides();
+  const { data: siteSettings } = useSiteSettings();
   const [slides, setSlides] = useState<HomeSlideItem[]>(liveSlides);
+  const [zoomEnabled, setZoomEnabled] = useState<boolean>(Boolean(siteSettings.sliderZoomEnabled));
+  const [savingZoom, setSavingZoom] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
+
+  useEffect(() => {
+    setZoomEnabled(Boolean(siteSettings.sliderZoomEnabled));
+  }, [siteSettings.sliderZoomEnabled]);
+
+  const handleToggleZoom = async () => {
+    const next = !zoomEnabled;
+    setZoomEnabled(next);
+    setSavingZoom(true);
+    try {
+      const res = await saveSection("content", { sliderZoomEnabled: next });
+      if (res.ok) {
+        notify("ok", next ? "Slider yakınlaştırma efekti açıldı." : "Slider yakınlaştırma efekti kapatıldı.");
+      } else {
+        notify("err", res.error || "Ayar kaydedilemedi.");
+      }
+    } finally {
+      setSavingZoom(false);
+    }
+  };
   const [previewSlide, setPreviewSlide] = useState<HomeSlideItem | null>(null);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [form, setForm] = useState<HomeSlideItem>(EMPTY_FORM);
@@ -149,8 +172,8 @@ export default function SlideEditor() {
 
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.title.trim() || !form.image.trim()) {
-      notify("err", "Başlık ve görsel alanı zorunludur.");
+    if (!form.image.trim()) {
+      notify("err", "Slayt görseli zorunludur.");
       return;
     }
     const next =
@@ -187,7 +210,22 @@ export default function SlideEditor() {
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            onClick={handleToggleZoom}
+            disabled={savingZoom}
+            className={`inline-flex items-center gap-2 rounded-xl border px-3.5 py-2 text-xs font-bold transition ${
+              zoomEnabled
+                ? "border-emerald-300 bg-emerald-50 text-emerald-800 hover:bg-emerald-100"
+                : "border-slate-300 bg-white text-slate-700 hover:bg-slate-50"
+            }`}
+          >
+            <span
+              className={`h-2.5 w-2.5 rounded-full ${zoomEnabled ? "bg-emerald-500" : "bg-slate-400"}`}
+            />
+            <span>Yakınlaştırma Efekti: {zoomEnabled ? "Açık" : "Kapalı"}</span>
+          </button>
           <button
             type="button"
             onClick={handleResetToDefault}
@@ -366,23 +404,23 @@ export default function SlideEditor() {
 
             <form onSubmit={handleFormSubmit} className="p-6 space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Slayt Başlığı *</label>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">Slayt Başlığı (Opsiyonel)</label>
                 <input
                   type="text"
-                  required
                   value={form.title}
                   onChange={(e) => setForm({ ...form, title: e.target.value })}
+                  placeholder="Boş bırakılırsa sadece görsel gösterilir"
                   className="w-full rounded-lg border border-slate-300 px-3.5 py-2.5 text-sm font-semibold text-ink focus:border-primary focus:outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Açıklama / Alt Metin *</label>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">Açıklama / Alt Metin (Opsiyonel)</label>
                 <textarea
                   rows={3}
-                  required
                   value={form.subtitle}
                   onChange={(e) => setForm({ ...form, subtitle: e.target.value })}
+                  placeholder="İsteğe bağlı açıklama metni"
                   className="w-full rounded-lg border border-slate-300 px-3.5 py-2.5 text-sm text-slate-800 focus:border-primary focus:outline-none"
                 />
               </div>
@@ -430,22 +468,22 @@ export default function SlideEditor() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Buton Metni *</label>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">Buton Metni (Opsiyonel)</label>
                   <input
                     type="text"
-                    required
                     value={form.buttonText}
                     onChange={(e) => setForm({ ...form, buttonText: e.target.value })}
+                    placeholder="Boş bırakılırsa buton gizlenir"
                     className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-primary focus:outline-none"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Hedef Bağlantı *</label>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">Hedef Bağlantı (Opsiyonel)</label>
                   <input
                     type="text"
-                    required
                     value={form.linkUrl}
                     onChange={(e) => setForm({ ...form, linkUrl: e.target.value })}
+                    placeholder="/kurumsal veya /haberler"
                     className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm font-mono focus:border-primary focus:outline-none"
                   />
                 </div>

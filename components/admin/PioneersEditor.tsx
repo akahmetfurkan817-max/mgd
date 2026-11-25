@@ -976,9 +976,14 @@ export default function PioneersEditor() {
 
             <div className="mt-4 space-y-4">
               <ImagePickerField
-                label="Portre Fotoğrafı"
+                label="Portre Fotoğrafı (Opsiyonel — Boş Bırakılabilir)"
                 value={current.portrait}
                 onChange={(url) => updateLocalCurrent((p) => ({ ...p, portrait: url }))}
+              />
+              <ImagePickerField
+                label="Özel Arka Plan Fotoğrafı (Opsiyonel — Boş Bırakılabilir)"
+                value={current.backgroundImage || ""}
+                onChange={(url) => updateLocalCurrent((p) => ({ ...p, backgroundImage: url }))}
               />
               <Field
                 label="Şiar / Öne Çıkan Söz"

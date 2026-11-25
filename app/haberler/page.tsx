@@ -1,37 +1,64 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useEffect, useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import {
+  ArrowRight,
+  BookOpen,
+  CalendarDays,
+  ChevronRight,
+  FileText,
+  Newspaper,
+  Search,
+  Users,
+} from "lucide-react";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
-import { CalendarDays, Newspaper, Search, X, ArrowLeft } from "lucide-react";
+import ScrollReveal from "@/components/ui/ScrollReveal";
 import { useNews } from "@/hooks/useSiteData";
-import Link from "next/link";
-import type { NewsCategory, NewsItem } from "@/types";
+import { slugify } from "@/lib/slug";
+import type { NewsCategory } from "@/types";
 
 const FILTERS: ("Tümü" | NewsCategory)[] = [
   "Tümü",
   "Duyurular & Burs",
-  "Programlar",
   "Teşkilattan Haberler",
   "Genel Merkez",
   "Basın Açıklaması",
+  "Programlar",
   "Üniversite",
+  "Yayınlar & Kütüphane",
+  "Basın Bildirisi & Rapor",
 ];
 
-const BADGE: Record<NewsCategory, string> = {
-  "Duyurular & Burs": "bg-emerald-600 text-white",
-  Programlar: "bg-purple-600 text-white",
-  "Teşkilattan Haberler": "bg-blue-600 text-white",
-  "Genel Merkez": "bg-primary text-white",
-  Üniversite: "bg-secondary text-white",
-  "Basın Açıklaması": "bg-slate-800 text-white",
-};
+function formatTrDate(dateStr: string) {
+  try {
+    const d = new Date(dateStr);
+    if (Number.isNaN(d.getTime())) return dateStr;
+    return d.toLocaleDateString("tr-TR", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+  } catch {
+    return dateStr;
+  }
+}
 
-export default function HaberlerPage() {
+function HaberlerContent() {
+  const searchParams = useSearchParams();
   const { data: news } = useNews();
   const [filter, setFilter] = useState<(typeof FILTERS)[number]>("Tümü");
   const [search, setSearch] = useState("");
-  const [selectedNews, setSelectedNews] = useState<NewsItem | null>(null);
+
+  useEffect(() => {
+    const catParam = searchParams.get("cat");
+    if (catParam && FILTERS.includes(catParam as (typeof FILTERS)[number])) {
+      setFilter(catParam as (typeof FILTERS)[number]);
+    }
+  }, [searchParams]);
 
   const filtered = news.filter((n) => {
     const matchesCat = filter === "Tümü" || n.category === filter;
@@ -42,175 +69,235 @@ export default function HaberlerPage() {
     return matchesCat && matchesSearch;
   });
 
+  const showHeroBento = filtered.length >= 3 && search.trim() === "";
+  const heroMain = showHeroBento ? filtered[0] : null;
+  const heroSide = showHeroBento ? filtered.slice(1, 3) : [];
+  const gridItems = showHeroBento ? filtered.slice(3) : filtered;
+
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col">
-      <Header />
-
-      <main className="flex-1">
-        <section className="bg-gradient-to-r from-slate-950 via-primary-dark to-slate-900 text-white py-16 sm:py-20 border-b border-blue-900/30">
-          <div className="container-x">
-            <div className="flex items-center gap-2 mb-3 text-xs font-bold text-blue-300 uppercase tracking-widest">
-              <Link href="/" className="hover:underline flex items-center gap-1">
-                <ArrowLeft size={14} /> Ana Sayfa
-              </Link>
-              <span>/</span>
-              <span>Haberler & Basın</span>
-            </div>
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold font-heading">
-              Haberler & Basın Açıklamaları
-            </h1>
-            <p className="mt-3 text-sm sm:text-base text-slate-300 max-w-2xl">
-              Milli Gençlik Derneği Genel Merkezimiz, il teşkilatlarımız ve üniversite birimlerimizin tüm haberleri, basın duyuruları ve bültenleri.
-            </p>
-          </div>
-        </section>
-
-        <section className="py-12">
-          <div className="container-x">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10 pb-6 border-b border-slate-200">
-              <div className="flex flex-wrap items-center gap-2">
-                {FILTERS.map((f) => (
-                  <button
-                    key={f}
-                    type="button"
-                    onClick={() => setFilter(f)}
-                    className={`rounded-full px-4 py-2 text-xs sm:text-sm font-bold transition ${
-                      filter === f
-                        ? "bg-primary text-white shadow-md shadow-primary/20"
-                        : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-100"
-                    }`}
-                  >
-                    {f}
-                  </button>
-                ))}
+    <main className="flex-1 bg-white">
+      {/* Üst Başlık ve Hızlı Alt Bölümler */}
+      <section className="pt-10 pb-6 border-b border-slate-100 bg-gradient-to-b from-slate-50/80 to-white">
+        <div className="container-x">
+          <ScrollReveal y={18} duration={650}>
+            <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
+              <div>
+                <div className="flex items-center gap-3">
+                  <span className="h-8 w-1.5 rounded-full bg-primary" />
+                  <h1 className="font-display text-3xl sm:text-4xl font-extrabold tracking-tight text-ink">
+                    Gündem ve Haberler
+                  </h1>
+                </div>
+                <p className="mt-2.5 text-sm text-slate-600 max-w-2xl">
+                  Milli Gençlik Derneği genel merkez haberleri, burs duyuruları, teşkilat faaliyetleri, basın bildirileri ve yayınlar.
+                </p>
               </div>
 
-              <div className="relative w-full md:w-72">
-                <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+              {/* Arama Kutusu */}
+              <div className="relative w-full lg:w-80">
+                <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
                 <input
                   type="text"
                   placeholder="Haber veya duyuru ara..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="w-full rounded-full border border-slate-300 bg-white py-2 pl-10 pr-4 text-xs sm:text-sm focus:border-secondary focus:outline-none"
+                  className="w-full rounded-xl border border-slate-200 bg-white py-2.5 pl-11 pr-4 text-sm text-ink shadow-xs focus:border-primary focus:outline-none transition"
                 />
               </div>
             </div>
 
-            {filtered.length === 0 ? (
-              <div className="text-center py-20 bg-white rounded-2xl border border-slate-200">
-                <Newspaper size={40} className="mx-auto text-slate-300 mb-3" />
-                <h3 className="text-base font-bold text-slate-700">Haber Bulunamadı</h3>
-                <p className="text-xs text-slate-500 mt-1">
-                  Arama kriterlerinize uygun bir haber veya basın açıklaması yer almıyor.
-                </p>
-              </div>
-            ) : (
-              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                {filtered.map((n) => (
-                  <article
-                    key={n.id}
-                    onClick={() => setSelectedNews(n)}
-                    className="group flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:shadow-xl hover:border-blue-400/60 cursor-pointer"
-                  >
-                    <div className="h-44 bg-gradient-to-br from-primary-dark via-primary to-secondary relative flex items-end p-5">
-                      <span className={`rounded-full px-3 py-1 text-xs font-semibold shadow-md ${BADGE[n.category]}`}>
-                        {n.category}
-                      </span>
-                    </div>
-                    <div className="flex flex-1 flex-col p-6">
-                      <h3 className="text-base sm:text-lg font-bold text-slate-900 leading-snug group-hover:text-primary transition-colors">
-                        {n.title}
-                      </h3>
-                      <p className="mt-2.5 flex-1 text-xs sm:text-sm text-slate-600 line-clamp-3 leading-relaxed">
-                        {n.summary}
-                      </p>
-                      <div className="mt-5 pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
-                        <span className="flex items-center gap-1.5 font-medium">
-                          <CalendarDays size={14} className="text-primary" />
-                          {new Date(n.date).toLocaleDateString("tr-TR", {
-                            day: "numeric",
-                            month: "long",
-                            year: "numeric",
-                          })}
-                        </span>
-                        <span className="font-bold text-primary group-hover:underline">
-                          Detayları Oku →
+            {/* Haberler Altındaki Hızlı Bağlantı Kartları */}
+            <div className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <Link
+                href="/faaliyetler"
+                className="group flex items-center justify-between rounded-xl border border-slate-200/80 bg-white px-4 py-3 hover:border-primary/40 hover:bg-blue-50/40 transition"
+              >
+                <span className="flex items-center gap-2.5 text-xs sm:text-sm font-bold text-ink group-hover:text-primary">
+                  <Users size={16} className="text-secondary" /> Teşkilat Faaliyetleri
+                </span>
+                <ChevronRight size={15} className="text-slate-400 group-hover:text-primary group-hover:translate-x-0.5 transition" />
+              </Link>
+              <Link
+                href="/raporlar"
+                className="group flex items-center justify-between rounded-xl border border-slate-200/80 bg-white px-4 py-3 hover:border-primary/40 hover:bg-blue-50/40 transition"
+              >
+                <span className="flex items-center gap-2.5 text-xs sm:text-sm font-bold text-ink group-hover:text-primary">
+                  <FileText size={16} className="text-secondary" /> Basın Bildirileri &amp; Raporlar
+                </span>
+                <ChevronRight size={15} className="text-slate-400 group-hover:text-primary group-hover:translate-x-0.5 transition" />
+              </Link>
+              <Link
+                href="/yayinlar"
+                className="group flex items-center justify-between rounded-xl border border-slate-200/80 bg-white px-4 py-3 hover:border-primary/40 hover:bg-blue-50/40 transition"
+              >
+                <span className="flex items-center gap-2.5 text-xs sm:text-sm font-bold text-ink group-hover:text-primary">
+                  <BookOpen size={16} className="text-secondary" /> Yayınlar &amp; E-Kütüphane
+                </span>
+                <ChevronRight size={15} className="text-slate-400 group-hover:text-primary group-hover:translate-x-0.5 transition" />
+              </Link>
+            </div>
+
+            {/* Kategori Filtre Hapları */}
+            <div className="mt-6 flex flex-wrap items-center gap-2">
+              {FILTERS.map((f) => (
+                <button
+                  key={f}
+                  type="button"
+                  onClick={() => setFilter(f)}
+                  className={`rounded-full px-4 py-2 text-xs font-bold transition-all ${
+                    filter === f
+                      ? "bg-primary text-white shadow-md shadow-primary/20"
+                      : "bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-ink"
+                  }`}
+                >
+                  {f}
+                </button>
+              ))}
+            </div>
+          </ScrollReveal>
+        </div>
+      </section>
+
+      {/* İçerik Alanı */}
+      <section className="py-10 sm:py-12">
+        <div className="container-x space-y-12">
+          {filtered.length === 0 ? (
+            <div className="text-center py-20 bg-slate-50 rounded-3xl border border-slate-200">
+              <Newspaper size={42} className="mx-auto text-slate-300 mb-3" />
+              <h3 className="text-base font-bold text-slate-700">Haber Bulunamadı</h3>
+              <p className="text-xs text-slate-500 mt-1">
+                Seçili kategori veya arama kriterlerine uygun bir haber bulunmuyor.
+              </p>
+            </div>
+          ) : (
+            <>
+              {/* Saadet Partisi Tarzı Asimetrik Manşet Bento Vitrini */}
+              {showHeroBento && heroMain && (
+                <ScrollReveal y={26} duration={750}>
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+                    {/* Sol Büyük Manşet Kartı (8 sütun) */}
+                    <Link
+                      href={`/haberler/${slugify(heroMain.title) || heroMain.id}`}
+                      className="lg:col-span-8 group relative block min-h-[360px] sm:min-h-[450px] overflow-hidden rounded-3xl bg-primary-dark shadow-lg"
+                    >
+                      <Image
+                        src={heroMain.image || "/images/mgd/haydi-milli-genclik.jpg"}
+                        alt={heroMain.title}
+                        fill
+                        sizes="(max-width: 1024px) 100vw, 66vw"
+                        className="object-cover transition-transform duration-700 group-hover:scale-105"
+                        priority
+                        unoptimized
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-transparent" />
+                      <div className="absolute top-5 left-5">
+                        <span className="rounded-full bg-primary/90 backdrop-blur-sm px-3.5 py-1 text-[11px] font-bold text-white shadow">
+                          {heroMain.category}
                         </span>
                       </div>
+                      <div className="absolute bottom-0 inset-x-0 p-6 sm:p-9">
+                        <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white leading-tight drop-shadow-sm">
+                          {heroMain.title}
+                        </h2>
+                        <div className="mt-5 inline-flex items-center gap-1.5 rounded-full bg-white px-5 py-2.5 text-xs sm:text-sm font-extrabold text-primary shadow-md transition-all group-hover:bg-blue-50 group-hover:gap-2.5">
+                          <span>Devamını Oku</span>
+                          <ChevronRight size={15} />
+                        </div>
+                      </div>
+                    </Link>
+
+                    {/* Sağ Üst Üste 2 Öne Çıkan Kart (4 sütun) */}
+                    <div className="lg:col-span-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-5">
+                      {heroSide.map((item) => (
+                        <Link
+                          key={item.id}
+                          href={`/haberler/${slugify(item.title) || item.id}`}
+                          className="group relative block min-h-[212px] overflow-hidden rounded-3xl bg-primary-dark shadow-md"
+                        >
+                          <Image
+                            src={item.image || "/images/mgd/nicin-milli-genclik.jpg"}
+                            alt={item.title}
+                            fill
+                            sizes="(max-width: 1024px) 50vw, 33vw"
+                            className="object-cover transition-transform duration-700 group-hover:scale-105"
+                            unoptimized
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
+                          <div className="absolute bottom-0 inset-x-0 p-5">
+                            <span className="text-[10px] font-bold uppercase tracking-wider text-blue-200 block mb-1">
+                              {item.category}
+                            </span>
+                            <h3 className="font-display text-base sm:text-lg font-extrabold text-white leading-snug line-clamp-2 group-hover:text-blue-200 transition-colors">
+                              {item.title}
+                            </h3>
+                          </div>
+                        </Link>
+                      ))}
                     </div>
-                  </article>
-                ))}
-              </div>
-            )}
-          </div>
-        </section>
-      </main>
+                  </div>
+                </ScrollReveal>
+              )}
 
-      {selectedNews && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm animate-in fade-in duration-200"
-          onClick={() => setSelectedNews(null)}
-        >
-          <div
-            className="relative w-full max-w-2xl rounded-2xl bg-white p-6 sm:p-8 shadow-2xl animate-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              type="button"
-              aria-label="Kapat"
-              onClick={() => setSelectedNews(null)}
-              className="absolute right-4 top-4 rounded-full p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition"
-            >
-              <X size={20} />
-            </button>
+              {/* Alt 3 Sütunlu Temiz Haber Izgarası */}
+              {gridItems.length > 0 && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7">
+                  {gridItems.map((n, idx) => (
+                    <ScrollReveal key={n.id} delay={(idx % 3) * 70} y={24} duration={700}>
+                      <Link
+                        href={`/haberler/${slugify(n.title) || n.id}`}
+                        className="group flex h-full flex-col overflow-hidden rounded-2xl bg-white transition-all duration-300 hover:-translate-y-1"
+                      >
+                        <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl bg-slate-100 shadow-sm">
+                          <Image
+                            src={n.image || "/images/mgd/11102025-il-baskanlari-toplantisi.jpg"}
+                            alt={n.title}
+                            fill
+                            sizes="(max-width: 768px) 100vw, 33vw"
+                            className="object-cover transition-transform duration-500 group-hover:scale-105"
+                            unoptimized
+                          />
+                          <span className="absolute top-3 left-3 rounded-full bg-primary/90 backdrop-blur-sm px-3 py-1 text-[10.5px] font-bold text-white shadow">
+                            {n.category}
+                          </span>
+                        </div>
 
-            <span className={`rounded-full px-3 py-1 text-xs font-semibold ${BADGE[selectedNews.category]}`}>
-              {selectedNews.category}
-            </span>
-
-            <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 mt-4 leading-snug">
-              {selectedNews.title}
-            </h2>
-
-            <div className="flex items-center gap-2 text-xs text-slate-400 mt-2 mb-6 pb-4 border-b border-slate-100">
-              <CalendarDays size={14} />
-              <span>
-                {new Date(selectedNews.date).toLocaleDateString("tr-TR", {
-                  day: "numeric",
-                  month: "long",
-                  year: "numeric",
-                })}
-              </span>
-              <span>•</span>
-              <span>Milli Gençlik Derneği Genel Merkezi</span>
-            </div>
-
-            <div className="prose prose-sm sm:prose-base max-w-none text-slate-700 leading-relaxed space-y-4">
-              <p className="font-semibold text-slate-800 text-sm sm:text-base">
-                {selectedNews.summary}
-              </p>
-              <p>
-                Milli Gençlik Derneği olarak milletimizin birlik ve beraberliği, gençlerimizin milli ve manevi değerlerle donanması yolunda çalışmalarımızı kararlılıkla sürdürüyoruz. Genel Merkezimiz koordinasyonunda Türkiye&apos;nin dört bir yanında gençlerimize yönelik ahlak, ilim, sanat ve teknoloji faaliyetlerimiz kesintisiz devam etmektedir.
-              </p>
-              <p>Kamuoyuna saygıyla duyurulur.</p>
-            </div>
-
-            <div className="mt-8 pt-4 border-t border-slate-100 flex justify-end">
-              <button
-                type="button"
-                onClick={() => setSelectedNews(null)}
-                className="rounded-xl bg-slate-900 px-6 py-2.5 text-xs font-bold text-white hover:bg-slate-800 transition"
-              >
-                Kapat
-              </button>
-            </div>
-          </div>
+                        <div className="flex flex-1 flex-col pt-4 px-1">
+                          <h3 className="font-display text-base sm:text-lg font-extrabold text-ink leading-snug line-clamp-2 group-hover:text-primary transition-colors">
+                            {n.title}
+                          </h3>
+                          <p className="mt-2 flex-1 text-xs sm:text-sm text-slate-600 line-clamp-2 leading-relaxed">
+                            {n.summary}
+                          </p>
+                          <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+                            <span className="flex items-center gap-1.5 text-slate-400 font-medium">
+                              <CalendarDays size={13} />
+                              {formatTrDate(n.date)}
+                            </span>
+                            <span className="inline-flex items-center gap-1 font-extrabold text-primary group-hover:text-secondary transition-colors">
+                              Haberin Devamı <ArrowRight size={13} className="transition-transform group-hover:translate-x-0.5" />
+                            </span>
+                          </div>
+                        </div>
+                      </Link>
+                    </ScrollReveal>
+                  ))}
+                </div>
+              )}
+            </>
+          )}
         </div>
-      )}
+      </section>
+    </main>
+  );
+}
 
+export default function HaberlerPage() {
+  return (
+    <div className="min-h-screen bg-white flex flex-col">
+      <Header />
+      <Suspense fallback={<div className="flex-1 bg-white py-24 text-center text-sm text-slate-400">Yükleniyor...</div>}>
+        <HaberlerContent />
+      </Suspense>
       <Footer />
     </div>
   );

@@ -5,6 +5,7 @@ import { can } from "@/lib/permissions";
 import { COLLECTIONS } from "@/lib/firebase";
 import { getAdminDb } from "@/lib/firebase-admin";
 import {
+  parseArchiveItem,
   parseIbanList,
   parseLeader,
   parseNews,
@@ -22,6 +23,7 @@ const SECTIONS: readonly AdminSection[] = [
   "slides",
   "media",
   "news",
+  "archive",
   "provinces",
   "board",
   "iban",
@@ -154,6 +156,14 @@ export async function PUT(req: Request, { params }: { params: { section: string 
       return NextResponse.json({ ok: true, id: ref.id });
     }
 
+    case "archive": {
+      const item = parseArchiveItem(body);
+      if (!item) return bad;
+      const ref = item.id ? db.collection(COLLECTIONS.archive).doc(item.id) : db.collection(COLLECTIONS.archive).doc();
+      await ref.set({ ...item, id: ref.id });
+      return NextResponse.json({ ok: true, id: ref.id });
+    }
+
     case "pioneers": {
       const b = body as { list?: unknown } | unknown[] | null;
       const rawList = Array.isArray(b) ? b : b?.list;
@@ -168,13 +178,14 @@ export async function PUT(req: Request, { params }: { params: { section: string 
 export async function DELETE(req: Request, { params }: { params: { section: string } }) {
   const g = await guard(params.section);
   if ("error" in g) return g.error;
-  const allowed = ["news", "publications", "applications", "board", "videos"];
+  const allowed = ["news", "archive", "publications", "applications", "board", "videos"];
   if (!allowed.includes(g.section)) return fail("Silme bu bölümde desteklenmiyor.", 405);
   const id = new URL(req.url).searchParams.get("id");
   if (!id) return fail("id gerekli.", 400);
 
   const colMap: Record<string, string> = {
     news: COLLECTIONS.news,
+    archive: COLLECTIONS.archive,
     publications: COLLECTIONS.publications,
     applications: COLLECTIONS.applications,
     board: COLLECTIONS.board,

@@ -2,17 +2,23 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   BookOpen,
   Calendar,
   ChevronDown,
+  ExternalLink,
   FileText,
+  FolderArchive,
   Handshake,
   Landmark,
+  LogIn,
   Menu,
   Newspaper,
   Search,
   ShieldCheck,
+  Sparkles,
+  Tv,
   User,
   Users,
   Video,
@@ -21,10 +27,13 @@ import {
 import Logo from "@/components/layout/Logo";
 import { useDonate } from "@/components/donate/DonateProvider";
 import { useVolunteer } from "@/components/volunteer/VolunteerProvider";
+import { useOncuSahsiyetler, usePresident, useSiteSettings } from "@/hooks/useSiteData";
+import { slugify } from "@/lib/slug";
 import FlipbookModal from "@/components/corporate/FlipbookModal";
 import SearchModal from "@/components/modals/SearchModal";
 
 export default function Header() {
+  const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [activeCorporateDoc, setActiveCorporateDoc] = useState<string | null>(null);
@@ -33,9 +42,22 @@ export default function Header() {
 
   const { openDonate } = useDonate();
   const { openVolunteer } = useVolunteer();
+  const { data: settings } = useSiteSettings();
+  const { data: pioneers } = useOncuSahsiyetler();
+  const { data: president } = usePresident();
+  const presidentHref = `/baskanlik-divani/${slugify(president?.name || "ahmet-ozvatan")}`;
+
+  const contact = settings.contact || {
+    phone: "0 (312) 472 54 54",
+    email: "iletisim@milligenclik.org.tr",
+    address: "Genel Merkez: Ankara",
+    xUrl: "https://x.com/milligenclikmgd",
+    instagramUrl: "https://www.instagram.com/milligenclikmgd/",
+    youtubeUrl: "https://www.youtube.com/@milligenclikmgd",
+  };
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 10);
+    const onScroll = () => setScrolled(window.scrollY > 12);
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
@@ -47,24 +69,100 @@ export default function Header() {
     };
   }, [mobileMenuOpen]);
 
+  const isActive = (href: string) => {
+    if (href === "/") return pathname === "/";
+    return pathname === href || pathname.startsWith(`${href}/`);
+  };
+
+  const navBtnClass = (active: boolean) =>
+    `relative flex items-center gap-1 whitespace-nowrap rounded-lg px-2 py-2 text-[13px] font-bold transition-all ${
+      active
+        ? "bg-white/15 text-white"
+        : "text-white hover:bg-white/15 hover:text-white"
+    }`;
+
   return (
     <>
+      {/* Üst Kurumsal Bilgi & Sosyal Medya Barı (Bizi Takip Et!) */}
+      <div className="bg-[#0B1E42] text-white/85 border-b border-white/10">
+        <div className="mx-auto w-full max-w-[1380px] px-4 sm:px-6 flex h-10 items-center justify-between gap-3 text-[11.5px]">
+          <div className="hidden md:flex items-center gap-4">
+            <Link
+              href="/etkinlikler"
+              className="inline-flex items-center gap-1.5 text-white/90 hover:text-white font-semibold transition-colors"
+            >
+              <Calendar size={13} className="text-blue-300" />
+              <span>Program Takvimi</span>
+            </Link>
+          </div>
+
+          <div className="flex items-center justify-between md:justify-end gap-3 w-full md:w-auto">
+            <span className="md:hidden text-[11px] font-semibold text-blue-200 truncate">
+              Milli Gençlik Derneği
+            </span>
+            <div className="flex items-center gap-2">
+              <span className="text-[11px] font-bold tracking-wide text-blue-200/95">
+                Bizi Takip Et!
+              </span>
+              <div className="flex items-center gap-1.5">
+                <a
+                  href={contact.xUrl || "https://x.com/milligenclikmgd"}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label="X (Twitter)"
+                  className="flex h-6 w-6 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white hover:text-primary transition-all"
+                >
+                  <svg className="h-3 w-3 fill-current" viewBox="0 0 24 24">
+                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                  </svg>
+                </a>
+                <a
+                  href={contact.instagramUrl || "https://www.instagram.com/milligenclikmgd/"}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label="Instagram"
+                  className="flex h-6 w-6 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white hover:text-primary transition-all"
+                >
+                  <svg className="h-3 w-3 fill-current" viewBox="0 0 24 24">
+                    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+                  </svg>
+                </a>
+                <a
+                  href={contact.youtubeUrl || "https://www.youtube.com/@milligenclikmgd"}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label="YouTube"
+                  className="flex h-6 w-6 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white hover:text-primary transition-all"
+                >
+                  <svg className="h-3 w-3 fill-current" viewBox="0 0 24 24">
+                    <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+                  </svg>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Ana Premium Header — Yüksek Kontrastlı Koyu Lacivert Zemin */}
       <header
-        className={`sticky top-0 z-40 bg-primary text-white transition-shadow duration-200 ${
-          scrolled ? "shadow-lg shadow-primary-dark/25" : "border-b border-white/10"
-        }`}
+        className={`sticky top-0 z-40 transition-all duration-300 ${
+          scrolled
+            ? "bg-[#0D2554]/95 backdrop-blur-xl shadow-[0_12px_36px_-10px_rgba(6,16,38,0.55)] border-b border-white/15"
+            : "bg-[#0F2B63] border-b border-white/15"
+        } text-white`}
       >
-        <div className="container-x flex h-[76px] items-center justify-between gap-4">
+        <div className="mx-auto w-full max-w-[1380px] px-4 sm:px-6 flex h-[72px] items-center justify-between gap-2">
           {/* Sol: Logo + Ayırıcı + Menü */}
-          <div className="flex items-center gap-6 xl:gap-8">
+          <div className="flex items-center gap-3 xl:gap-4 min-w-0">
             <Link href="/" aria-label="MGD Ana Sayfa" className="shrink-0">
               <Logo light />
             </Link>
 
-            <span className="hidden lg:block h-7 w-px bg-white/15" />
+            <span className="hidden xl:block h-6 w-px bg-white/15 shrink-0" />
 
             {/* Masaüstü Navigasyon */}
-            <nav className="hidden lg:flex items-center gap-5 xl:gap-7" aria-label="Ana menü">
+            <nav className="hidden lg:flex items-center gap-0.5 xl:gap-1.5" aria-label="Ana menü">
               {/* KURUMSAL */}
               <div
                 className="relative"
@@ -74,23 +172,28 @@ export default function Header() {
                 <button
                   type="button"
                   onClick={() => setActiveDropdown(activeDropdown === "kurumsal" ? null : "kurumsal")}
-                  className="flex items-center gap-1.5 text-[14px] font-semibold text-white/95 hover:text-white py-2 transition-colors"
+                  className={navBtnClass(isActive("/kurumsal") || isActive("/protokollerimiz"))}
                 >
                   <span>Kurumsal</span>
-                  <ChevronDown size={14} className="text-white/70" />
+                  <ChevronDown
+                    size={13}
+                    className={`text-white/70 transition-transform duration-200 ${
+                      activeDropdown === "kurumsal" ? "rotate-180 text-white" : ""
+                    }`}
+                  />
                 </button>
                 {activeDropdown === "kurumsal" && (
-                  <div className="absolute left-0 top-full pt-2 z-50">
-                    <div className="w-60 rounded-xl border border-slate-200 bg-white p-2 shadow-xl text-ink">
+                  <div className="absolute left-0 top-full pt-2.5 z-50 animate-dropdown">
+                    <div className="w-64 rounded-2xl border border-slate-200/90 bg-white p-2 shadow-[0_20px_50px_-12px_rgba(15,30,60,0.28)] text-ink">
                       <button
                         type="button"
                         onClick={() => {
                           setActiveCorporateDoc("hakkimizda");
                           setActiveDropdown(null);
                         }}
-                        className="w-full text-left rounded-lg px-3 py-2.5 text-xs font-semibold text-slate-700 hover:bg-surface hover:text-primary flex items-center gap-2.5 transition"
+                        className="w-full text-left rounded-xl px-3.5 py-2.5 text-xs font-semibold text-slate-700 hover:bg-blue-50/80 hover:text-primary flex items-center gap-2.5 transition"
                       >
-                        <FileText size={14} className="text-secondary" /> Hakkımızda
+                        <FileText size={14} className="text-secondary shrink-0" /> Hakkımızda
                       </button>
                       <button
                         type="button"
@@ -98,29 +201,26 @@ export default function Header() {
                           setActiveCorporateDoc("tuzuk");
                           setActiveDropdown(null);
                         }}
-                        className="w-full text-left rounded-lg px-3 py-2.5 text-xs font-semibold text-slate-700 hover:bg-surface hover:text-primary flex items-center gap-2.5 transition"
+                        className="w-full text-left rounded-xl px-3.5 py-2.5 text-xs font-semibold text-slate-700 hover:bg-blue-50/80 hover:text-primary flex items-center gap-2.5 transition"
                       >
-                        <BookOpen size={14} className="text-secondary" /> Dernek Tüzüğü
+                        <BookOpen size={14} className="text-secondary shrink-0" /> Dernek Tüzüğü
                       </button>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setActiveCorporateDoc("protokoller");
-                          setActiveDropdown(null);
-                        }}
-                        className="w-full text-left rounded-lg px-3 py-2.5 text-xs font-semibold text-slate-700 hover:bg-surface hover:text-primary flex items-center gap-2.5 transition"
+                      <Link
+                        href="/protokollerimiz"
+                        onClick={() => setActiveDropdown(null)}
+                        className="w-full text-left rounded-xl px-3.5 py-2.5 text-xs font-semibold text-slate-700 hover:bg-blue-50/80 hover:text-primary flex items-center gap-2.5 transition"
                       >
-                        <Handshake size={14} className="text-secondary" /> Protokollerimiz
-                      </button>
+                        <Handshake size={14} className="text-secondary shrink-0" /> Protokollerimiz
+                      </Link>
                       <button
                         type="button"
                         onClick={() => {
                           setActiveCorporateDoc("kurumsalKimlik");
                           setActiveDropdown(null);
                         }}
-                        className="w-full text-left rounded-lg px-3 py-2.5 text-xs font-semibold text-slate-700 hover:bg-surface hover:text-primary flex items-center gap-2.5 transition"
+                        className="w-full text-left rounded-xl px-3.5 py-2.5 text-xs font-semibold text-slate-700 hover:bg-blue-50/80 hover:text-primary flex items-center gap-2.5 transition"
                       >
-                        <ShieldCheck size={14} className="text-secondary" /> Kurumsal Kimlik
+                        <ShieldCheck size={14} className="text-secondary shrink-0" /> Kurumsal Kimlik
                       </button>
                       <button
                         type="button"
@@ -128,16 +228,16 @@ export default function Header() {
                           openDonate();
                           setActiveDropdown(null);
                         }}
-                        className="w-full text-left rounded-lg px-3 py-2.5 text-xs font-semibold text-slate-700 hover:bg-surface hover:text-primary flex items-center gap-2.5 transition"
+                        className="w-full text-left rounded-xl px-3.5 py-2.5 text-xs font-semibold text-slate-700 hover:bg-blue-50/80 hover:text-primary flex items-center gap-2.5 transition"
                       >
-                        <Landmark size={14} className="text-secondary" /> Banka Hesapları (İBAN)
+                        <Landmark size={14} className="text-secondary shrink-0" /> Banka Hesapları (İBAN)
                       </button>
                       <Link
                         href="/kurumsal"
                         onClick={() => setActiveDropdown(null)}
-                        className="mt-1 pt-2.5 border-t border-slate-100 w-full rounded-lg px-3 py-2 text-xs font-bold text-primary hover:bg-surface flex items-center justify-between"
+                        className="mt-1 pt-2.5 border-t border-slate-100 w-full rounded-xl px-3.5 py-2 text-xs font-bold text-primary hover:bg-blue-50 flex items-center justify-between"
                       >
-                        <span>Tüm Kurumsal Sayfası</span>
+                        <span>Kurumsal Belgeler</span>
                         <span>→</span>
                       </Link>
                     </div>
@@ -154,41 +254,46 @@ export default function Header() {
                 <button
                   type="button"
                   onClick={() => setActiveDropdown(activeDropdown === "yonetim" ? null : "yonetim")}
-                  className="flex items-center gap-1.5 text-[14px] font-semibold text-white/95 hover:text-white py-2 transition-colors"
+                  className={navBtnClass(isActive("/genel-baskan") || isActive("/baskanlik-divani"))}
                 >
                   <span>Yönetim</span>
-                  <ChevronDown size={14} className="text-white/70" />
+                  <ChevronDown
+                    size={13}
+                    className={`text-white/70 transition-transform duration-200 ${
+                      activeDropdown === "yonetim" ? "rotate-180 text-white" : ""
+                    }`}
+                  />
                 </button>
                 {activeDropdown === "yonetim" && (
-                  <div className="absolute left-0 top-full pt-2 z-50">
-                    <div className="w-56 rounded-xl border border-slate-200 bg-white p-2 shadow-xl text-ink">
+                  <div className="absolute left-0 top-full pt-2.5 z-50 animate-dropdown">
+                    <div className="w-60 rounded-2xl border border-slate-200/90 bg-white p-2 shadow-[0_20px_50px_-12px_rgba(15,30,60,0.28)] text-ink">
                       <Link
-                        href="/kurumsal"
+                        href={presidentHref}
                         onClick={() => setActiveDropdown(null)}
-                        className="flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-xs font-semibold text-slate-700 hover:bg-surface hover:text-primary transition"
+                        className="flex items-center gap-2.5 rounded-xl px-3.5 py-2.5 text-xs font-semibold text-slate-700 hover:bg-blue-50/80 hover:text-primary transition"
                       >
-                        <User size={14} className="text-secondary" /> Genel Başkanımız
+                        <User size={14} className="text-secondary shrink-0" /> Genel Başkanımız
                       </Link>
                       <Link
-                        href="/kurumsal"
+                        href="/baskanlik-divani"
                         onClick={() => setActiveDropdown(null)}
-                        className="flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-xs font-semibold text-slate-700 hover:bg-surface hover:text-primary transition"
+                        className="flex items-center gap-2.5 rounded-xl px-3.5 py-2.5 text-xs font-semibold text-slate-700 hover:bg-blue-50/80 hover:text-primary transition"
                       >
-                        <Users size={14} className="text-secondary" /> Başkanlık Divanı
+                        <Users size={14} className="text-secondary shrink-0" /> Başkanlık Divanı
                       </Link>
                       <Link
                         href="/#teskilat"
                         onClick={() => setActiveDropdown(null)}
-                        className="flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-xs font-semibold text-slate-700 hover:bg-surface hover:text-primary transition"
+                        className="flex items-center gap-2.5 rounded-xl px-3.5 py-2.5 text-xs font-semibold text-slate-700 hover:bg-blue-50/80 hover:text-primary transition"
                       >
-                        <Landmark size={14} className="text-secondary" /> 81 İl Teşkilatı
+                        <Landmark size={14} className="text-secondary shrink-0" /> 81 İl Teşkilatı
                       </Link>
                     </div>
                   </div>
                 )}
               </div>
 
-              {/* ÖNCÜ ŞAHSİYETLER (Videoların olduğu üst konuma taşındı) */}
+              {/* ÖNCÜ ŞAHSİYETLER */}
               <div
                 className="relative"
                 onMouseEnter={() => setActiveDropdown("oncu")}
@@ -197,34 +302,121 @@ export default function Header() {
                 <button
                   type="button"
                   onClick={() => setActiveDropdown(activeDropdown === "oncu" ? null : "oncu")}
-                  className="flex items-center gap-1.5 text-[14px] font-semibold text-white/95 hover:text-white py-2 transition-colors"
+                  className={navBtnClass(isActive("/oncu-sahsiyetler"))}
                 >
                   <span>Öncü Şahsiyetler</span>
-                  <ChevronDown size={14} className="text-white/70" />
+                  <ChevronDown
+                    size={13}
+                    className={`text-white/70 transition-transform duration-200 ${
+                      activeDropdown === "oncu" ? "rotate-180 text-white" : ""
+                    }`}
+                  />
                 </button>
                 {activeDropdown === "oncu" && (
-                  <div className="absolute left-0 top-full pt-2 z-50">
-                    <div className="w-60 rounded-xl border border-slate-200 bg-white p-2 shadow-xl text-ink">
+                  <div className="absolute left-0 top-full pt-2.5 z-50 animate-dropdown">
+                    <div className="w-64 rounded-2xl border border-slate-200/90 bg-white p-2 shadow-[0_20px_50px_-12px_rgba(15,30,60,0.28)] text-ink">
+                      {pioneers.slice(0, 5).map((p) => (
+                        <Link
+                          key={p.id}
+                          href={`/oncu-sahsiyetler/${p.id}`}
+                          onClick={() => setActiveDropdown(null)}
+                          className="flex items-center gap-2.5 rounded-xl px-3.5 py-2.5 text-xs font-semibold text-slate-700 hover:bg-blue-50/80 hover:text-primary transition"
+                        >
+                          <Sparkles size={13} className="text-secondary shrink-0" />
+                          <span className="truncate">{p.name}</span>
+                        </Link>
+                      ))}
                       <Link
                         href="/oncu-sahsiyetler"
                         onClick={() => setActiveDropdown(null)}
-                        className="block rounded-lg px-3 py-2.5 text-xs font-semibold text-slate-700 hover:bg-surface hover:text-primary transition"
+                        className="mt-1 pt-2.5 border-t border-slate-100 w-full rounded-xl px-3.5 py-2 text-xs font-bold text-primary hover:bg-blue-50 flex items-center justify-between"
                       >
-                        Prof. Dr. Necmettin Erbakan
-                      </Link>
-                      <Link
-                        href="/oncu-sahsiyetler"
-                        onClick={() => setActiveDropdown(null)}
-                        className="block rounded-lg px-3 py-2.5 text-xs font-semibold text-slate-700 hover:bg-surface hover:text-primary transition"
-                      >
-                        Tüm Öncü Şahsiyetler
+                        <span>Tüm Öncü Şahsiyetler</span>
+                        <span>→</span>
                       </Link>
                     </div>
                   </div>
                 )}
               </div>
 
-              {/* MEDYA VE YAYINLAR (Videolar bu menünün altına alındı) */}
+              {/* HABERLER (Öncü Şahsiyetler ile Medya arasında!) */}
+              <div
+                className="relative"
+                onMouseEnter={() => setActiveDropdown("haberler")}
+                onMouseLeave={() => setActiveDropdown(null)}
+              >
+                <Link
+                  href="/haberler"
+                  className={navBtnClass(
+                    isActive("/haberler") ||
+                      isActive("/faaliyetler") ||
+                      isActive("/raporlar") ||
+                      isActive("/yayinlar"),
+                  )}
+                >
+                  <span>Haberler</span>
+                  <ChevronDown
+                    size={13}
+                    className={`text-white/70 transition-transform duration-200 ${
+                      activeDropdown === "haberler" ? "rotate-180 text-white" : ""
+                    }`}
+                  />
+                  {isActive("/haberler") && (
+                    <span className="absolute bottom-0 inset-x-0 h-0.5 rounded-full bg-white" />
+                  )}
+                </Link>
+                {activeDropdown === "haberler" && (
+                  <div className="absolute left-0 top-full pt-2.5 z-50 animate-dropdown">
+                    <div className="w-64 rounded-2xl border border-slate-200/90 bg-white p-2 shadow-[0_20px_50px_-12px_rgba(15,30,60,0.28)] text-ink">
+                      <Link
+                        href="/haberler"
+                        onClick={() => setActiveDropdown(null)}
+                        className="flex items-center gap-2.5 rounded-xl px-3.5 py-2.5 text-xs font-bold text-primary hover:bg-blue-50/80 transition"
+                      >
+                        <Newspaper size={14} className="text-secondary shrink-0" /> Tüm Gündem &amp; Haberler
+                      </Link>
+                      <Link
+                        href="/haberler?cat=Duyurular%20%26%20Burs"
+                        onClick={() => setActiveDropdown(null)}
+                        className="flex items-center gap-2.5 rounded-xl px-3.5 py-2.5 text-xs font-semibold text-slate-700 hover:bg-blue-50/80 hover:text-primary transition"
+                      >
+                        <Sparkles size={14} className="text-secondary shrink-0" /> Haberler &amp; Burs Duyuruları
+                      </Link>
+                      <Link
+                        href="/faaliyetler"
+                        onClick={() => setActiveDropdown(null)}
+                        className="flex items-center gap-2.5 rounded-xl px-3.5 py-2.5 text-xs font-semibold text-slate-700 hover:bg-blue-50/80 hover:text-primary transition"
+                      >
+                        <Users size={14} className="text-secondary shrink-0" /> Teşkilat Faaliyetleri
+                      </Link>
+                      <Link
+                        href="/raporlar"
+                        onClick={() => setActiveDropdown(null)}
+                        className="flex items-center gap-2.5 rounded-xl px-3.5 py-2.5 text-xs font-semibold text-slate-700 hover:bg-blue-50/80 hover:text-primary transition"
+                      >
+                        <FileText size={14} className="text-secondary shrink-0" /> Basın Bildirileri &amp; Raporlar
+                      </Link>
+                      <Link
+                        href="/yayinlar"
+                        onClick={() => setActiveDropdown(null)}
+                        className="flex items-center gap-2.5 rounded-xl px-3.5 py-2.5 text-xs font-semibold text-slate-700 hover:bg-blue-50/80 hover:text-primary transition"
+                      >
+                        <BookOpen size={14} className="text-secondary shrink-0" /> Yayınlar &amp; E-Kütüphane
+                      </Link>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* DOSYA ARŞİVİ */}
+              <Link href="/dosya-arsivi" className={navBtnClass(isActive("/dosya-arsivi"))}>
+                <span>Dosya Arşivi</span>
+                {isActive("/dosya-arsivi") && (
+                  <span className="absolute bottom-0 inset-x-0 h-0.5 rounded-full bg-white" />
+                )}
+              </Link>
+
+              {/* MEDYA */}
               <div
                 className="relative"
                 onMouseEnter={() => setActiveDropdown("medya")}
@@ -233,109 +425,86 @@ export default function Header() {
                 <button
                   type="button"
                   onClick={() => setActiveDropdown(activeDropdown === "medya" ? null : "medya")}
-                  className="flex items-center gap-1.5 text-[14px] font-semibold text-white/95 hover:text-white py-2 transition-colors"
+                  className={navBtnClass(isActive("/videolar") || isActive("/etkinlikler"))}
                 >
-                  <span>Medya ve Yayınlar</span>
-                  <ChevronDown size={14} className="text-white/70" />
+                  <span>Medya</span>
+                  <ChevronDown
+                    size={13}
+                    className={`text-white/70 transition-transform duration-200 ${
+                      activeDropdown === "medya" ? "rotate-180 text-white" : ""
+                    }`}
+                  />
                 </button>
                 {activeDropdown === "medya" && (
-                  <div className="absolute left-0 top-full pt-2 z-50">
-                    <div className="w-60 rounded-xl border border-slate-200 bg-white p-2 shadow-xl text-ink">
+                  <div className="absolute left-0 top-full pt-2.5 z-50 animate-dropdown">
+                    <div className="w-60 rounded-2xl border border-slate-200/90 bg-white p-2 shadow-[0_20px_50px_-12px_rgba(15,30,60,0.28)] text-ink">
                       <Link
                         href="/videolar"
                         onClick={() => setActiveDropdown(null)}
-                        className="flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-xs font-semibold text-slate-700 hover:bg-surface hover:text-primary transition"
+                        className="flex items-center gap-2.5 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-700 hover:bg-blue-50/80 hover:text-primary transition"
                       >
-                        <Video size={14} className="text-secondary" /> Videolar &amp; MGD TV
-                      </Link>
-                      <Link
-                        href="/yayinlar"
-                        onClick={() => setActiveDropdown(null)}
-                        className="flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-xs font-semibold text-slate-700 hover:bg-surface hover:text-primary transition"
-                      >
-                        <BookOpen size={14} className="text-secondary" /> Yayınlar &amp; E-Kütüphane
-                      </Link>
-                      <Link
-                        href="/haberler"
-                        onClick={() => setActiveDropdown(null)}
-                        className="flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-xs font-semibold text-slate-700 hover:bg-surface hover:text-primary transition"
-                      >
-                        <Newspaper size={14} className="text-secondary" /> Haberler &amp; Burs Duyuruları
-                      </Link>
-                      <Link
-                        href="/faaliyetler"
-                        onClick={() => setActiveDropdown(null)}
-                        className="flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-xs font-semibold text-slate-700 hover:bg-surface hover:text-primary transition"
-                      >
-                        <Users size={14} className="text-secondary" /> Teşkilat Faaliyetleri
+                        <Tv size={14} className="text-secondary shrink-0" /> MGD TV &amp; Video Galeri
                       </Link>
                       <Link
                         href="/etkinlikler"
                         onClick={() => setActiveDropdown(null)}
-                        className="flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-xs font-semibold text-slate-700 hover:bg-surface hover:text-primary transition"
+                        className="flex items-center gap-2.5 rounded-xl px-3.5 py-2.5 text-xs font-semibold text-slate-700 hover:bg-blue-50/80 hover:text-primary transition border-t border-slate-100 mt-1 pt-2.5"
                       >
-                        <Calendar size={14} className="text-secondary" /> Program Takvimi
+                        <Calendar size={14} className="text-secondary shrink-0" /> Program Takvimi
                       </Link>
-                      <Link
-                        href="/raporlar"
-                        onClick={() => setActiveDropdown(null)}
-                        className="flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-xs font-semibold text-slate-700 hover:bg-surface hover:text-primary transition"
-                      >
-                        <FileText size={14} className="text-secondary" /> Basın Bildirileri &amp; Raporlar
-                      </Link>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setActiveCorporateDoc("kurumsalKimlik");
-                          setActiveDropdown(null);
-                        }}
-                        className="w-full text-left flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-xs font-semibold text-slate-700 hover:bg-surface hover:text-primary transition border-t border-slate-100 mt-1 pt-2.5"
-                      >
-                        <ShieldCheck size={14} className="text-secondary" /> Kurumsal Kimlik
-                      </button>
                     </div>
                   </div>
                 )}
               </div>
 
               {/* İLETİŞİM */}
-              <Link
-                href="/#iletisim"
-                className="text-[14px] font-semibold text-white/95 hover:text-white py-2 transition-colors"
-              >
-                İletişim
+              <Link href="/iletisim" className={navBtnClass(isActive("/iletisim"))}>
+                <span>İletişim</span>
+                {isActive("/iletisim") && (
+                  <span className="absolute bottom-0 inset-x-0 h-0.5 rounded-full bg-white" />
+                )}
               </Link>
             </nav>
           </div>
 
-          {/* Sağ: Arama + Üyelik / Başvuru */}
-          <div className="flex items-center gap-2.5">
+          {/* Sağ: Arama + Üyelik / Başvuru + MİLBİS Giriş */}
+          <div className="flex items-center gap-1.5 xl:gap-2 shrink-0">
             <button
               type="button"
               onClick={() => setSearchOpen(true)}
-              className="flex h-11 w-11 items-center justify-center rounded-xl border border-white/15 bg-white/10 text-white hover:bg-white/20 transition"
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-white/20 bg-white/10 text-white hover:bg-white/20 transition"
               aria-label="Sitede Ara"
               title="Sitede Ara"
             >
-              <Search size={18} />
+              <Search size={16} />
             </button>
 
             <button
               type="button"
               onClick={openVolunteer}
-              className="hidden sm:inline-flex items-center gap-2 rounded-xl bg-white px-5 py-2.5 text-[13px] font-bold text-primary shadow-sm transition hover:bg-slate-100 active:scale-[0.98]"
+              className="hidden sm:inline-flex shrink-0 whitespace-nowrap items-center gap-1.5 rounded-xl bg-white px-3.5 py-2 text-[12px] font-bold text-[#0F2B63] shadow-sm transition hover:bg-blue-50 active:scale-[0.98]"
             >
-              <User size={16} />
+              <User size={14} />
               <span>Üyelik / Başvuru</span>
             </button>
+
+            <a
+              href="https://milbis.net/giris"
+              target="_blank"
+              rel="noreferrer"
+              className="hidden sm:inline-flex shrink-0 whitespace-nowrap items-center gap-1.5 rounded-xl border border-white/30 bg-white/15 px-3 py-2 text-[12px] font-bold text-white shadow-sm transition hover:bg-white/25 active:scale-[0.98]"
+            >
+              <LogIn size={14} />
+              <span>MİLBİS Giriş</span>
+            </a>
 
             <button
               type="button"
               onClick={() => setMobileMenuOpen(true)}
-              className="flex h-11 w-11 items-center justify-center rounded-xl border border-white/15 bg-white/10 text-white lg:hidden hover:bg-white/20 transition"
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-white/20 bg-white/10 text-white lg:hidden hover:bg-white/20 transition"
               aria-label="Menüyü Aç"
             >
-              <Menu size={20} />
+              <Menu size={19} />
             </button>
           </div>
         </div>
@@ -372,11 +541,17 @@ export default function Header() {
                     Kurumsal &amp; Yönetim
                   </span>
                   <div className="mt-1.5 space-y-0.5">
-                    <Link href="/kurumsal" onClick={() => setMobileMenuOpen(false)} className="block rounded-lg px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-surface">
-                      Kurumsal &amp; Yönetim
+                    <Link href="/genel-baskan" onClick={() => setMobileMenuOpen(false)} className="block rounded-lg px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-surface">
+                      Genel Başkanımız
                     </Link>
-                    <Link href="/#teskilat" onClick={() => setMobileMenuOpen(false)} className="block rounded-lg px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-surface">
-                      81 İl Teşkilatı
+                    <Link href="/baskanlik-divani" onClick={() => setMobileMenuOpen(false)} className="block rounded-lg px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-surface">
+                      Başkanlık Divanı
+                    </Link>
+                    <Link href="/protokollerimiz" onClick={() => setMobileMenuOpen(false)} className="block rounded-lg px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-surface">
+                      Protokollerimiz
+                    </Link>
+                    <Link href="/kurumsal" onClick={() => setMobileMenuOpen(false)} className="block rounded-lg px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-surface">
+                      Kurumsal Belgeler &amp; Tüzük
                     </Link>
                     <Link href="/oncu-sahsiyetler" onClick={() => setMobileMenuOpen(false)} className="block rounded-lg px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-surface">
                       Öncü Şahsiyetler
@@ -386,26 +561,40 @@ export default function Header() {
 
                 <div className="pt-3 border-t border-slate-100">
                   <span className="px-2 text-[10px] font-extrabold uppercase tracking-[0.18em] text-primary">
-                    Medya ve Yayınlar
+                    Haberler &amp; Arşiv
                   </span>
                   <div className="mt-1.5 space-y-0.5">
-                    <Link href="/videolar" onClick={() => setMobileMenuOpen(false)} className="block rounded-lg px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-surface">
-                      Videolar &amp; MGD TV
-                    </Link>
-                    <Link href="/yayinlar" onClick={() => setMobileMenuOpen(false)} className="block rounded-lg px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-surface">
-                      Yayınlar &amp; E-Kütüphane
-                    </Link>
                     <Link href="/haberler" onClick={() => setMobileMenuOpen(false)} className="block rounded-lg px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-surface">
                       Haberler &amp; Burs Duyuruları
                     </Link>
                     <Link href="/faaliyetler" onClick={() => setMobileMenuOpen(false)} className="block rounded-lg px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-surface">
                       Teşkilat Faaliyetleri
                     </Link>
+                    <Link href="/raporlar" onClick={() => setMobileMenuOpen(false)} className="block rounded-lg px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-surface">
+                      Basın Bildirileri &amp; Raporlar
+                    </Link>
+                    <Link href="/yayinlar" onClick={() => setMobileMenuOpen(false)} className="block rounded-lg px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-surface">
+                      Yayınlar &amp; E-Kütüphane
+                    </Link>
+                    <Link href="/dosya-arsivi" onClick={() => setMobileMenuOpen(false)} className="block rounded-lg px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-surface">
+                      Dosya Arşivi
+                    </Link>
+                  </div>
+                </div>
+
+                <div className="pt-3 border-t border-slate-100">
+                  <span className="px-2 text-[10px] font-extrabold uppercase tracking-[0.18em] text-primary">
+                    Medya &amp; İletişim
+                  </span>
+                  <div className="mt-1.5 space-y-0.5">
+                    <Link href="/videolar" onClick={() => setMobileMenuOpen(false)} className="block rounded-lg px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-surface">
+                      MGD TV &amp; Video Galeri
+                    </Link>
                     <Link href="/etkinlikler" onClick={() => setMobileMenuOpen(false)} className="block rounded-lg px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-surface">
                       Program Takvimi
                     </Link>
-                    <Link href="/raporlar" onClick={() => setMobileMenuOpen(false)} className="block rounded-lg px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-surface">
-                      Basın Bildirileri &amp; Raporlar
+                    <Link href="/iletisim" onClick={() => setMobileMenuOpen(false)} className="block rounded-lg px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-surface">
+                      İletişim
                     </Link>
                   </div>
                 </div>
@@ -423,6 +612,14 @@ export default function Header() {
               >
                 <User size={16} /> Üyelik / Başvuru
               </button>
+              <a
+                href="https://milbis.net/giris"
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-slate-900 px-5 py-3 text-sm font-bold text-white hover:bg-slate-800 transition"
+              >
+                <LogIn size={16} /> MİLBİS Giriş <ExternalLink size={13} />
+              </a>
               <button
                 type="button"
                 onClick={() => {

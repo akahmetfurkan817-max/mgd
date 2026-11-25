@@ -20,6 +20,12 @@ export const DEFAULT_SECTIONS: SectionBlock[] = [
     enabled: true,
   },
   {
+    id: "principles",
+    label: "Öncü Şahsiyetler Vitrini",
+    desc: "Ana sayfada kademeli küçülen premium Öncü Şahsiyetler vitrini",
+    enabled: true,
+  },
+  {
     id: "news",
     label: "Haberler & Duyurular Vitrini",
     desc: "Kategorilere göre filtrelenebilir son gelişmeler ve burs duyuruları",
@@ -77,12 +83,6 @@ export const DEFAULT_SECTIONS: SectionBlock[] = [
     id: "events",
     label: "Program Takvimi",
     desc: "İl kongreleri, üniversite buluşmaları ve ziyaret takvimi",
-    enabled: false,
-  },
-  {
-    id: "principles",
-    label: "Öncü Şahsiyetler Vitrini",
-    desc: "Öncü Şahsiyetler sayfasından erişilen vitrin",
     enabled: false,
   },
   {
@@ -161,4 +161,5 @@ export const DEFAULT_SITE_SETTINGS: SiteSettings = {
     primaryColor: "#1B3B7B",
     secondaryColor: "#1D56B8",
   },
+  sliderZoomEnabled: false,
 };

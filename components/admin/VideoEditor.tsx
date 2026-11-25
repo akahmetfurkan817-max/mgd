@@ -10,6 +10,9 @@ import { deleteItem, saveSection } from "@/lib/adminApi";
 import type { VideoItem } from "@/types";
 
 const CATEGORIES: VideoItem["category"][] = [
+  "MGD TV",
+  "Erbakan Hoca Videoları",
+  "Fatih Erbakan Videoları",
   "Genel Başkan Konuşması",
   "Teşkilat & Kongre",
   "Belgesel & Arşiv",

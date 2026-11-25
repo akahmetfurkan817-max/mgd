@@ -1,0 +1,58 @@
+import type { ArchiveItem } from "@/types";
+
+export const ARCHIVE_ITEMS: ArchiveItem[] = [
+  {
+    id: "arc-1",
+    title: "MGD 2026 Ramazan Çalışma Konsepti",
+    category: "Konsept",
+    date: "2026-03-01",
+    coverImage: "/images/mgd/haydi-milli-genclik.jpg",
+    fileUrl: "/kurumsal",
+    description: "81 il teşkilatımız için iftar sofraları, mukabele ve gençlik buluşmaları görsel ve içerik konsept dosyası.",
+  },
+  {
+    id: "arc-2",
+    title: "İl - İlçe Divan Toplantıları Kılavuzu",
+    category: "Konsept",
+    date: "2026-04-20",
+    coverImage: "/images/mgd/11102025-il-baskanlari-toplantisi.jpg",
+    fileUrl: "/kurumsal",
+    description: "Teşkilat divan toplantıları sunum şablonları, gündem formatları ve raporlama kılavuzu.",
+  },
+  {
+    id: "arc-3",
+    title: "Erbakan Haftası — 2026 Anma Dosyası",
+    category: "Konsept",
+    date: "2026-02-12",
+    coverImage: "/images/erbakan_banner.png",
+    fileUrl: "/oncu-sahsiyetler/erbakan",
+    description: "Prof. Dr. Necmettin Erbakan'ı anma ve anlama haftası afiş, branda, sosyal medya ve program akış paketi.",
+  },
+  {
+    id: "arc-4",
+    title: "2025 - 2026 Yıllık Teşkilat Faaliyet Raporu",
+    category: "Raporlar",
+    date: "2026-09-15",
+    coverImage: "/images/mgd/milli-genclik-dernegi-il-baskanlari-toplantisi-06092025.jpg",
+    fileUrl: "/raporlar",
+    description: "81 il, 120+ üniversite temsilciliği ve ortaöğretim komisyonlarımızın yıllık kapsamlı faaliyet raporu.",
+  },
+  {
+    id: "arc-5",
+    title: "Üniversite ve Burs Tanıtım Broşürü",
+    category: "Broşürler",
+    date: "2026-09-01",
+    coverImage: "/images/slider/burs-universite.jpg",
+    fileUrl: "/haberler",
+    description: "Üniversite kayıt dönemlerinde kampüs stantlarında kullanılacak MGD tanıtım ve burs başvuru broşürü.",
+  },
+  {
+    id: "arc-6",
+    title: "MGD Kurumsal Kimlik ve Logo Paketi",
+    category: "Kurumsal Medya",
+    date: "2026-01-10",
+    coverImage: "/images/mgd/nicin-milli-genclik.jpg",
+    fileUrl: "/kurumsal",
+    description: "Yüksek çözünürlüklü vektörel MGD logoları, bayrak-flama ölçüleri, antetli kâğıt ve kurumsal renk rehberi.",
+  },
+];

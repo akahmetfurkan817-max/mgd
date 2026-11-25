@@ -100,6 +100,17 @@ select {
   }
 }
 
+@keyframes dropdownReveal {
+  from {
+    opacity: 0;
+    transform: translate3d(0, -8px, 0) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
 @keyframes slideInRight {
   from {
     transform: translateX(100%);
@@ -124,6 +135,11 @@ select {
 
 .animate-fadeIn {
   animation: fadeIn 0.2s ease-out forwards;
+}
+
+.animate-dropdown {
+  transform-origin: top left;
+  animation: dropdownReveal 0.24s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .animate-slideInRight {

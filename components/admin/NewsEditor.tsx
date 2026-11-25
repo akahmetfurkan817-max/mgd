@@ -11,17 +11,20 @@ import type { NewsCategory, NewsItem } from "@/types";
 
 const CATEGORIES: NewsCategory[] = [
   "Genel Merkez",
+  "Duyurular & Burs",
+  "Teşkilattan Haberler",
+  "Basın Bildirisi & Rapor",
+  "Yayınlar & Kütüphane",
+  "Programlar",
   "Üniversite",
   "Basın Açıklaması",
-  "Duyurular & Burs",
-  "Programlar",
-  "Teşkilattan Haberler",
 ];
 
 const empty = (): NewsItem => ({
   id: "",
   title: "",
   summary: "",
+  content: "",
   category: "Genel Merkez",
   date: new Date().toISOString().slice(0, 10),
   image: "/images/basinda-biz/teskilat.png",
@@ -63,7 +66,14 @@ export default function NewsEditor() {
           <h2 className="mb-4 font-bold text-primary">{form.id ? "Haberi Düzenle" : "Yeni Haber Ekle"}</h2>
           <div className="space-y-4">
             <Field label="Başlık *" value={form.title} onChange={(v) => setForm({ ...form, title: v })} />
-            <Field label="Özet *" multiline value={form.summary} onChange={(v) => setForm({ ...form, summary: v })} />
+            <Field label="Kısa Özet *" multiline value={form.summary} onChange={(v) => setForm({ ...form, summary: v })} />
+            <Field
+              label="Detaylı Haber Metni (Opsiyonel)"
+              multiline
+              value={form.content || ""}
+              onChange={(v) => setForm({ ...form, content: v })}
+              placeholder="Paragrafları alt alta yazabilirsiniz..."
+            />
 
             <ImagePickerField
               label="Kapak Fotoğrafı"

@@ -22,6 +22,7 @@ export default function Footer() {
     address: "Genel Merkez: Milli Gençlik Cad. Çankaya / Ankara",
     xUrl: "https://x.com/milligenclikmgd",
     instagramUrl: "https://www.instagram.com/milligenclikmgd/",
+    youtubeUrl: "https://www.youtube.com/@milligenclikmgd",
   };
 
   const handleNewsletter = async (e: React.FormEvent) => {
@@ -46,15 +47,28 @@ export default function Footer() {
 
   return (
     <>
-      <footer id="iletisim" className="bg-primary-dark text-slate-300 border-t border-white/10">
+      <footer id="iletisim" className="relative overflow-hidden bg-[#061529] text-slate-300 border-t border-white/10">
+        {/* Sağ Arka Plan Büyük Selçuklu Yıldızı Filigranı (TÜGVA ilhamlı) */}
+        <svg
+          aria-hidden="true"
+          viewBox="0 0 200 200"
+          className="pointer-events-none select-none absolute -right-16 bottom-6 h-[420px] w-[420px] text-white/[0.045]"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="12"
+        >
+          <rect x="42" y="42" width="116" height="116" rx="4" />
+          <rect x="42" y="42" width="116" height="116" rx="4" transform="rotate(45 100 100)" />
+        </svg>
+
         {/* E-Bülten Şeridi */}
-        <div className="border-b border-white/10 bg-primary">
-          <div className="container-x py-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+        <div className="relative border-b border-white/10 bg-gradient-to-r from-[#0B2245] via-primary to-[#0D2B5C]">
+          <div className="container-x py-9 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
             <div className="max-w-xl">
               <span className="text-[11px] font-extrabold uppercase tracking-[0.2em] text-blue-200">
                 E-Bülten Aboneliği
               </span>
-              <h3 className="font-display text-xl sm:text-2xl font-extrabold text-white mt-1.5">
+              <h3 className="font-display text-xl sm:text-2xl font-extrabold text-white mt-1">
                 Faaliyetlerimizden ve Duyurularımızdan Haberdar Olun
               </h3>
               <p className="text-xs sm:text-sm text-blue-100/80 mt-1">
@@ -62,7 +76,10 @@ export default function Footer() {
               </p>
             </div>
 
-            <form onSubmit={handleNewsletter} className="w-full lg:w-auto flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
+            <form
+              onSubmit={handleNewsletter}
+              className="w-full lg:w-auto flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5"
+            >
               <input
                 type="email"
                 required
@@ -74,7 +91,7 @@ export default function Footer() {
               <button
                 type="submit"
                 disabled={submitting}
-                className="px-6 py-3 rounded-xl bg-white hover:bg-slate-100 text-primary text-xs font-extrabold uppercase tracking-wider transition flex items-center justify-center gap-2 shrink-0 disabled:opacity-60"
+                className="px-6 py-3 rounded-xl bg-white hover:bg-blue-50 text-primary text-xs font-extrabold uppercase tracking-wider transition flex items-center justify-center gap-2 shrink-0 disabled:opacity-60"
               >
                 {subscribed ? (
                   <>
@@ -90,37 +107,107 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Ana Footer Sütunları */}
-        <div className="container-x grid gap-10 py-16 grid-cols-1 md:grid-cols-2 lg:grid-cols-12">
-          {/* Kurumsal Özet */}
-          <div className="lg:col-span-4 space-y-5">
-            <Logo light />
-            <p className="text-sm leading-relaxed text-slate-400 max-w-sm">
-              Milli Gençlik Derneği; &ldquo;Önce Ahlak ve Maneviyat&rdquo; düsturuyla 81 ilde, üniversite kampüslerinde ve ilçelerde gençliğin ilim, irfan ve aksiyon merkezi olarak faaliyet göstermektedir.
-            </p>
-
-            <div className="flex items-start gap-2.5 text-xs text-slate-300 bg-white/[0.04] p-3.5 rounded-lg border border-white/10">
-              <ShieldCheck size={17} className="text-gold-light shrink-0 mt-0.5" />
-              <span>T.C. İçişleri Bakanlığı Sivil Toplumla İlişkiler Genel Müdürlüğü Kayıtlı Resmî STK</span>
+        {/* Ana Footer İçeriği */}
+        <div className="container-x relative grid gap-10 py-16 grid-cols-1 md:grid-cols-2 lg:grid-cols-12">
+          {/* Sol: Logo + İletişim Satırları + Sosyal İkonlar */}
+          <div className="lg:col-span-5 space-y-6">
+            <div className="flex items-center gap-3">
+              <Logo light />
             </div>
 
-            <div className="flex items-center gap-2.5 pt-1">
+            <div className="space-y-3.5 text-sm">
               <a
-                href={contact.xUrl || "https://x.com/milligenclikmgd"}
+                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(contact.address)}`}
                 target="_blank"
                 rel="noreferrer"
-                className="px-3.5 py-2 rounded-lg bg-white/[0.06] hover:bg-white/15 text-xs font-semibold text-white transition border border-white/10"
+                className="flex items-start gap-3 text-slate-300 hover:text-white transition-colors group"
               >
-                X (Twitter)
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/10 text-blue-300 group-hover:bg-white/20 transition">
+                  <MapPin size={15} />
+                </span>
+                <span className="pt-1 leading-relaxed">
+                  <strong className="text-white">Adres:</strong> {contact.address}
+                </span>
               </a>
+
               <a
-                href={contact.instagramUrl || "https://www.instagram.com/milligenclikmgd/"}
-                target="_blank"
-                rel="noreferrer"
-                className="px-3.5 py-2 rounded-lg bg-white/[0.06] hover:bg-white/15 text-xs font-semibold text-white transition border border-white/10"
+                href={`tel:${contact.phone.replace(/[^0-9+]/g, "")}`}
+                className="flex items-center gap-3 text-slate-300 hover:text-white transition-colors group"
               >
-                Instagram
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/10 text-blue-300 group-hover:bg-white/20 transition">
+                  <Phone size={15} />
+                </span>
+                <span>
+                  <strong className="text-white">Telefon:</strong> {contact.phone}
+                </span>
               </a>
+
+              <a
+                href={`mailto:${contact.email}`}
+                className="flex items-center gap-3 text-slate-300 hover:text-white transition-colors group"
+              >
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/10 text-blue-300 group-hover:bg-white/20 transition">
+                  <Mail size={15} />
+                </span>
+                <span>
+                  <strong className="text-white">E-Posta:</strong> {contact.email}
+                </span>
+              </a>
+            </div>
+
+            {/* Yasal + Sosyal İkonlar */}
+            <div className="pt-2 space-y-4">
+              <div className="flex flex-wrap items-center gap-5 text-xs font-medium text-slate-400">
+                <button
+                  type="button"
+                  onClick={() => setActiveCorporateDoc("tuzuk")}
+                  className="hover:text-white transition-colors"
+                >
+                  Dernek Tüzüğü
+                </button>
+                <Link href="/iletisim" className="hover:text-white transition-colors">
+                  KVKK &amp; İletişim
+                </Link>
+                <span className="inline-flex items-center gap-1.5 text-blue-200/80">
+                  <ShieldCheck size={14} /> Resmî STK
+                </span>
+              </div>
+
+              <div className="flex items-center gap-2.5">
+                <a
+                  href={contact.xUrl || "https://x.com/milligenclikmgd"}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label="X"
+                  className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 border border-white/10 text-white hover:bg-white hover:text-[#061529] transition-all"
+                >
+                  <svg className="h-4 w-4 fill-current" viewBox="0 0 24 24">
+                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                  </svg>
+                </a>
+                <a
+                  href={contact.instagramUrl || "https://www.instagram.com/milligenclikmgd/"}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label="Instagram"
+                  className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 border border-white/10 text-white hover:bg-white hover:text-[#061529] transition-all"
+                >
+                  <svg className="h-4 w-4 fill-current" viewBox="0 0 24 24">
+                    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+                  </svg>
+                </a>
+                <a
+                  href={contact.youtubeUrl || "https://www.youtube.com/@milligenclikmgd"}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label="YouTube"
+                  className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 border border-white/10 text-white hover:bg-white hover:text-[#061529] transition-all"
+                >
+                  <svg className="h-4 w-4 fill-current" viewBox="0 0 24 24">
+                    <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+                  </svg>
+                </a>
+              </div>
             </div>
           </div>
 
@@ -131,76 +218,115 @@ export default function Footer() {
             </h4>
             <ul className="space-y-2.5 text-sm text-slate-400">
               <li>
-                <button type="button" onClick={() => setActiveCorporateDoc("tuzuk")} className="hover:text-white transition-colors text-left">
+                <Link href="/genel-baskan" className="hover:text-white transition-colors">
+                  Genel Başkanımız
+                </Link>
+              </li>
+              <li>
+                <Link href="/baskanlik-divani" className="hover:text-white transition-colors">
+                  Başkanlık Divanı
+                </Link>
+              </li>
+              <li>
+                <Link href="/protokollerimiz" className="hover:text-white transition-colors">
+                  Protokollerimiz
+                </Link>
+              </li>
+              <li>
+                <button
+                  type="button"
+                  onClick={() => setActiveCorporateDoc("tuzuk")}
+                  className="hover:text-white transition-colors text-left"
+                >
                   Dernek Tüzüğü
                 </button>
               </li>
               <li>
-                <Link href="/etkinlikler" className="hover:text-white transition-colors">
-                  Teşkilat Programı
-                </Link>
-              </li>
-              <li>
-                <button type="button" onClick={() => setActiveCorporateDoc("kurumsalKimlik")} className="hover:text-white transition-colors text-left">
-                  Kurumsal Kimlik
-                </button>
-              </li>
-              <li>
-                <button type="button" onClick={openDonate} className="text-gold-light hover:text-white transition-colors text-left font-semibold">
+                <button
+                  type="button"
+                  onClick={openDonate}
+                  className="text-blue-300 hover:text-white transition-colors text-left font-semibold"
+                >
                   Banka Hesapları (İBAN)
                 </button>
               </li>
             </ul>
           </div>
 
-          {/* Kadro & Faaliyetler */}
+          {/* Haberler & Arşiv */}
           <div className="lg:col-span-3">
             <h4 className="mb-4 font-bold text-white text-xs uppercase tracking-[0.18em]">
-              Kadro &amp; Faaliyetler
+              Haberler &amp; Arşiv
             </h4>
             <ul className="space-y-2.5 text-sm text-slate-400">
-              <li><Link href="/#yonetim" className="hover:text-white transition-colors">Genel Başkanımız</Link></li>
-              <li><Link href="/haberler" className="hover:text-white transition-colors">Haberler &amp; Burs Duyuruları</Link></li>
-              <li><Link href="/faaliyetler" className="hover:text-white transition-colors">Teşkilat Faaliyetleri</Link></li>
-              <li><Link href="/etkinlikler" className="hover:text-white transition-colors">Program Takvimi</Link></li>
-              <li><Link href="/yayinlar" className="hover:text-white transition-colors">E-Kütüphane &amp; Yayınlar</Link></li>
-              <li><Link href="/#erbakan" className="hover:text-white transition-colors">Prof. Dr. Necmettin Erbakan</Link></li>
+              <li>
+                <Link href="/haberler" className="hover:text-white transition-colors">
+                  Gündem &amp; Haberler
+                </Link>
+              </li>
+              <li>
+                <Link href="/faaliyetler" className="hover:text-white transition-colors">
+                  Teşkilat Faaliyetleri
+                </Link>
+              </li>
+              <li>
+                <Link href="/raporlar" className="hover:text-white transition-colors">
+                  Basın Bildirileri &amp; Raporlar
+                </Link>
+              </li>
+              <li>
+                <Link href="/yayinlar" className="hover:text-white transition-colors">
+                  Yayınlar &amp; E-Kütüphane
+                </Link>
+              </li>
+              <li>
+                <Link href="/dosya-arsivi" className="hover:text-white transition-colors">
+                  Dosya Arşivi
+                </Link>
+              </li>
+              <li>
+                <Link href="/oncu-sahsiyetler" className="hover:text-white transition-colors">
+                  Öncü Şahsiyetler
+                </Link>
+              </li>
             </ul>
           </div>
 
-          {/* İletişim */}
-          <div className="lg:col-span-3">
+          {/* Medya & Hızlı Erişim */}
+          <div className="lg:col-span-2">
             <h4 className="mb-4 font-bold text-white text-xs uppercase tracking-[0.18em]">
-              İletişim &amp; Genel Merkez
+              Medya &amp; Portal
             </h4>
-            <ul className="space-y-3.5 text-sm text-slate-400">
-              <li className="flex gap-2.5">
-                <MapPin size={16} className="shrink-0 text-gold-light mt-0.5" />
+            <ul className="space-y-2.5 text-sm text-slate-400">
+              <li>
+                <Link href="/videolar" className="hover:text-white transition-colors">
+                  MGD TV &amp; Videolar
+                </Link>
+              </li>
+              <li>
+                <Link href="/etkinlikler" className="hover:text-white transition-colors">
+                  Program Takvimi
+                </Link>
+              </li>
+              <li>
+                <Link href="/iletisim" className="hover:text-white transition-colors">
+                  İletişim
+                </Link>
+              </li>
+              <li>
                 <a
-                  href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(contact.address)}`}
+                  href="https://milbis.net/giris"
                   target="_blank"
                   rel="noreferrer"
-                  className="hover:text-white transition-colors underline-offset-4 hover:underline"
+                  className="hover:text-white transition-colors"
                 >
-                  {contact.address}
-                </a>
-              </li>
-              <li className="flex gap-2.5">
-                <Phone size={16} className="shrink-0 text-gold-light mt-0.5" />
-                <a href={`tel:${contact.phone.replace(/[^0-9+]/g, "")}`} className="hover:text-white transition-colors">
-                  {contact.phone}
-                </a>
-              </li>
-              <li className="flex gap-2.5">
-                <Mail size={16} className="shrink-0 text-gold-light mt-0.5" />
-                <a href={`mailto:${contact.email}`} className="hover:text-white transition-colors">
-                  {contact.email}
+                  MİLBİS Giriş →
                 </a>
               </li>
               <li className="pt-2">
                 <Link
                   href="/admin"
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/[0.06] hover:bg-white/15 text-slate-200 text-xs font-semibold transition border border-white/10"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/[0.07] hover:bg-white/15 text-slate-200 text-xs font-semibold transition border border-white/10"
                 >
                   <span>Yönetim Paneli</span>
                   <span>→</span>
@@ -211,10 +337,10 @@ export default function Footer() {
         </div>
 
         {/* Alt Telif */}
-        <div className="border-t border-white/10 py-6 text-xs text-slate-500">
+        <div className="relative border-t border-white/10 py-6 text-xs text-slate-500">
           <div className="container-x flex flex-col sm:flex-row items-center justify-between gap-2">
-            <span>© {new Date().getFullYear()} Milli Gençlik Derneği (MGD). Tüm hakları saklıdır.</span>
-            <span className="text-slate-400">Önce Ahlak ve Maneviyat</span>
+            <span>© {new Date().getFullYear()} Milli Gençlik Derneği (MGD) — Tüm Hakları Saklıdır.</span>
+            <span className="text-slate-400 font-medium">Önce Ahlak ve Maneviyat</span>
           </div>
         </div>
       </footer>

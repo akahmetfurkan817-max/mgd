@@ -4,8 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
-import PresidentSection from "@/components/home/PresidentSection";
-import TeamGrid from "@/components/home/TeamGrid";
+import ScrollReveal from "@/components/ui/ScrollReveal";
 import FlipbookModal from "@/components/corporate/FlipbookModal";
 import { CORPORATE_DOCS, PROTOCOL_PARTNERS } from "@/data/corporate";
 import {
@@ -224,9 +223,33 @@ export default function KurumsalPage() {
           </div>
         </section>
 
-        {/* Genel Başkan ve Başkanlık Divanı */}
-        <PresidentSection />
-        <TeamGrid />
+        {/* Yönetim Hızlı Geçiş Bandı */}
+        <ScrollReveal y={24} duration={700}>
+          <section className="pb-16">
+            <div className="container-x grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <Link
+                href="/genel-baskan"
+                className="rounded-3xl bg-gradient-to-r from-[#071933] to-primary p-7 text-white shadow-lg hover:-translate-y-1 transition flex items-center justify-between"
+              >
+                <div>
+                  <span className="text-[11px] font-bold uppercase tracking-widest text-blue-200">Yönetim</span>
+                  <h3 className="font-display text-xl font-extrabold mt-1">Genel Başkanımız</h3>
+                </div>
+                <span className="text-lg font-bold">→</span>
+              </Link>
+              <Link
+                href="/baskanlik-divani"
+                className="rounded-3xl bg-gradient-to-r from-[#0A2547] to-secondary p-7 text-white shadow-lg hover:-translate-y-1 transition flex items-center justify-between"
+              >
+                <div>
+                  <span className="text-[11px] font-bold uppercase tracking-widest text-blue-200">Yönetim</span>
+                  <h3 className="font-display text-xl font-extrabold mt-1">Başkanlık Divanı</h3>
+                </div>
+                <span className="text-lg font-bold">→</span>
+              </Link>
+            </div>
+          </section>
+        </ScrollReveal>
       </main>
 
       <Footer />

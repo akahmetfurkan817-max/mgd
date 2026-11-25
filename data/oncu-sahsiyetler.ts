@@ -33,6 +33,7 @@ export interface OncuSahsiyet {
   title: string;
   period: string;
   portrait: string;
+  backgroundImage?: string;
   badge: string;
   motto: string;
   bioSections: { heading: string; content: string }[];

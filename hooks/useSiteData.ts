@@ -14,7 +14,9 @@ import { VIDEOS } from "@/data/videos";
 import { DEFAULT_SECTIONS, DEFAULT_SITE_SETTINGS } from "@/data/site-settings";
 import { HOME_SLIDES, type HomeSlideItem } from "@/data/slides";
 import { ONCU_SAHSIYETLER, type OncuSahsiyet } from "@/data/oncu-sahsiyetler";
+import { ARCHIVE_ITEMS } from "@/data/archive";
 import type {
+  ArchiveItem,
   IbanInfo,
   Leader,
   NewsItem,
@@ -120,8 +122,16 @@ const combineLeaders = (remote: Leader[], seed: Leader[]): Leader[] => {
   return remote;
 };
 
-const combineNews = (remote: NewsItem[]): NewsItem[] =>
-  [...remote].sort((a, b) => b.date.localeCompare(a.date));
+const combineNews = (remote: NewsItem[], seed: NewsItem[]): NewsItem[] => {
+  if (!remote || remote.length === 0) return seed;
+  if (remote.length < 6) {
+    const ids = new Set(remote.map((r) => r.id));
+    return [...remote, ...seed.filter((s) => !ids.has(s.id))].sort((a, b) =>
+      b.date.localeCompare(a.date),
+    );
+  }
+  return [...remote].sort((a, b) => b.date.localeCompare(a.date));
+};
 
 const combinePublications = (remote: Publication[], seed: Publication[]): Publication[] => {
   if (!remote || remote.length === 0) return seed;
@@ -239,4 +249,13 @@ export function useOncuSahsiyetler(): Live<OncuSahsiyet[]> {
     data: Array.isArray(data?.list) && data.list.length > 0 ? data.list : ONCU_SAHSIYETLER,
     live,
   };
+}
+
+const combineArchive = (remote: ArchiveItem[], seed: ArchiveItem[]): ArchiveItem[] => {
+  if (!remote || remote.length === 0) return seed;
+  return [...remote].sort((a, b) => (b.date || "").localeCompare(a.date || ""));
+};
+
+export function useArchiveItems(): Live<ArchiveItem[]> {
+  return useCollection<ArchiveItem>(COLLECTIONS.archive, ARCHIVE_ITEMS, combineArchive);
 }

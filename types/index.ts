@@ -12,7 +12,8 @@ export type AdminSection =
   | "layout"
   | "content"
   | "videos"
-  | "pioneers";
+  | "pioneers"
+  | "archive";
 
 export interface HomeSlideItem {
   id: string;
@@ -70,15 +71,36 @@ export type NewsCategory =
   | "Basın Açıklaması"
   | "Duyurular & Burs"
   | "Programlar"
-  | "Teşkilattan Haberler";
+  | "Teşkilattan Haberler"
+  | "Yayınlar & Kütüphane"
+  | "Basın Bildirisi & Rapor";
 
 export interface NewsItem {
   id: string;
   title: string;
   summary: string;
+  content?: string;
   category: NewsCategory;
   date: string; // ISO
   image?: string;
+}
+
+export type ArchiveCategory =
+  | "Konsept"
+  | "Raporlar"
+  | "Broşürler"
+  | "Yayınlar"
+  | "Kurumsal Medya";
+
+export interface ArchiveItem {
+  id: string;
+  title: string;
+  category: ArchiveCategory;
+  date: string;
+  coverImage?: string;
+  fileUrl: string;
+  downloadUrl?: string;
+  description?: string;
 }
 
 export interface Announcement {
@@ -172,10 +194,19 @@ export interface EventItem {
   status: "Yaklaşan" | "Tamamlandı";
 }
 
+export type VideoCategory =
+  | "Genel Başkan Konuşması"
+  | "Teşkilat & Kongre"
+  | "Belgesel & Arşiv"
+  | "Gençlik Buluşması"
+  | "Erbakan Hoca Videoları"
+  | "Fatih Erbakan Videoları"
+  | "MGD TV";
+
 export interface VideoItem {
   id: string;
   title: string;
-  category: "Genel Başkan Konuşması" | "Teşkilat & Kongre" | "Belgesel & Arşiv" | "Gençlik Buluşması";
+  category: VideoCategory;
   duration: string;
   date: string;
   thumbnail: string;
@@ -294,4 +325,5 @@ export interface SiteSettings {
   erbakan?: ErbakanConfig;
   managementCards?: ManagementCardsConfig;
   corporatePdfs?: CorporatePdfsConfig;
+  sliderZoomEnabled?: boolean;
 }
