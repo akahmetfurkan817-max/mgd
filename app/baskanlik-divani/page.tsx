@@ -46,41 +46,44 @@ export default function BaskanlikDivaniPage() {
             </div>
           </ScrollReveal>
 
-          {/* Genel Başkan Öne Çıkan Kart (Üstte Ayrı) */}
+          {/* Genel Başkan Öne Çıkan Kart (Üstte Ortada, Diğerleriyle Aynı Portre Tarzında & Daha Büyük/Seçkin) */}
           {president && (
-            <ScrollReveal delay={50} y={22} duration={700} className="mb-12">
-              <div className="group relative flex flex-col sm:flex-row items-center gap-6 rounded-3xl border border-white/15 bg-white/[0.07] backdrop-blur-md p-5 sm:p-7 max-w-3xl mx-auto hover:bg-white/[0.11] hover:border-blue-300/40 transition-all duration-300 shadow-2xl">
+            <ScrollReveal delay={50} y={22} duration={700} className="mb-14">
+              <div className="group mx-auto flex w-full max-w-[340px] sm:max-w-[360px] flex-col">
+                {/* Büyük & Seçkin Portre Kutusu */}
                 <Link
                   href={`/baskanlik-divani/${presidentSlug}`}
-                  className="relative h-36 w-36 sm:h-40 sm:w-40 shrink-0 overflow-hidden rounded-2xl bg-[#07182E] border-2 border-white/20 shadow-lg block"
+                  className="relative aspect-[4/4.3] w-full overflow-hidden rounded-3xl bg-[#07182E] border-2 border-gold/60 ring-4 ring-gold/15 shadow-2xl shadow-black/40 block"
                 >
                   <Image
                     src={president.photo || "/images/ahmet-ozvatan.jpg"}
                     alt={president.name}
                     fill
-                    sizes="160px"
+                    sizes="(max-width: 640px) 100vw, 360px"
                     className="object-cover object-top transition-transform duration-500 group-hover:scale-105"
                     unoptimized
                   />
-                </Link>
-
-                <div className="text-center sm:text-left flex-1">
-                  <span className="inline-block rounded-full bg-secondary/90 px-3.5 py-1 text-[10.5px] font-extrabold uppercase tracking-wider text-white mb-2">
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent" />
+                  <span className="absolute top-3.5 left-3.5 rounded-full bg-gold px-3.5 py-1 text-[10.5px] font-extrabold uppercase tracking-[0.14em] text-primary-dark shadow-lg">
                     Genel Başkan
                   </span>
+                </Link>
+
+                {/* Alt Seçkin İsim / Unvan + Özgeçmiş & Sosyal Medya Bandı */}
+                <div className="mt-3 flex flex-col justify-between rounded-2xl bg-gradient-to-b from-white/[0.14] to-white/[0.08] group-hover:from-white/[0.18] group-hover:to-white/[0.11] border border-gold/35 px-6 py-5 text-center shadow-xl backdrop-blur-md transition-all duration-300">
                   <Link href={`/baskanlik-divani/${presidentSlug}`} className="block">
-                    <h2 className="font-display text-2xl sm:text-3xl font-extrabold text-white group-hover:text-blue-200 transition-colors">
+                    <h2 className="font-display text-xl sm:text-2xl font-extrabold text-white group-hover:text-gold-light transition-colors leading-snug">
                       {president.name}
                     </h2>
+                    <p className="mt-1 text-xs sm:text-sm font-semibold text-gold-light/90">
+                      {president.title}
+                    </p>
                   </Link>
-                  <p className="mt-1 text-sm text-blue-200/85 font-medium">
-                    {president.title}
-                  </p>
 
-                  <div className="mt-4 flex flex-wrap items-center justify-center sm:justify-between gap-3">
+                  <div className="mt-4 pt-3.5 border-t border-white/15 flex items-center justify-between gap-3">
                     <Link
                       href={`/baskanlik-divani/${presidentSlug}`}
-                      className="inline-flex items-center gap-1.5 text-xs font-bold text-white hover:text-blue-200 transition"
+                      className="inline-flex items-center gap-1.5 text-xs font-bold text-white hover:text-gold-light transition"
                     >
                       Özgeçmiş &amp; Mesaj <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
                     </Link>
@@ -91,7 +94,7 @@ export default function BaskanlikDivaniPage() {
                         target="_blank"
                         rel="noreferrer"
                         aria-label="Instagram"
-                        className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/10 text-blue-100 hover:bg-white hover:text-[#0A2547] transition"
+                        className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/10 text-blue-100 hover:bg-gold hover:text-primary-dark transition"
                       >
                         <svg className="h-3.5 w-3.5 fill-current" viewBox="0 0 24 24">
                           <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
@@ -102,7 +105,7 @@ export default function BaskanlikDivaniPage() {
                         target="_blank"
                         rel="noreferrer"
                         aria-label="X"
-                        className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/10 text-blue-100 hover:bg-white hover:text-[#0A2547] transition"
+                        className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/10 text-blue-100 hover:bg-gold hover:text-primary-dark transition"
                       >
                         <svg className="h-3.5 w-3.5 fill-current" viewBox="0 0 24 24">
                           <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
@@ -111,7 +114,7 @@ export default function BaskanlikDivaniPage() {
                       <a
                         href={`mailto:${president.email || "baskan@milligenclik.org.tr"}`}
                         aria-label="E-Posta"
-                        className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/10 text-blue-100 hover:bg-white hover:text-[#0A2547] transition"
+                        className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/10 text-blue-100 hover:bg-gold hover:text-primary-dark transition"
                       >
                         <Mail size={14} />
                       </a>
