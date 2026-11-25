@@ -17,6 +17,7 @@ import {
   X,
 } from "lucide-react";
 import { Card } from "@/components/admin/ui";
+import { uploadMedia } from "@/lib/uploadMedia";
 
 interface MediaItem {
   id: string;
@@ -58,6 +59,8 @@ export default function MediaManager() {
   const [copiedPath, setCopiedPath] = useState<string | null>(null);
   const [previewItem, setPreviewItem] = useState<MediaItem | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<string | null>(null);
+  const [storageMode, setStorageMode] = useState<string>("");
   const [deletingPath, setDeletingPath] = useState<string | null>(null);
   const [replacingPath, setReplacingPath] = useState<string | null>(null);
   const [dragActive, setDragActive] = useState(false);
@@ -78,6 +81,7 @@ export default function MediaManager() {
       const data = await res.json();
       if (data.ok && Array.isArray(data.files)) {
         setUploadedItems(data.files);
+        if (data.storage) setStorageMode(String(data.storage));
       }
     } catch {
       notify("err", "Yüklenen görseller okunamadı.");
@@ -126,11 +130,10 @@ export default function MediaManager() {
     let lastError = "";
 
     try {
-      for (const file of list) {
-        const formData = new FormData();
-        formData.append("file", file);
-        const res = await fetch("/api/admin/upload", { method: "POST", body: formData });
-        const data = await res.json();
+      for (let i = 0; i < list.length; i++) {
+        const file = list[i];
+        setUploadProgress(`${i + 1} / ${list.length} yükleniyor…`);
+        const data = await uploadMedia(file);
         if (data.ok && data.url) {
           successCount++;
         } else {
@@ -140,8 +143,10 @@ export default function MediaManager() {
 
       await loadUploaded();
 
-      if (successCount > 0) {
-        notify("ok", `${successCount} fotoğraf başarıyla yüklendi.`);
+      if (successCount > 0 && lastError) {
+        notify("ok", `${successCount} fotoğraf yüklendi, bazıları başarısız: ${lastError}`);
+      } else if (successCount > 0) {
+        notify("ok", `${successCount} fotoğraf başarıyla yüklendi ve buluta kaydedildi.`);
       } else if (lastError) {
         notify("err", lastError);
       }
@@ -149,6 +154,7 @@ export default function MediaManager() {
       notify("err", "Fotoğraf yüklenirken bir hata oluştu.");
     } finally {
       setUploading(false);
+      setUploadProgress(null);
     }
   };
 
@@ -164,24 +170,25 @@ export default function MediaManager() {
     if (!file || !replacingPath) return;
 
     setUploading(true);
+    setUploadProgress("Görsel güncelleniyor…");
     try {
       const cleanTarget = stripCacheBuster(replacingPath);
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("targetPath", cleanTarget);
-
-      const res = await fetch("/api/admin/upload", { method: "POST", body: formData });
-      const data = await res.json();
+      const data = await uploadMedia(file, { targetPath: cleanTarget });
 
       if (data.ok && data.url) {
-        if (cleanTarget.startsWith("/uploads/") || cleanTarget.startsWith("http")) {
+        if (
+          cleanTarget.startsWith("/uploads/") ||
+          cleanTarget.startsWith("/api/media/") ||
+          cleanTarget.startsWith("http")
+        ) {
           setUploadedItems((prev) =>
-            prev.map((it) => (stripCacheBuster(it.path) === cleanTarget ? { ...it, path: data.url } : it)),
+            prev.map((it) => (stripCacheBuster(it.path) === cleanTarget ? { ...it, path: data.url! } : it)),
           );
         } else {
           setDefaultItems((prev) =>
-            prev.map((it) => (stripCacheBuster(it.path) === cleanTarget ? { ...it, path: data.url } : it)),
+            prev.map((it) => (stripCacheBuster(it.path) === cleanTarget ? { ...it, path: data.url! } : it)),
           );
+          await loadUploaded();
         }
         notify("ok", "Fotoğraf başarıyla değiştirildi ve yayına alındı.");
       } else {
@@ -191,6 +198,7 @@ export default function MediaManager() {
       notify("err", "Fotoğraf değiştirme başarısız oldu.");
     } finally {
       setUploading(false);
+      setUploadProgress(null);
       setReplacingPath(null);
       if (e.target) e.target.value = "";
     }
@@ -242,9 +250,21 @@ export default function MediaManager() {
       {/* Üst Başlık */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-primary-dark flex items-center gap-2.5">
-            <ImageIcon className="text-gold" /> Medya &amp; Fotoğraf Galerisi
-          </h1>
+          <div className="flex flex-wrap items-center gap-2.5">
+            <h1 className="text-2xl font-bold text-primary-dark flex items-center gap-2.5">
+              <ImageIcon className="text-gold" /> Medya &amp; Fotoğraf Galerisi
+            </h1>
+            {storageMode && (
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-0.5 text-[11px] font-bold text-emerald-700">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                {storageMode === "firebase"
+                  ? "Firebase Storage"
+                  : storageMode === "firestore"
+                    ? "Bulut Depolama Aktif"
+                    : "Yerel Depo"}
+              </span>
+            )}
+          </div>
           <p className="mt-1 text-sm text-slate-600">
             Yeni fotoğraf yükleyin, yüklediklerinizi kalıcı olarak silin veya mevcut kurumsal görsellerin yerine yenisini koyun.
           </p>
@@ -259,7 +279,7 @@ export default function MediaManager() {
           >
             {uploading ? (
               <>
-                <Loader2 size={16} className="animate-spin" /> Yükleniyor…
+                <Loader2 size={16} className="animate-spin" /> {uploadProgress || "Yükleniyor…"}
               </>
             ) : (
               <>

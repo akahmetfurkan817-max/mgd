@@ -23,6 +23,7 @@ import { Card, Field, IDLE, PageHeader, SaveStatus, type SaveState } from "@/com
 import ImagePickerField from "@/components/admin/ImagePickerField";
 import { useOncuSahsiyetler } from "@/hooks/useSiteData";
 import { saveSection } from "@/lib/adminApi";
+import { uploadMedia } from "@/lib/uploadMedia";
 import type {
   OncuSahsiyet,
   SahsiyetBook,
@@ -223,12 +224,9 @@ export default function PioneersEditor() {
     setUploadingPdf(true);
     setPdfError(null);
     try {
-      const fd = new FormData();
-      fd.append("file", file);
-      const res = await fetch("/api/admin/upload", { method: "POST", body: fd });
-      const data = await res.json();
+      const data = await uploadMedia(file, { skipOptimize: true });
       if (data.ok && data.url) {
-        setBookForm((prev) => ({ ...prev, pdfUrl: data.url }));
+        setBookForm((prev) => ({ ...prev, pdfUrl: data.url! }));
       } else {
         setPdfError(data.error || "PDF yüklenemedi.");
       }

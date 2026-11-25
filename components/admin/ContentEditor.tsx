@@ -21,6 +21,7 @@ import { Card, Field, IDLE, PageHeader, SaveStatus, type SaveState } from "@/com
 import ImagePickerField from "@/components/admin/ImagePickerField";
 import { useSiteSettings } from "@/hooks/useSiteData";
 import { saveSection } from "@/lib/adminApi";
+import { uploadMedia } from "@/lib/uploadMedia";
 import { DEFAULT_SITE_SETTINGS } from "@/data/site-settings";
 import type {
   ContactConfig,
@@ -136,10 +137,7 @@ export default function ContentEditor() {
     if (!file) return;
     setUploadingPdfKey(key);
     try {
-      const formData = new FormData();
-      formData.append("file", file);
-      const res = await fetch("/api/admin/upload", { method: "POST", body: formData });
-      const data = await res.json();
+      const data = await uploadMedia(file, { skipOptimize: true });
       if (data.ok && data.url) {
         const nextPdfs = { ...corporatePdfs, [key]: data.url };
         setCorporatePdfs(nextPdfs);

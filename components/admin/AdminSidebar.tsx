@@ -43,6 +43,12 @@ const SECTION_ICONS: Record<AdminSection, typeof Newspaper> = {
   videos: Video,
 };
 
+const NAV_GROUPS: { title: string; ids: AdminSection[] }[] = [
+  { title: "Vitrin & Medya", ids: ["slides", "media", "layout", "content"] },
+  { title: "İçerik & Arşiv", ids: ["news", "videos", "pioneers", "archive", "publications"] },
+  { title: "Teşkilat & Kurumsal", ids: ["board", "provinces", "applications", "iban"] },
+];
+
 export default function AdminSidebar({ user }: { user: AdminUser }) {
   const pathname = usePathname();
   const router = useRouter();
@@ -55,15 +61,17 @@ export default function AdminSidebar({ user }: { user: AdminUser }) {
   };
 
   const linkClass = (active: boolean) =>
-    `flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
+    `flex items-center gap-2.5 rounded-xl px-3 py-2 text-[13px] font-medium transition-all ${
       active
         ? "bg-white text-primary-dark font-bold shadow-sm"
         : "text-slate-300 hover:bg-white/10 hover:text-white"
     }`;
 
+  const sectionMap = new Map(ADMIN_SECTIONS.map((s) => [s.id, s]));
+
   const navContent = (
     <>
-      <div className="mb-6 flex items-center justify-between">
+      <div className="mb-5 flex items-center justify-between">
         <Logo light />
         <button
           type="button"
@@ -78,45 +86,68 @@ export default function AdminSidebar({ user }: { user: AdminUser }) {
       <Link
         href="/"
         target="_blank"
-        className="mb-5 flex items-center justify-between rounded-lg border border-gold/40 bg-gold/10 px-3 py-2 text-xs font-bold text-gold-light hover:bg-gold hover:text-primary-dark transition-colors"
+        className="mb-4 flex items-center justify-between rounded-xl border border-gold/40 bg-gold/10 px-3.5 py-2 text-xs font-bold text-gold-light hover:bg-gold hover:text-primary-dark transition-colors"
       >
         <span>Canlı Siteyi Görüntüle</span>
         <ExternalLink size={14} />
       </Link>
 
-      <nav className="flex flex-1 flex-col gap-1 overflow-y-auto" aria-label="Panel menüsü">
-        <Link
-          href="/admin"
-          onClick={() => setMobileOpen(false)}
-          className={linkClass(pathname === "/admin")}
-        >
-          <LayoutDashboard size={17} /> Genel Bakış
-        </Link>
-        {ADMIN_SECTIONS.filter((s) => can(user.role, s.id)).map((s) => {
-          const Icon = SECTION_ICONS[s.id] || LayoutDashboard;
+      <nav className="flex flex-1 flex-col gap-4 overflow-y-auto pr-1" aria-label="Panel menüsü">
+        <div>
+          <Link
+            href="/admin"
+            onClick={() => setMobileOpen(false)}
+            className={linkClass(pathname === "/admin")}
+          >
+            <LayoutDashboard size={16} /> Genel Bakış
+          </Link>
+        </div>
+
+        {NAV_GROUPS.map((group) => {
+          const items = group.ids
+            .filter((id) => can(user.role, id))
+            .map((id) => sectionMap.get(id))
+            .filter(Boolean);
+          if (items.length === 0) return null;
           return (
-            <Link
-              key={s.id}
-              href={s.href}
-              onClick={() => setMobileOpen(false)}
-              className={linkClass(pathname.startsWith(s.href))}
-            >
-              <Icon size={17} /> {s.label}
-            </Link>
+            <div key={group.title} className="space-y-1">
+              <p className="px-3 text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400/80">
+                {group.title}
+              </p>
+              {items.map((s) => {
+                if (!s) return null;
+                const Icon = SECTION_ICONS[s.id] || LayoutDashboard;
+                return (
+                  <Link
+                    key={s.id}
+                    href={s.href}
+                    onClick={() => setMobileOpen(false)}
+                    className={linkClass(pathname.startsWith(s.href))}
+                  >
+                    <Icon size={16} /> {s.label}
+                  </Link>
+                );
+              })}
+            </div>
           );
         })}
       </nav>
 
-      <div className="mt-6 border-t border-white/10 pt-4 text-sm">
-        <p className="font-semibold text-white">{user.displayName}</p>
-        <p className="mb-3 text-xs text-slate-400">{ROLE_LABELS[user.role]}</p>
-        <button
-          type="button"
-          onClick={logout}
-          className="flex items-center gap-2 text-slate-300 hover:text-white text-xs font-semibold transition-colors"
-        >
-          <LogOut size={15} /> Güvenli Çıkış
-        </button>
+      <div className="mt-4 border-t border-white/10 pt-3.5 text-sm">
+        <div className="flex items-center justify-between gap-2">
+          <div className="min-w-0">
+            <p className="truncate font-semibold text-white text-xs">{user.displayName}</p>
+            <p className="truncate text-[11px] text-slate-400">{ROLE_LABELS[user.role]}</p>
+          </div>
+          <button
+            type="button"
+            onClick={logout}
+            title="Güvenli Çıkış"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-white/15 px-2.5 py-1.5 text-[11px] font-semibold text-slate-200 hover:bg-white/10 hover:text-white transition"
+          >
+            <LogOut size={13} /> Çıkış
+          </button>
+        </div>
       </div>
     </>
   );

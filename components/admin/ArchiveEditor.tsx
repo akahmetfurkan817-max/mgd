@@ -7,6 +7,7 @@ import { Card, Field, IDLE, PageHeader, SaveStatus, type SaveState } from "@/com
 import ImagePickerField from "@/components/admin/ImagePickerField";
 import { useArchiveItems } from "@/hooks/useSiteData";
 import { deleteItem, saveSection } from "@/lib/adminApi";
+import { uploadMedia } from "@/lib/uploadMedia";
 import type { ArchiveCategory, ArchiveItem } from "@/types";
 
 const CATEGORIES: ArchiveCategory[] = [
@@ -40,16 +41,15 @@ export default function ArchiveEditor() {
     if (!file) return;
     setUploading(true);
     try {
-      const fd = new FormData();
-      fd.append("file", file);
-      const res = await fetch("/api/admin/upload", { method: "POST", body: fd });
-      const data = await res.json();
+      const data = await uploadMedia(file);
       if (data.ok && data.url) {
         setForm((prev) => ({
           ...prev,
-          fileUrl: data.url,
-          downloadUrl: prev.downloadUrl || data.url,
+          fileUrl: data.url!,
+          downloadUrl: prev.downloadUrl || data.url!,
         }));
+      } else {
+        setState({ status: "error", message: data.error || "Dosya yüklenemedi." });
       }
     } finally {
       setUploading(false);

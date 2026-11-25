@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import {
+  AlertCircle,
   ArrowDown,
   ArrowUp,
   Camera,
@@ -20,6 +21,7 @@ import { Card } from "@/components/admin/ui";
 import ImagePickerField from "@/components/admin/ImagePickerField";
 import { useSiteSettings, useSlides } from "@/hooks/useSiteData";
 import { saveSection } from "@/lib/adminApi";
+import { uploadMedia } from "@/lib/uploadMedia";
 import { HOME_SLIDES, type HomeSlideItem } from "@/data/slides";
 
 const PRESET_BADGES = [
@@ -33,14 +35,14 @@ const PRESET_BADGES = [
 
 const EMPTY_FORM: HomeSlideItem = {
   id: "",
-  badge: "BURS DUYURUSU",
-  badgeColor: "bg-emerald-700",
+  badge: "MİLLİ GENÇLİK HAREKETİ",
+  badgeColor: "bg-primary",
   title: "",
   subtitle: "",
   image: "/images/slider/burs-universite.jpg",
-  linkUrl: "/haberler#burs-basvuru",
-  buttonText: "Başvuru Formuna Git",
-  date: "Aktif Başvuru",
+  linkUrl: "/haberler",
+  buttonText: "Detayları İncele",
+  date: "Yeni Duyuru",
 };
 
 export default function SlideEditor() {
@@ -50,10 +52,31 @@ export default function SlideEditor() {
   const [zoomEnabled, setZoomEnabled] = useState<boolean>(Boolean(siteSettings.sliderZoomEnabled));
   const [savingZoom, setSavingZoom] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
+  const [previewSlide, setPreviewSlide] = useState<HomeSlideItem | null>(null);
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const [form, setForm] = useState<HomeSlideItem>(EMPTY_FORM);
+  const [toast, setToast] = useState<{ type: "ok" | "err"; text: string } | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [uploadingIndex, setUploadingIndex] = useState<number | null>(null);
+  const [dragIndex, setDragIndex] = useState<number | null>(null);
+
+  const cardFileInputRef = useRef<HTMLInputElement>(null);
+  const [activeReplaceIndex, setActiveReplaceIndex] = useState<number | null>(null);
 
   useEffect(() => {
     setZoomEnabled(Boolean(siteSettings.sliderZoomEnabled));
   }, [siteSettings.sliderZoomEnabled]);
+
+  useEffect(() => {
+    if (live && liveSlides.length > 0) {
+      setSlides(liveSlides);
+    }
+  }, [live, liveSlides]);
+
+  const notify = (type: "ok" | "err", text: string) => {
+    setToast({ type, text });
+    setTimeout(() => setToast(null), 4000);
+  };
 
   const handleToggleZoom = async () => {
     const next = !zoomEnabled;
@@ -70,26 +93,6 @@ export default function SlideEditor() {
       setSavingZoom(false);
     }
   };
-  const [previewSlide, setPreviewSlide] = useState<HomeSlideItem | null>(null);
-  const [editingIndex, setEditingIndex] = useState<number | null>(null);
-  const [form, setForm] = useState<HomeSlideItem>(EMPTY_FORM);
-  const [toast, setToast] = useState<{ type: "ok" | "err"; text: string } | null>(null);
-  const [saving, setSaving] = useState(false);
-  const [uploadingIndex, setUploadingIndex] = useState<number | null>(null);
-
-  const cardFileInputRef = useRef<HTMLInputElement>(null);
-  const [activeReplaceIndex, setActiveReplaceIndex] = useState<number | null>(null);
-
-  useEffect(() => {
-    if (live && liveSlides.length > 0) {
-      setSlides(liveSlides);
-    }
-  }, [live, liveSlides]);
-
-  const notify = (type: "ok" | "err", text: string) => {
-    setToast({ type, text });
-    setTimeout(() => setToast(null), 3500);
-  };
 
   const persistSlides = async (newSlides: HomeSlideItem[]) => {
     setSlides(newSlides);
@@ -103,7 +106,7 @@ export default function SlideEditor() {
       if (res.ok) {
         notify("ok", "Slaytlar kaydedildi ve ana sayfada anında yayına alındı.");
       } else {
-        notify("ok", "Slaytlar yerel olarak güncellendi.");
+        notify("err", res.error || "Slaytlar sunucuya kaydedilemedi.");
       }
     } catch {
       notify("err", "Kaydetme sırasında beklenmedik bir hata oluştu.");
@@ -112,19 +115,12 @@ export default function SlideEditor() {
     }
   };
 
-  const handleQuickReplaceImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file || activeReplaceIndex === null) return;
-
-    const targetIdx = activeReplaceIndex;
+  const replaceSlideImageFile = async (targetIdx: number, file: File) => {
     setUploadingIndex(targetIdx);
     try {
-      const formData = new FormData();
-      formData.append("file", file);
-      const res = await fetch("/api/admin/upload", { method: "POST", body: formData });
-      const data = await res.json();
+      const data = await uploadMedia(file);
       if (data.ok && data.url) {
-        const next = slides.map((s, idx) => (idx === targetIdx ? { ...s, image: data.url } : s));
+        const next = slides.map((s, idx) => (idx === targetIdx ? { ...s, image: data.url! } : s));
         await persistSlides(next);
       } else {
         notify("err", data.error || "Görsel yüklenemedi.");
@@ -134,8 +130,14 @@ export default function SlideEditor() {
     } finally {
       setUploadingIndex(null);
       setActiveReplaceIndex(null);
-      if (e.target) e.target.value = "";
     }
+  };
+
+  const handleQuickReplaceImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || activeReplaceIndex === null) return;
+    await replaceSlideImageFile(activeReplaceIndex, file);
+    if (e.target) e.target.value = "";
   };
 
   const handleOpenAdd = () => {
@@ -155,7 +157,8 @@ export default function SlideEditor() {
       notify("err", "En az bir adet manşet slaytı bulunmalıdır.");
       return;
     }
-    if (!window.confirm(`"${slides[index].title}" başlıklı slaytı silmek istediğinize emin misiniz?`)) return;
+    const label = slides[index].title || `#${index + 1}`;
+    if (!window.confirm(`"${label}" slaytını silmek istediğinize emin misiniz?`)) return;
     const next = slides.filter((_, i) => i !== index);
     await persistSlides(next);
   };
@@ -202,11 +205,16 @@ export default function SlideEditor() {
 
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-primary-dark flex items-center gap-2.5">
-            <Layers className="text-gold" /> Manşet Slaytları &amp; Afişler
-          </h1>
+          <div className="flex items-center gap-2.5">
+            <h1 className="text-2xl font-bold text-primary-dark flex items-center gap-2.5">
+              <Layers className="text-gold" /> Manşet Slaytları &amp; Afişler
+            </h1>
+            <span className="rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-bold text-primary">
+              {slides.length} Slayt
+            </span>
+          </div>
           <p className="mt-1 text-sm text-slate-600">
-            Ana sayfada kaydırılabilir manşet slaytlarını ekleyin, sıralayın, görsellerini değiştirin veya silin.
+            Ana sayfada kaydırılabilir manşet slaytlarını ekleyin, sıralayın veya fotoğrafı doğrudan kartın üzerine sürükleyip değiştirin.
           </p>
         </div>
 
@@ -224,7 +232,7 @@ export default function SlideEditor() {
             <span
               className={`h-2.5 w-2.5 rounded-full ${zoomEnabled ? "bg-emerald-500" : "bg-slate-400"}`}
             />
-            <span>Yakınlaştırma Efekti: {zoomEnabled ? "Açık" : "Kapalı"}</span>
+            <span>Yakınlaştırma: {zoomEnabled ? "Açık" : "Kapalı"}</span>
           </button>
           <button
             type="button"
@@ -255,7 +263,7 @@ export default function SlideEditor() {
           }`}
         >
           <span className="flex items-center gap-2">
-            <Check size={16} /> {toast.text}
+            {toast.type === "ok" ? <Check size={16} /> : <AlertCircle size={16} />} {toast.text}
           </span>
           <button type="button" onClick={() => setToast(null)}>
             <X size={16} />
@@ -265,8 +273,30 @@ export default function SlideEditor() {
 
       <div className="space-y-4">
         {slides.map((item, index) => (
-          <Card key={item.id || index} className="p-4 sm:p-5 hover:border-slate-300 transition">
-            <div className="flex flex-col lg:flex-row gap-5 items-start lg:items-center">
+          <Card
+            key={item.id || index}
+            className={`p-4 sm:p-5 transition ${
+              dragIndex === index
+                ? "border-primary ring-2 ring-primary/25 bg-primary/[0.02]"
+                : "hover:border-slate-300"
+            }`}
+          >
+            <div
+              onDragOver={(e) => {
+                e.preventDefault();
+                setDragIndex(index);
+              }}
+              onDragLeave={() => setDragIndex(null)}
+              onDrop={(e) => {
+                e.preventDefault();
+                setDragIndex(null);
+                const f = e.dataTransfer.files?.[0];
+                if (f && f.type.startsWith("image/")) {
+                  replaceSlideImageFile(index, f);
+                }
+              }}
+              className="flex flex-col lg:flex-row gap-5 items-start lg:items-center"
+            >
               {/* Sıralama */}
               <div className="flex lg:flex-col items-center gap-1 shrink-0">
                 <button
@@ -293,18 +323,18 @@ export default function SlideEditor() {
               </div>
 
               {/* Thumbnail */}
-              <div className="relative w-full sm:w-52 h-32 rounded-xl overflow-hidden bg-slate-900 border border-slate-200 shrink-0 group">
+              <div className="relative w-full sm:w-56 h-32 rounded-xl overflow-hidden bg-slate-900 border border-slate-200 shrink-0 group">
                 <Image
                   src={item.image || "/images/slider/burs-universite.jpg"}
-                  alt={item.title}
+                  alt={item.title || "Slayt"}
                   fill
                   className="object-cover"
                   unoptimized
                 />
                 {uploadingIndex === index && (
-                  <div className="absolute inset-0 bg-black/70 flex flex-col items-center justify-center text-white text-xs gap-1 z-20">
+                  <div className="absolute inset-0 bg-black/75 flex flex-col items-center justify-center text-white text-xs gap-1.5 z-20">
                     <Loader2 size={20} className="animate-spin" />
-                    <span>Yükleniyor…</span>
+                    <span>Optimize edilip yükleniyor…</span>
                   </div>
                 )}
                 <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition flex flex-col items-center justify-center gap-1.5 p-2">
@@ -332,16 +362,24 @@ export default function SlideEditor() {
               <div className="flex-1 min-w-0">
                 <div className="flex flex-wrap items-center gap-2 mb-1.5">
                   <span className="text-[11px] font-bold uppercase tracking-wider text-gold">
-                    {item.badge}
+                    {item.badge || "GÖRSEL AFİŞ"}
                   </span>
                   {item.date && <span className="text-xs text-slate-400">• {item.date}</span>}
                 </div>
-                <h3 className="font-bold text-ink text-base leading-snug line-clamp-1">{item.title}</h3>
-                <p className="text-xs text-slate-600 mt-1 line-clamp-2 leading-relaxed">{item.subtitle}</p>
+                <h3 className="font-bold text-ink text-base leading-snug line-clamp-1">
+                  {item.title || "(Başlıksız — Sadece Afiş Görseli)"}
+                </h3>
+                {item.subtitle && (
+                  <p className="text-xs text-slate-600 mt-1 line-clamp-2 leading-relaxed">{item.subtitle}</p>
+                )}
                 <div className="mt-2.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500">
-                  <span className="font-semibold text-primary">Buton: {item.buttonText}</span>
-                  <span>•</span>
-                  <span className="font-mono text-[11px] truncate max-w-xs">{item.linkUrl}</span>
+                  {item.buttonText && <span className="font-semibold text-primary">Buton: {item.buttonText}</span>}
+                  {item.linkUrl && (
+                    <>
+                      {item.buttonText && <span>•</span>}
+                      <span className="font-mono text-[11px] truncate max-w-xs">{item.linkUrl}</span>
+                    </>
+                  )}
                 </div>
               </div>
 
@@ -353,6 +391,7 @@ export default function SlideEditor() {
                     setActiveReplaceIndex(index);
                     cardFileInputRef.current?.click();
                   }}
+                  disabled={uploadingIndex === index}
                   className="btn-outline text-xs px-3 py-1.5"
                 >
                   <Camera size={13} /> Fotoğraf
@@ -378,14 +417,14 @@ export default function SlideEditor() {
         ))}
       </div>
 
-      {/* Düzenle / Ekle Modalı */}
+      {/* Düzenle / Ekle Modalı (Canlı Önizlemeli) */}
       {modalOpen && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/65 backdrop-blur-sm overflow-y-auto"
           onClick={() => setModalOpen(false)}
         >
           <div
-            className="relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden my-8"
+            className="relative w-full max-w-3xl bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden my-8"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-ivory">
@@ -402,7 +441,46 @@ export default function SlideEditor() {
               </button>
             </div>
 
-            <form onSubmit={handleFormSubmit} className="p-6 space-y-4">
+            <form onSubmit={handleFormSubmit} className="p-6 space-y-4 max-h-[80vh] overflow-y-auto">
+              {/* Canlı Mini Önizleme */}
+              <div className="relative h-44 w-full overflow-hidden rounded-xl border border-slate-200 bg-primary-dark">
+                {form.image && (
+                  <Image src={form.image} alt={form.title || "Önizleme"} fill className="object-cover" unoptimized />
+                )}
+                {(form.title || form.subtitle || form.buttonText) && (
+                  <>
+                    <div className="absolute inset-0 bg-gradient-to-r from-[#06101F]/90 via-[#081529]/65 to-transparent" />
+                    <div className="relative z-10 flex h-full flex-col justify-center p-5 max-w-md text-white">
+                      {form.badge && (
+                        <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-gold-light">
+                          {form.badge}
+                        </span>
+                      )}
+                      {form.title && (
+                        <h3 className="mt-1 font-serif text-lg font-bold leading-snug line-clamp-2">{form.title}</h3>
+                      )}
+                      {form.subtitle && (
+                        <p className="mt-1 text-[11px] text-slate-200 line-clamp-2">{form.subtitle}</p>
+                      )}
+                      {form.buttonText && (
+                        <span className="mt-2.5 inline-flex w-fit items-center rounded-md bg-white px-3 py-1 text-[10px] font-bold text-primary-dark">
+                          {form.buttonText}
+                        </span>
+                      )}
+                    </div>
+                  </>
+                )}
+                <span className="absolute top-2 right-2 rounded bg-black/60 px-2 py-0.5 text-[10px] font-semibold text-white">
+                  Canlı Önizleme
+                </span>
+              </div>
+
+              <ImagePickerField
+                label="Slayt Arka Plan Fotoğrafı *"
+                value={form.image}
+                onChange={(url) => setForm({ ...form, image: url })}
+              />
+
               <div>
                 <label className="block text-xs font-semibold text-slate-700 mb-1">Slayt Başlığı (Opsiyonel)</label>
                 <input
@@ -417,11 +495,11 @@ export default function SlideEditor() {
               <div>
                 <label className="block text-xs font-semibold text-slate-700 mb-1">Açıklama / Alt Metin (Opsiyonel)</label>
                 <textarea
-                  rows={3}
+                  rows={2}
                   value={form.subtitle}
                   onChange={(e) => setForm({ ...form, subtitle: e.target.value })}
                   placeholder="İsteğe bağlı açıklama metni"
-                  className="w-full rounded-lg border border-slate-300 px-3.5 py-2.5 text-sm text-slate-800 focus:border-primary focus:outline-none"
+                  className="w-full rounded-lg border border-slate-300 px-3.5 py-2 text-sm text-slate-800 focus:border-primary focus:outline-none"
                 />
               </div>
 
@@ -454,17 +532,11 @@ export default function SlideEditor() {
                     type="text"
                     value={form.date || ""}
                     onChange={(e) => setForm({ ...form, date: e.target.value })}
-                    placeholder="Örn: 18 Kasım 2026 veya Aktif Başvuru"
+                    placeholder="Örn: 25 Kasım 2026 veya Aktif Başvuru"
                     className="w-full rounded-lg border border-slate-300 px-3 py-2 text-xs focus:border-primary focus:outline-none"
                   />
                 </div>
               </div>
-
-              <ImagePickerField
-                label="Slayt Arka Plan Fotoğrafı *"
-                value={form.image}
-                onChange={(url) => setForm({ ...form, image: url })}
-              />
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
@@ -493,7 +565,7 @@ export default function SlideEditor() {
                 <button type="button" onClick={() => setModalOpen(false)} className="btn-outline text-xs">
                   İptal
                 </button>
-                <button type="submit" className="btn-primary text-xs">
+                <button type="submit" disabled={saving} className="btn-primary text-xs">
                   {editingIndex !== null ? "Değişiklikleri Kaydet" : "Slaytı Ekle"}
                 </button>
               </div>
@@ -530,11 +602,13 @@ export default function SlideEditor() {
                   {previewSlide.title}
                 </h2>
                 <p className="mt-3 text-sm text-slate-200 leading-relaxed">{previewSlide.subtitle}</p>
-                <div className="mt-6">
-                  <span className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-white text-primary-dark font-bold text-xs">
-                    {previewSlide.buttonText}
-                  </span>
-                </div>
+                {previewSlide.buttonText && (
+                  <div className="mt-6">
+                    <span className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-white text-primary-dark font-bold text-xs">
+                      {previewSlide.buttonText}
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
           </div>

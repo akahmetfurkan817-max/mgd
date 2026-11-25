@@ -3,75 +3,91 @@ import { ADMIN_SECTIONS, ROLE_LABELS, can } from "@/lib/permissions";
 import Link from "next/link";
 import SeedButton from "@/components/admin/SeedButton";
 import {
+  ArrowRight,
   Award,
   BookOpen,
+  ExternalLink,
   FolderArchive,
   Image as ImageIcon,
   Landmark,
   Layers,
   MapPin,
   Newspaper,
-  Share2,
   ShieldAlert,
   Sliders,
+  Sparkles,
   Type,
+  Upload,
   UserCheck,
   Users,
   Video,
 } from "lucide-react";
 import type { AdminSection } from "@/types";
 
-const SECTION_META: Record<AdminSection, { icon: typeof Newspaper; desc: string }> = {
+const SECTION_META: Record<AdminSection, { icon: typeof Newspaper; desc: string; tag: string }> = {
   slides: {
     icon: Sliders,
+    tag: "Vitrin",
     desc: "Ana sayfa manşetinde dönen afişleri, burs duyurularını ve kampanyaları yönetin.",
   },
   media: {
     icon: ImageIcon,
-    desc: "Sitedeki tüm fotoğrafları inceleyin, yollarını kopyalayın ve galeriyi yönetin.",
+    tag: "Bulut Medya",
+    desc: "Yeni fotoğraf yükleyin, görselleri değiştirin ve tüm medya kütüphanesini yönetin.",
   },
   layout: {
     icon: Layers,
-    desc: "Ana sayfadaki bölümlerin yerini sürükleyip taşıyın veya gizleyin.",
+    tag: "Tasarım",
+    desc: "Ana sayfadaki bölümlerin yerini sıralayın veya gizleyin.",
   },
   content: {
     icon: Type,
-    desc: "Sayaç sayılarını (50.000+, 81 il vb.), başlıkları ve sözleri düzenleyin.",
+    tag: "İçerik",
+    desc: "Sayaç sayılarını, başlıkları, iletişim bilgilerini ve kurumsal PDF'leri düzenleyin.",
   },
   board: {
     icon: Users,
+    tag: "Teşkilat",
     desc: "Genel Başkan ve Başkanlık Divanı kadrosunu yönetin.",
   },
   pioneers: {
     icon: Award,
+    tag: "Arşiv",
     desc: "Öncü Şahsiyetlerin videolarını, fotoğraf galerilerini, kitap/PDF eserlerini ve biyografilerini yönetin.",
   },
   news: {
     icon: Newspaper,
+    tag: "Yayın",
     desc: "Genel Merkez, Üniversite ve Basın Açıklamalarını yayınlayın.",
   },
   archive: {
     icon: FolderArchive,
+    tag: "Arşiv",
     desc: "Konsept, rapor, broşür, yayın ve kurumsal medya dosya arşivini yönetin.",
   },
   videos: {
     icon: Video,
+    tag: "Medya",
     desc: "Video galerisi, YouTube videoları, süreleri ve kapak fotoğraflarını yönetin.",
   },
   applications: {
     icon: UserCheck,
+    tag: "Başvuru",
     desc: "Gelen gönüllülük taleplerini inceleyin ve iletişime geçin.",
   },
   publications: {
     icon: BookOpen,
+    tag: "Yayın",
     desc: "Teşkilat bültenleri, dergiler ve faaliyet raporlarını yönetin.",
   },
   provinces: {
     icon: MapPin,
+    tag: "Teşkilat",
     desc: "81 il başkanlığı iletişim ve adres bilgilerini güncelleyin.",
   },
   iban: {
     icon: Landmark,
+    tag: "Kurumsal",
     desc: "Bağış modalında görünen resmî banka hesaplarını güncelleyin.",
   },
 };
@@ -82,18 +98,56 @@ export default async function AdminHome({ searchParams }: { searchParams: { deni
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-slate-200/80 pb-5">
-        <div>
-          <h1 className="text-2xl font-extrabold text-primary-dark">
-            Hoş geldiniz, {user.displayName}
-          </h1>
-          <p className="mt-1 text-sm text-slate-600">
-            Milli Gençlik Derneği Yönetim ve Teşkilat Portalı
-          </p>
+      {/* Üst Karşılama & Hızlı İşlemler Banner */}
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary-dark via-primary to-[#0b2347] p-6 sm:p-7 text-white shadow-lg border border-white/10">
+        <div className="pointer-events-none absolute -right-12 -top-12 h-48 w-48 rounded-full bg-gold/15 blur-3xl" />
+        <div className="relative flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5">
+          <div>
+            <div className="inline-flex items-center gap-1.5 rounded-full border border-gold/30 bg-gold/15 px-3 py-0.5 text-[11px] font-bold text-gold-light">
+              <Sparkles size={12} /> {ROLE_LABELS[user.role]}
+            </div>
+            <h1 className="mt-2.5 text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
+              Hoş geldiniz, {user.displayName}
+            </h1>
+            <p className="mt-1 text-sm text-slate-300">
+              Milli Gençlik Derneği Yönetim Portalı — Tüm görsel ve içerik değişiklikleri anında yayına alınır.
+            </p>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2">
+            {can(user.role, "slides") && (
+              <Link
+                href="/admin/slides"
+                className="inline-flex items-center gap-1.5 rounded-xl bg-gold px-4 py-2.5 text-xs font-bold text-primary-dark shadow hover:bg-gold-light transition"
+              >
+                <Sliders size={14} /> Slayt Yönetimi
+              </Link>
+            )}
+            {can(user.role, "media") && (
+              <Link
+                href="/admin/media"
+                className="inline-flex items-center gap-1.5 rounded-xl bg-white/15 px-4 py-2.5 text-xs font-bold text-white backdrop-blur hover:bg-white/25 transition"
+              >
+                <Upload size={14} /> Fotoğraf Yükle
+              </Link>
+            )}
+            {can(user.role, "news") && (
+              <Link
+                href="/admin/news"
+                className="inline-flex items-center gap-1.5 rounded-xl bg-white/15 px-4 py-2.5 text-xs font-bold text-white backdrop-blur hover:bg-white/25 transition"
+              >
+                <Newspaper size={14} /> Yeni Haber
+              </Link>
+            )}
+            <Link
+              href="/"
+              target="_blank"
+              className="inline-flex items-center gap-1.5 rounded-xl border border-white/25 px-3.5 py-2.5 text-xs font-semibold text-slate-100 hover:bg-white/10 transition"
+            >
+              Canlı Site <ExternalLink size={13} />
+            </Link>
+          </div>
         </div>
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-50 px-3.5 py-1 text-xs font-bold text-secondary border border-blue-200 w-fit">
-          Yetki: {ROLE_LABELS[user.role]}
-        </span>
       </div>
 
       {searchParams.denied && (
@@ -106,6 +160,7 @@ export default async function AdminHome({ searchParams }: { searchParams: { deni
         </div>
       )}
 
+      {/* Modül Kartları */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {allowed.map((s) => {
           const meta = SECTION_META[s.id];
@@ -114,21 +169,26 @@ export default async function AdminHome({ searchParams }: { searchParams: { deni
             <Link
               key={s.id}
               href={s.href}
-              className="group flex flex-col justify-between rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-secondary hover:shadow-lg"
+              className="group flex flex-col justify-between rounded-2xl border border-slate-200/90 bg-white p-5 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md"
             >
               <div>
-                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-blue-50 text-secondary transition group-hover:bg-secondary group-hover:text-white">
-                  <Icon size={24} />
+                <div className="mb-3.5 flex items-center justify-between">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary/5 text-primary transition group-hover:bg-primary group-hover:text-white">
+                    <Icon size={21} />
+                  </div>
+                  <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-slate-500 group-hover:bg-gold/15 group-hover:text-primary-dark transition">
+                    {meta.tag}
+                  </span>
                 </div>
-                <h2 className="text-base font-bold text-ink group-hover:text-secondary transition-colors">
+                <h2 className="text-base font-bold text-ink group-hover:text-primary transition-colors">
                   {s.label}
                 </h2>
                 <p className="mt-1.5 text-xs leading-relaxed text-slate-500">
                   {meta.desc}
                 </p>
               </div>
-              <span className="mt-5 text-xs font-semibold text-secondary flex items-center gap-1">
-                Yönetime Git →
+              <span className="mt-4 inline-flex items-center gap-1 text-xs font-bold text-primary/80 group-hover:text-primary">
+                Yönetime Git <ArrowRight size={13} className="transition-transform group-hover:translate-x-0.5" />
               </span>
             </Link>
           );
