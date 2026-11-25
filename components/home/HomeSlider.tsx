@@ -23,18 +23,22 @@ const COMMISSION_CARDS = [
     subtitle: "Ortaöğretim çalışmaları",
     href: "/faaliyetler",
     icon: FileText,
-    bgClass: "bg-gradient-to-br from-[#163675] via-[#1B4EA3] to-[#1D56B8] hover:brightness-110",
+    bgClass: "bg-gradient-to-br from-[#163675] via-[#1B4EA3] to-[#1D56B8] text-white hover:brightness-110",
     iconBgClass: "bg-white/15 text-white border border-white/20 group-hover:bg-white group-hover:text-[#1B4EA3]",
+    titleClass: "text-white",
     subtitleClass: "text-blue-100/85",
+    arrowClass: "text-white/70 group-hover:text-white",
   },
   {
     title: "Üniversiteler",
     subtitle: "Üniversite ve burs çalışmaları",
     href: "/haberler?cat=Duyurular%20%26%20Burs",
     icon: GraduationCap,
-    bgClass: "bg-gradient-to-br from-[#22262E] via-[#2B303A] to-[#343A46] hover:brightness-110",
-    iconBgClass: "bg-white/12 text-white border border-white/15 group-hover:bg-white group-hover:text-[#23272F]",
-    subtitleClass: "text-slate-300",
+    bgClass: "bg-white text-[#1B4EA3] hover:bg-blue-50/70",
+    iconBgClass: "bg-[#1B4EA3]/10 text-[#1B4EA3] border border-[#1B4EA3]/20 group-hover:bg-[#1B4EA3] group-hover:text-white",
+    titleClass: "text-[#1B4EA3]",
+    subtitleClass: "text-[#1B4EA3]/80",
+    arrowClass: "text-[#1B4EA3]/70 group-hover:text-[#1B4EA3]",
   },
 ];
 
@@ -355,9 +359,9 @@ export default function HomeSlider() {
         </div>
       </div>
 
-      {/* Slayt Altına Binen Yüzer Komisyon Kartı (Ortaöğretim: Mavi • Üniversiteler: Antrasit Gri) */}
+      {/* Slayt Altına Binen Yüzer Komisyon Kartı (Ortaöğretim: Mavi • Üniversiteler: Beyaz / Mavi Yazı) */}
       <div className="container-x relative z-30 -mt-12 sm:-mt-14 pb-6">
-        <div className="rounded-2xl shadow-[0_18px_45px_-12px_rgba(10,25,60,0.28)] overflow-hidden border border-white/15">
+        <div className="rounded-2xl shadow-[0_18px_45px_-12px_rgba(10,25,60,0.28)] overflow-hidden border border-slate-200/70">
           <div className="grid grid-cols-1 md:grid-cols-2">
             {COMMISSION_CARDS.map((card) => {
               const Icon = card.icon;
@@ -365,7 +369,7 @@ export default function HomeSlider() {
                 <Link
                   key={card.title}
                   href={card.href}
-                  className={`group flex items-center justify-between md:justify-center gap-4 px-5 sm:px-10 py-5 sm:py-7 text-white transition-all duration-300 ${card.bgClass}`}
+                  className={`group flex items-center justify-between md:justify-center gap-4 px-5 sm:px-10 py-5 sm:py-7 transition-all duration-300 ${card.bgClass}`}
                 >
                   <div className="flex items-center gap-4 min-w-0">
                     <div
@@ -374,7 +378,7 @@ export default function HomeSlider() {
                       <Icon size={23} strokeWidth={1.8} />
                     </div>
                     <div className="min-w-0 text-left">
-                      <h2 className="font-display text-base sm:text-lg font-extrabold text-white tracking-tight">
+                      <h2 className={`font-display text-base sm:text-lg font-extrabold tracking-tight ${card.titleClass}`}>
                         {card.title}
                       </h2>
                       <p className={`text-xs sm:text-sm font-medium truncate ${card.subtitleClass}`}>
@@ -384,7 +388,7 @@ export default function HomeSlider() {
                   </div>
                   <ArrowRight
                     size={18}
-                    className="shrink-0 text-white/70 transition-transform duration-300 group-hover:translate-x-1 group-hover:text-white md:ml-4"
+                    className={`shrink-0 transition-transform duration-300 group-hover:translate-x-1 md:ml-4 ${card.arrowClass}`}
                   />
                 </Link>
               );
