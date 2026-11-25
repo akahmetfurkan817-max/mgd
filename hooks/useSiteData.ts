@@ -192,6 +192,13 @@ export function useSiteSettings(): Live<SiteSettings> {
     data: {
       ...DEFAULT_SITE_SETTINGS,
       ...data,
+      hero: { ...DEFAULT_SITE_SETTINGS.hero, ...(data.hero || {}) },
+      vision: { ...DEFAULT_SITE_SETTINGS.vision, ...(data.vision || {}) },
+      contact: {
+        ...DEFAULT_SITE_SETTINGS.contact!,
+        ...(data.contact || {}),
+      },
+      theme: { ...DEFAULT_SITE_SETTINGS.theme, ...(data.theme || {}) },
       sections: data.sections && data.sections.length > 0 ? data.sections : DEFAULT_SECTIONS,
     },
     live,

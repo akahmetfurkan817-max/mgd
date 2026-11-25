@@ -479,6 +479,14 @@ export default function Header() {
               <Search size={16} />
             </button>
 
+            <Link
+              href="/bagis"
+              className="hidden sm:inline-flex shrink-0 whitespace-nowrap items-center gap-1.5 rounded-xl bg-gold px-3.5 py-2 text-[12px] font-extrabold text-[#0B1E42] shadow-sm transition hover:bg-gold-light active:scale-[0.98]"
+            >
+              <Landmark size={14} />
+              <span>Bağış Yap</span>
+            </Link>
+
             <button
               type="button"
               onClick={openVolunteer}
