@@ -22,7 +22,7 @@ export default function Footer() {
     address: "Genel Merkez: Milli Gençlik Cad. Çankaya / Ankara",
     xUrl: "https://x.com/milligenclikmgd",
     instagramUrl: "https://www.instagram.com/milligenclikmgd/",
-    youtubeUrl: "https://www.youtube.com/@milligenclikmgd",
+    youtubeUrl: "https://www.youtube.com/@MilliGenclikDernegi",
   };
 
   const handleNewsletter = async (e: React.FormEvent) => {
@@ -197,7 +197,7 @@ export default function Footer() {
                   </svg>
                 </a>
                 <a
-                  href={contact.youtubeUrl || "https://www.youtube.com/@milligenclikmgd"}
+                  href={contact.youtubeUrl || "https://www.youtube.com/@MilliGenclikDernegi"}
                   target="_blank"
                   rel="noreferrer"
                   aria-label="YouTube"

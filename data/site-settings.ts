@@ -156,7 +156,7 @@ export const DEFAULT_SITE_SETTINGS: SiteSettings = {
     headerNotice: "Milli Gençlik Derneği Genel Merkez Portalı",
     xUrl: "https://x.com/milligenclikmgd",
     instagramUrl: "https://www.instagram.com/milligenclikmgd/",
-    youtubeUrl: "https://www.youtube.com/@milligenclikmgd",
+    youtubeUrl: "https://www.youtube.com/@MilliGenclikDernegi",
   },
   theme: {
     primaryColor: "#1B3B7B",

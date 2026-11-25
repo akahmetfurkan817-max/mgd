@@ -53,7 +53,7 @@ export default function Header() {
     address: "Genel Merkez: Ankara",
     xUrl: "https://x.com/milligenclikmgd",
     instagramUrl: "https://www.instagram.com/milligenclikmgd/",
-    youtubeUrl: "https://www.youtube.com/@milligenclikmgd",
+    youtubeUrl: "https://www.youtube.com/@MilliGenclikDernegi",
   };
 
   useEffect(() => {
@@ -128,7 +128,7 @@ export default function Header() {
                   </svg>
                 </a>
                 <a
-                  href={contact.youtubeUrl || "https://www.youtube.com/@milligenclikmgd"}
+                  href={contact.youtubeUrl || "https://www.youtube.com/@MilliGenclikDernegi"}
                   target="_blank"
                   rel="noreferrer"
                   aria-label="YouTube"

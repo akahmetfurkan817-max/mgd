@@ -27,7 +27,7 @@ export default function IletisimPage() {
     address: "Genel Merkez: Milli Gençlik Cad. Çankaya / Ankara",
     xUrl: "https://x.com/milligenclikmgd",
     instagramUrl: "https://www.instagram.com/milligenclikmgd/",
-    youtubeUrl: "https://www.youtube.com/@milligenclikmgd",
+    youtubeUrl: "https://www.youtube.com/@MilliGenclikDernegi",
   };
 
   const handleSubmit = (e: React.FormEvent) => {
