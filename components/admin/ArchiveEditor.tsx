@@ -126,6 +126,7 @@ export default function ArchiveEditor() {
 
               <ImagePickerField
                 label="Kapak Görseli"
+                recommendedSize="1200 × 675 px (Yatay 16:9)"
                 value={form.coverImage || ""}
                 onChange={(url) => setForm({ ...form, coverImage: url })}
               />

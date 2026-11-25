@@ -150,6 +150,7 @@ export default function VideoEditor() {
 
               <ImagePickerField
                 label="Kapak Fotoğrafı (Thumbnail)"
+                recommendedSize="1280 × 720 px (Yatay 16:9)"
                 value={form.thumbnail}
                 onChange={(url) => setForm({ ...form, thumbnail: url })}
               />

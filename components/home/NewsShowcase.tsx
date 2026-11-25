@@ -3,9 +3,9 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, CalendarDays, X } from "lucide-react";
+import { ArrowRight, CalendarDays } from "lucide-react";
 import { useNews } from "@/hooks/useSiteData";
-import type { NewsItem } from "@/types";
+import { slugify } from "@/lib/slug";
 
 const CATEGORY_TABS = [
   "Tümü",
@@ -19,7 +19,6 @@ const CATEGORY_TABS = [
 export default function NewsShowcase() {
   const { data: news } = useNews();
   const [activeCategory, setActiveCategory] = useState("Tümü");
-  const [selectedNews, setSelectedNews] = useState<NewsItem | null>(null);
 
   const filtered =
     activeCategory === "Tümü"
@@ -68,7 +67,7 @@ export default function NewsShowcase() {
           ))}
         </div>
 
-        {/* Haber Kartları */}
+        {/* Haber Kartları — Doğrudan haber detay sayfasına gider */}
         {displayed.length === 0 ? (
           <div className="rounded-xl border border-slate-200 bg-white py-14 text-center">
             <p className="text-sm text-slate-500">Bu kategoride henüz yayınlanmış bir içerik bulunmuyor.</p>
@@ -76,13 +75,10 @@ export default function NewsShowcase() {
         ) : (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {displayed.map((n) => (
-              <article
+              <Link
                 key={n.id}
-                role="button"
-                tabIndex={0}
-                onClick={() => setSelectedNews(n)}
-                onKeyDown={(e) => e.key === "Enter" && setSelectedNews(n)}
-                className="group flex flex-col justify-between overflow-hidden rounded-xl border border-slate-200/90 bg-white transition-all duration-200 hover:border-primary/40 hover:shadow-lg cursor-pointer"
+                href={`/haberler/${slugify(n.title)}`}
+                className="group flex flex-col justify-between overflow-hidden rounded-xl border border-slate-200/90 bg-white transition-all duration-200 hover:border-primary/40 hover:shadow-lg"
               >
                 <div>
                   <div className="relative aspect-[16/10] w-full bg-slate-900 overflow-hidden">
@@ -122,81 +118,11 @@ export default function NewsShowcase() {
                     Oku →
                   </span>
                 </div>
-              </article>
+              </Link>
             ))}
           </div>
         )}
       </div>
-
-      {/* Haber Okuma Modalı */}
-      {selectedNews && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-primary-dark/75 backdrop-blur-sm animate-fadeIn"
-          onClick={() => setSelectedNews(null)}
-        >
-          <div
-            className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-white rounded-2xl p-6 sm:p-8 shadow-2xl border border-slate-200"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex items-center justify-between pb-4 border-b border-slate-100 mb-5">
-              <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-gold">
-                {selectedNews.category}
-              </span>
-              <button
-                type="button"
-                onClick={() => setSelectedNews(null)}
-                className="p-1.5 text-slate-400 hover:text-ink rounded-lg hover:bg-slate-100 transition"
-                aria-label="Kapat"
-              >
-                <X size={20} />
-              </button>
-            </div>
-
-            {selectedNews.image && (
-              <div className="relative aspect-video w-full rounded-xl overflow-hidden mb-6 bg-slate-900 border border-slate-200">
-                <Image
-                  src={selectedNews.image}
-                  alt={selectedNews.title}
-                  fill
-                  className="object-cover"
-                  unoptimized
-                />
-              </div>
-            )}
-
-            <h3 className="font-serif text-2xl sm:text-3xl font-bold text-ink leading-snug">
-              {selectedNews.title}
-            </h3>
-
-            <p className="mt-2 text-xs text-slate-500">
-              {new Date(selectedNews.date).toLocaleDateString("tr-TR", {
-                day: "numeric",
-                month: "long",
-                year: "numeric",
-              })}
-            </p>
-
-            <div className="mt-5 pt-5 border-t border-slate-100 text-sm sm:text-base text-slate-700 leading-relaxed space-y-4">
-              <p className="font-medium text-ink">{selectedNews.summary}</p>
-              <p>
-                Milli Gençlik Derneği Genel Merkez koordinasyonunda 81 ilimizde çalışmalarımız kararlılıkla devam etmektedir. Burs, gençlik etkinlikleri ve eğitim faaliyetlerimizle ilgili tüm güncel gelişmeleri resmî portalımızdan takip edebilirsiniz.
-              </p>
-            </div>
-
-            <div className="mt-8 pt-4 border-t border-slate-100 flex justify-end">
-              <button
-                type="button"
-                onClick={() => setSelectedNews(null)}
-                className="btn-primary text-xs px-6"
-              >
-                Kapat
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </section>
   );
 }

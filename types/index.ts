@@ -283,6 +283,8 @@ export interface ContactConfig {
   xUrl?: string;
   instagramUrl?: string;
   youtubeUrl?: string;
+  whatsappUrl?: string;
+  donateUrl?: string;
 }
 
 export interface ErbakanQuoteItem {

@@ -112,6 +112,7 @@ export default function PublicationEditor() {
 
             <ImagePickerField
               label="Kapak Fotoğrafı"
+              recommendedSize="600 × 850 px (Dikey Kapak 3:4)"
               value={form.coverImage || ""}
               onChange={(url) => setForm({ ...form, coverImage: url })}
             />

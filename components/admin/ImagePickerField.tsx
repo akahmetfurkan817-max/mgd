@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
-import { Check, CloudUpload, Image as ImageIcon, Loader2, Search, Trash2, Upload, X } from "lucide-react";
+import { Check, CloudUpload, Image as ImageIcon, Loader2, Maximize2, Search, Trash2, Upload, X } from "lucide-react";
 import { uploadMedia } from "@/lib/uploadMedia";
 
 interface LibraryItem {
@@ -29,11 +29,13 @@ export default function ImagePickerField({
   label,
   value,
   onChange,
+  recommendedSize,
   placeholder = "/images/... veya /api/media/...",
 }: {
   label: string;
   value: string;
   onChange: (url: string) => void;
+  recommendedSize?: string;
   placeholder?: string;
 }) {
   const fileRef = useRef<HTMLInputElement>(null);
@@ -47,6 +49,11 @@ export default function ImagePickerField({
   const [libCategory, setLibCategory] = useState<string>("Tümü");
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
+  const [naturalDims, setNaturalDims] = useState<{ w: number; h: number } | null>(null);
+
+  useEffect(() => {
+    setNaturalDims(null);
+  }, [value]);
 
   const fetchUploaded = useCallback(async () => {
     setLoadingLib(true);
@@ -118,7 +125,19 @@ export default function ImagePickerField({
   return (
     <div className="space-y-2">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <label className="text-xs font-semibold text-slate-700">{label}</label>
+        <div className="flex flex-wrap items-center gap-2">
+          <label className="text-xs font-semibold text-slate-700">{label}</label>
+          {recommendedSize && (
+            <span className="inline-flex items-center gap-1 rounded-md border border-amber-200 bg-amber-50 px-2 py-0.5 text-[10px] font-bold text-amber-800">
+              <Maximize2 size={10} /> Önerilen: {recommendedSize}
+            </span>
+          )}
+          {naturalDims && (
+            <span className="inline-flex items-center rounded-md border border-slate-200 bg-slate-100 px-1.5 py-0.5 text-[10px] font-mono font-semibold text-slate-600">
+              Mevcut: {naturalDims.w} × {naturalDims.h} px
+            </span>
+          )}
+        </div>
         <div className="flex items-center gap-1.5">
           <button
             type="button"
@@ -183,7 +202,19 @@ export default function ImagePickerField({
             title="Değiştirmek için tıklayın veya görsel sürükleyin"
             className="relative h-14 w-20 shrink-0 overflow-hidden rounded-lg border border-slate-200 bg-slate-900 group"
           >
-            <Image src={value} alt="" fill className="object-cover" unoptimized />
+            <Image
+              src={value}
+              alt=""
+              fill
+              className="object-cover"
+              unoptimized
+              onLoad={(e) => {
+                const img = e.currentTarget;
+                if (img.naturalWidth && img.naturalHeight) {
+                  setNaturalDims({ w: img.naturalWidth, h: img.naturalHeight });
+                }
+              }}
+            />
             <span className="absolute inset-0 flex items-center justify-center bg-black/50 text-white opacity-0 group-hover:opacity-100 transition">
               <CloudUpload size={16} />
             </span>

@@ -212,6 +212,9 @@ export default function SlideEditor() {
             <span className="rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-bold text-primary">
               {slides.length} Slayt
             </span>
+            <span className="rounded-full border border-amber-200 bg-amber-50 px-2.5 py-0.5 text-[11px] font-bold text-amber-800">
+              Önerilen: 1920 × 800 px
+            </span>
           </div>
           <p className="mt-1 text-sm text-slate-600">
             Ana sayfada kaydırılabilir manşet slaytlarını ekleyin, sıralayın veya fotoğrafı doğrudan kartın üzerine sürükleyip değiştirin.
@@ -477,6 +480,7 @@ export default function SlideEditor() {
 
               <ImagePickerField
                 label="Slayt Arka Plan Fotoğrafı *"
+                recommendedSize="1920 × 800 px (Yatay Geniş)"
                 value={form.image}
                 onChange={(url) => setForm({ ...form, image: url })}
               />

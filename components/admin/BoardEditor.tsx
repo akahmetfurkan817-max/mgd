@@ -147,6 +147,7 @@ function BoardManager({
           <div className="sm:col-span-2">
             <ImagePickerField
               label="Genel Başkan Fotoğrafı"
+              recommendedSize="800 × 1000 px (Dikey Portre 4:5)"
               value={president.photo}
               onChange={(url) => setPresident({ ...president, photo: url })}
             />
@@ -224,6 +225,7 @@ function BoardManager({
               <Field label="Görev / Unvan" value={l.title} onChange={(v) => patch(l.id, { title: v })} />
               <ImagePickerField
                 label="Yönetici Fotoğrafı"
+                recommendedSize="800 × 1000 px (Dikey Portre 4:5)"
                 value={l.photo}
                 onChange={(url) => patch(l.id, { photo: url })}
               />
@@ -264,6 +266,7 @@ function BoardManager({
           />
           <ImagePickerField
             label="Fotoğraf"
+            recommendedSize="800 × 1000 px (Dikey Portre 4:5)"
             value={newLeader.photo}
             onChange={(url) => setNewLeader({ ...newLeader, photo: url })}
           />

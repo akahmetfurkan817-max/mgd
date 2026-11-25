@@ -454,6 +454,7 @@ export default function PioneersEditor() {
 
                 <ImagePickerField
                   label="Özel Kapak Fotoğrafı (Opsiyonel)"
+                  recommendedSize="1280 × 720 px (Yatay 16:9)"
                   value={videoForm.thumbnail || ""}
                   onChange={(url) => setVideoForm({ ...videoForm, thumbnail: url })}
                 />
@@ -626,6 +627,7 @@ export default function PioneersEditor() {
               <form onSubmit={handleSavePhoto} className="space-y-4">
                 <ImagePickerField
                   label="Fotoğraf *"
+                  recommendedSize="1200 × 900 px (Yatay 4:3)"
                   value={photoForm.url}
                   onChange={(url) => setPhotoForm({ ...photoForm, url })}
                 />
@@ -772,6 +774,7 @@ export default function PioneersEditor() {
 
                 <ImagePickerField
                   label="Kitap Kapak Görseli"
+                  recommendedSize="600 × 850 px (Dikey Kapak 3:4)"
                   value={bookForm.coverImage}
                   onChange={(url) => setBookForm({ ...bookForm, coverImage: url })}
                 />
@@ -975,11 +978,13 @@ export default function PioneersEditor() {
             <div className="mt-4 space-y-4">
               <ImagePickerField
                 label="Portre Fotoğrafı (Opsiyonel — Boş Bırakılabilir)"
+                recommendedSize="800 × 1000 px (Dikey Portre 4:5)"
                 value={current.portrait}
                 onChange={(url) => updateLocalCurrent((p) => ({ ...p, portrait: url }))}
               />
               <ImagePickerField
                 label="Özel Arka Plan Fotoğrafı (Opsiyonel — Boş Bırakılabilir)"
+                recommendedSize="1920 × 900 px (Yatay Geniş)"
                 value={current.backgroundImage || ""}
                 onChange={(url) => updateLocalCurrent((p) => ({ ...p, backgroundImage: url }))}
               />

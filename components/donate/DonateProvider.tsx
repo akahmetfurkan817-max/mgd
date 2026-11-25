@@ -1,7 +1,7 @@
 "use client";
 
-import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from "react";
-import DonateModal from "@/components/donate/DonateModal";
+import { createContext, useCallback, useContext, useMemo, type ReactNode } from "react";
+import { useRouter } from "next/navigation";
 
 interface DonateContextValue {
   openDonate: () => void;
@@ -10,15 +10,12 @@ interface DonateContextValue {
 const DonateContext = createContext<DonateContextValue | null>(null);
 
 export function DonateProvider({ children }: { children: ReactNode }) {
-  const [open, setOpen] = useState(false);
-  const openDonate = useCallback(() => setOpen(true), []);
+  const router = useRouter();
+  const openDonate = useCallback(() => {
+    router.push("/bagis");
+  }, [router]);
   const value = useMemo(() => ({ openDonate }), [openDonate]);
-  return (
-    <DonateContext.Provider value={value}>
-      {children}
-      <DonateModal open={open} onClose={() => setOpen(false)} />
-    </DonateContext.Provider>
-  );
+  return <DonateContext.Provider value={value}>{children}</DonateContext.Provider>;
 }
 
 export function useDonate(): DonateContextValue {

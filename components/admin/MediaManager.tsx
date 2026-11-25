@@ -338,8 +338,25 @@ export default function MediaManager() {
           Fotoğrafları buraya sürükleyip bırakın veya bilgisayarınızdan seçin
         </p>
         <p className="mt-1 text-xs text-slate-500">
-          JPG, PNG, WEBP, SVG — Birden fazla görsel seçebilirsiniz (Maks. 15 MB)
+          JPG, PNG, WEBP, SVG — Birden fazla görsel seçebilirsiniz (Otomatik bulut optimizasyonu)
         </p>
+        <div className="mt-4 mx-auto max-w-3xl flex flex-wrap items-center justify-center gap-1.5 text-[10px]">
+          <span className="rounded-md bg-amber-50 border border-amber-200 px-2 py-0.5 font-bold text-amber-800">
+            Manşet Slider: 1920 × 800 px
+          </span>
+          <span className="rounded-md bg-slate-100 border border-slate-200 px-2 py-0.5 font-semibold text-slate-700">
+            Haber / Arşiv: 1200 × 675 px
+          </span>
+          <span className="rounded-md bg-slate-100 border border-slate-200 px-2 py-0.5 font-semibold text-slate-700">
+            Video Kapak: 1280 × 720 px
+          </span>
+          <span className="rounded-md bg-slate-100 border border-slate-200 px-2 py-0.5 font-semibold text-slate-700">
+            Portreler: 800 × 1000 px
+          </span>
+          <span className="rounded-md bg-slate-100 border border-slate-200 px-2 py-0.5 font-semibold text-slate-700">
+            Kitap / Yayın: 600 × 850 px
+          </span>
+        </div>
         <button
           type="button"
           onClick={() => fileInputRef.current?.click()}

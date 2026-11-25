@@ -30,6 +30,7 @@ function ProvinceForm({ initial }: { initial: Province }) {
         <div className="sm:col-span-2">
           <ImagePickerField
             label="İl Başkanı Fotoğrafı"
+            recommendedSize="600 × 600 px (Kare 1:1)"
             value={draft.chairPhoto}
             onChange={(url) => update({ chairPhoto: url })}
           />

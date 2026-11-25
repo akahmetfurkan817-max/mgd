@@ -77,6 +77,7 @@ export default function NewsEditor() {
 
             <ImagePickerField
               label="Kapak Fotoğrafı"
+              recommendedSize="1200 × 675 px (Yatay 16:9)"
               value={form.image || ""}
               onChange={(url) => setForm({ ...form, image: url })}
             />

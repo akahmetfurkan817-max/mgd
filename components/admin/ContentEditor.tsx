@@ -213,6 +213,7 @@ export default function ContentEditor() {
 
         <ImagePickerField
           label="Ev ve Yurt Sorumluları Kart Fotoğrafı (İsteğe Bağlı)"
+          recommendedSize="1000 × 650 px (Yatay 3:2)"
           value={managementCards.dormitoryPhoto || ""}
           onChange={(url) => setManagementCards((prev) => ({ ...prev, dormitoryPhoto: url }))}
         />
@@ -386,6 +387,7 @@ export default function ContentEditor() {
           />
           <ImagePickerField
             label="Portre Fotoğrafı"
+            recommendedSize="800 × 1000 px (Dikey Portre 4:5)"
             value={erbakan.portrait || ""}
             onChange={(url) => setErbakan({ ...erbakan, portrait: url })}
           />
@@ -427,8 +429,30 @@ export default function ContentEditor() {
           <Field label="E-Posta" value={contact.email} onChange={(v) => setContact({ ...contact, email: v })} />
           <Field label="Genel Merkez Adresi" value={contact.address} onChange={(v) => setContact({ ...contact, address: v })} />
           <Field label="Üst Duyuru / Slogan" value={contact.headerNotice || ""} onChange={(v) => setContact({ ...contact, headerNotice: v })} />
-          <Field label="X (Twitter) Profil URL" value={contact.xUrl || ""} onChange={(v) => setContact({ ...contact, xUrl: v })} />
-          <Field label="Instagram Profil URL" value={contact.instagramUrl || ""} onChange={(v) => setContact({ ...contact, instagramUrl: v })} />
+          <Field
+            label="YouTube Kanal URL (Sağ Üst & Footer)"
+            value={contact.youtubeUrl || ""}
+            placeholder="https://www.youtube.com/@kanaliniz"
+            onChange={(v) => setContact({ ...contact, youtubeUrl: v })}
+          />
+          <Field
+            label="X (Twitter) Profil URL"
+            value={contact.xUrl || ""}
+            placeholder="https://x.com/..."
+            onChange={(v) => setContact({ ...contact, xUrl: v })}
+          />
+          <Field
+            label="Instagram Profil URL"
+            value={contact.instagramUrl || ""}
+            placeholder="https://www.instagram.com/..."
+            onChange={(v) => setContact({ ...contact, instagramUrl: v })}
+          />
+          <Field
+            label="Online Kart ile Bağış Linki (Opsiyonel — /bagis sayfasında görünür)"
+            value={contact.donateUrl || ""}
+            placeholder="https://..."
+            onChange={(v) => setContact({ ...contact, donateUrl: v })}
+          />
         </div>
       </Card>
 
