@@ -58,7 +58,11 @@ function useCollection<T>(name: string, seed: T[], combine: (remote: T[], seed: 
         const remote = snap.docs.map((d) => d.data() as T);
         setState({ data: combine(remote, seed), live: true });
         try {
-          localStorage.setItem(cacheKey, JSON.stringify(remote));
+          if (remote.length > 0) {
+            localStorage.setItem(cacheKey, JSON.stringify(remote));
+          } else {
+            localStorage.removeItem(cacheKey);
+          }
         } catch {}
       },
       (err) => console.error(`${name} dinlenemedi:`, err),
@@ -122,25 +126,27 @@ const combineLeaders = (remote: Leader[], seed: Leader[]): Leader[] => {
   return remote;
 };
 
+const EMPTY_APPLICATIONS: VolunteerApplication[] = [];
+
 const combineNews = (remote: NewsItem[], seed: NewsItem[]): NewsItem[] => {
   if (!remote || remote.length === 0) return seed;
   if (remote.length < 6) {
     const ids = new Set(remote.map((r) => r.id));
     return [...remote, ...seed.filter((s) => !ids.has(s.id))].sort((a, b) =>
-      b.date.localeCompare(a.date),
+      String(b.date || "").localeCompare(String(a.date || "")),
     );
   }
-  return [...remote].sort((a, b) => b.date.localeCompare(a.date));
+  return [...remote].sort((a, b) => String(b.date || "").localeCompare(String(a.date || "")));
 };
 
 const combinePublications = (remote: Publication[], seed: Publication[]): Publication[] => {
   if (!remote || remote.length === 0) return seed;
-  return [...remote].sort((a, b) => b.date.localeCompare(a.date));
+  return [...remote].sort((a, b) => String(b.date || "").localeCompare(String(a.date || "")));
 };
 
 const combineApplications = (remote: VolunteerApplication[], seed: VolunteerApplication[]): VolunteerApplication[] => {
   if (!remote || remote.length === 0) return seed;
-  return [...remote].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  return [...remote].sort((a, b) => String(b.createdAt || "").localeCompare(String(a.createdAt || "")));
 };
 
 export function useNews(): Live<NewsItem[]> {
@@ -165,7 +171,7 @@ export function usePublications(): Live<Publication[]> {
 }
 
 export function useApplications(): Live<VolunteerApplication[]> {
-  return useCollection<VolunteerApplication>(COLLECTIONS.applications, [], combineApplications);
+  return useCollection<VolunteerApplication>(COLLECTIONS.applications, EMPTY_APPLICATIONS, combineApplications);
 }
 
 const combineSocialPosts = (remote: SocialPost[], seed: SocialPost[]): SocialPost[] => {
@@ -188,18 +194,20 @@ export function useVideos(): Live<VideoItem[]> {
 
 export function useSiteSettings(): Live<SiteSettings> {
   const { data, live } = useDocument<SiteSettings>(COLLECTIONS.settings, "site", DEFAULT_SITE_SETTINGS);
+  const safe = data && typeof data === "object" ? data : DEFAULT_SITE_SETTINGS;
   return {
     data: {
       ...DEFAULT_SITE_SETTINGS,
-      ...data,
-      hero: { ...DEFAULT_SITE_SETTINGS.hero, ...(data.hero || {}) },
-      vision: { ...DEFAULT_SITE_SETTINGS.vision, ...(data.vision || {}) },
+      ...safe,
+      hero: { ...DEFAULT_SITE_SETTINGS.hero, ...(safe.hero && typeof safe.hero === "object" ? safe.hero : {}) },
+      stats: Array.isArray(safe.stats) && safe.stats.length > 0 ? safe.stats : DEFAULT_SITE_SETTINGS.stats,
+      vision: { ...DEFAULT_SITE_SETTINGS.vision, ...(safe.vision && typeof safe.vision === "object" ? safe.vision : {}) },
       contact: {
         ...DEFAULT_SITE_SETTINGS.contact!,
-        ...(data.contact || {}),
+        ...(safe.contact && typeof safe.contact === "object" ? safe.contact : {}),
       },
-      theme: { ...DEFAULT_SITE_SETTINGS.theme, ...(data.theme || {}) },
-      sections: data.sections && data.sections.length > 0 ? data.sections : DEFAULT_SECTIONS,
+      theme: { ...DEFAULT_SITE_SETTINGS.theme, ...(safe.theme && typeof safe.theme === "object" ? safe.theme : {}) },
+      sections: Array.isArray(safe.sections) && safe.sections.length > 0 ? safe.sections : DEFAULT_SECTIONS,
     },
     live,
   };

@@ -33,9 +33,16 @@ export default function ScrollReveal({
     const el = ref.current;
     if (!el) return;
 
-    if (typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setVisible(true);
-      return;
+    if (typeof window !== "undefined") {
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        setVisible(true);
+        return;
+      }
+      const rect = el.getBoundingClientRect();
+      if (rect.top < window.innerHeight + 80) {
+        setVisible(true);
+        if (once) return;
+      }
     }
 
     const observer = new IntersectionObserver(
@@ -50,13 +57,24 @@ export default function ScrollReveal({
         });
       },
       {
-        threshold: 0.08,
-        rootMargin: "0px 0px -40px 0px",
+        threshold: 0.01,
+        rootMargin: "0px 0px 80px 0px",
       },
     );
 
     observer.observe(el);
-    return () => observer.disconnect();
+
+    // Uzun bölümlerde veya sayfa yenilemede hiçbir bölüm görünmez (opacity: 0) kalmasın
+    const fallbackTimer = once
+      ? window.setTimeout(() => {
+          setVisible(true);
+        }, 900)
+      : null;
+
+    return () => {
+      observer.disconnect();
+      if (fallbackTimer !== null) window.clearTimeout(fallbackTimer);
+    };
   }, [once]);
 
   return (
