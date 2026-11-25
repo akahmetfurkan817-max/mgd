@@ -15,8 +15,14 @@ export const DEFAULT_SECTIONS: SectionBlock[] = [
   },
   {
     id: "team",
-    label: "Genel Başkan & Başkanlık Divanı (Kompakt)",
-    desc: "AGD tarzı kompakt Genel Başkan ve Başkanlık Divanı vitrini",
+    label: "Genel Başkan & Yönetim",
+    desc: "Genel Başkan vitrini, Başkanlık Divanı, şubeler, komisyonlar, tüzük ve dosya arşivi",
+    enabled: true,
+  },
+  {
+    id: "events",
+    label: "Program Takvimi",
+    desc: "İl kongreleri, üniversite buluşmaları ve ziyaret takvimi",
     enabled: true,
   },
   {
@@ -77,12 +83,6 @@ export const DEFAULT_SECTIONS: SectionBlock[] = [
     id: "reports",
     label: "Basın Bildirileri ve Haftalık Raporlar",
     desc: "Haftalık faaliyet raporları ve kamuoyu duyuruları",
-    enabled: false,
-  },
-  {
-    id: "events",
-    label: "Program Takvimi",
-    desc: "İl kongreleri, üniversite buluşmaları ve ziyaret takvimi",
     enabled: false,
   },
   {

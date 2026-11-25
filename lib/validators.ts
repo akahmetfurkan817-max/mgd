@@ -207,6 +207,7 @@ export function parseVideo(v: unknown): VideoItem | null {
   const title = str(v.title, 300);
   if (!title) return null;
   const cat = VIDEO_CATEGORIES.find((c) => c === v.category) || "Genel Başkan Konuşması";
+  const downloadUrl = str(v.downloadUrl, 1000);
   return {
     id: str(v.id, 100),
     title,
@@ -217,6 +218,8 @@ export function parseVideo(v: unknown): VideoItem | null {
     youtubeId: str(v.youtubeId, 50) || "dQw4w9WgXcQ",
     views: str(v.views, 50) || "1.000",
     description: str(v.description, 2000),
+    ...(downloadUrl ? { downloadUrl } : {}),
+    showDownload: Boolean(v.showDownload),
   };
 }
 
@@ -257,6 +260,8 @@ export function parseOncuSahsiyetList(v: unknown): OncuSahsiyet[] | null {
             category: str(vid.category, 100) || "Arşiv",
             description: str(vid.description, 2000),
             ...(str(vid.thumbnail, 500) ? { thumbnail: str(vid.thumbnail, 500) } : {}),
+            ...(str(vid.downloadUrl, 1000) ? { downloadUrl: str(vid.downloadUrl, 1000) } : {}),
+            showDownload: Boolean(vid.showDownload),
           }))
           .filter((vid) => Boolean(vid.title))
       : [];

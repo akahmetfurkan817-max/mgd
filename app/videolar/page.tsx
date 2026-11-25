@@ -4,7 +4,7 @@ import { Suspense, useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { ArrowLeft, Clock, Play, Tv, Video as VideoIcon } from "lucide-react";
+import { ArrowLeft, Clock, Download, Play, Tv, Video as VideoIcon } from "lucide-react";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import ScrollReveal from "@/components/ui/ScrollReveal";
@@ -143,11 +143,29 @@ function VideolarContent() {
                             </p>
                           </div>
 
-                          <div className="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-xs text-slate-400">
+                          <div className="mt-4 pt-3 border-t border-white/10 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-400">
                             <span>{video.date}</span>
-                            <span className="font-bold text-blue-300 group-hover:underline">
-                              Videoyu İzle →
-                            </span>
+                            <div className="flex items-center gap-2">
+                              {video.showDownload && video.downloadUrl?.trim() && (
+                                <a
+                                  href={
+                                    video.downloadUrl.trim().startsWith("/") ||
+                                    /^https?:\/\//i.test(video.downloadUrl.trim())
+                                      ? video.downloadUrl.trim()
+                                      : `https://${video.downloadUrl.trim()}`
+                                  }
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  onClick={(e) => e.stopPropagation()}
+                                  className="inline-flex items-center gap-1 rounded-lg bg-emerald-600/90 hover:bg-emerald-500 px-2.5 py-1 text-[11px] font-bold text-white transition"
+                                >
+                                  <Download size={12} /> Videoyu İndir
+                                </a>
+                              )}
+                              <span className="font-bold text-blue-300 group-hover:underline">
+                                Videoyu İzle →
+                              </span>
+                            </div>
                           </div>
                         </div>
                       </div>

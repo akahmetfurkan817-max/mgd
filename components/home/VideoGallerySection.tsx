@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Clock, Eye, Play } from "lucide-react";
+import { ArrowRight, Clock, Download, Eye, Play } from "lucide-react";
 import { useVideos } from "@/hooks/useSiteData";
 import VideoModal from "@/components/modals/VideoModal";
 import type { VideoItem } from "@/types";
@@ -94,6 +94,24 @@ export default function VideoGallerySection() {
               <p className="mt-2 text-xs sm:text-sm text-slate-300 line-clamp-2 max-w-xl">
                 {featured.description}
               </p>
+              {featured.showDownload && featured.downloadUrl?.trim() && (
+                <div className="mt-3">
+                  <a
+                    href={
+                      featured.downloadUrl.trim().startsWith("/") ||
+                      /^https?:\/\//i.test(featured.downloadUrl.trim())
+                        ? featured.downloadUrl.trim()
+                        : `https://${featured.downloadUrl.trim()}`
+                    }
+                    target="_blank"
+                    rel="noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                    className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 px-3.5 py-1.5 text-xs font-bold text-white shadow transition"
+                  >
+                    <Download size={13} /> Videoyu İndir
+                  </a>
+                </div>
+              )}
             </div>
           </div>
 
@@ -136,9 +154,27 @@ export default function VideoGallerySection() {
                       {vid.title}
                     </h4>
                   </div>
-                  <div className="flex items-center gap-2 text-[11px] text-slate-400 mt-2">
-                    <span>{vid.date}</span>
-                    {vid.views && <span>• {vid.views}</span>}
+                  <div className="flex flex-wrap items-center justify-between gap-2 text-[11px] text-slate-400 mt-2">
+                    <div className="flex items-center gap-2">
+                      <span>{vid.date}</span>
+                      {vid.views && <span>• {vid.views}</span>}
+                    </div>
+                    {vid.showDownload && vid.downloadUrl?.trim() && (
+                      <a
+                        href={
+                          vid.downloadUrl.trim().startsWith("/") ||
+                          /^https?:\/\//i.test(vid.downloadUrl.trim())
+                            ? vid.downloadUrl.trim()
+                            : `https://${vid.downloadUrl.trim()}`
+                        }
+                        target="_blank"
+                        rel="noreferrer"
+                        onClick={(e) => e.stopPropagation()}
+                        className="inline-flex items-center gap-1 rounded-md bg-emerald-600/90 hover:bg-emerald-500 px-2 py-0.5 text-[10px] font-bold text-white transition"
+                      >
+                        <Download size={10} /> Videoyu İndir
+                      </a>
+                    )}
                   </div>
                 </div>
               </div>

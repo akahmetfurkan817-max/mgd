@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { ExternalLink, Film, Pencil, Play, Plus, Trash2, Youtube } from "lucide-react";
+import { Download, ExternalLink, Film, Pencil, Play, Plus, Trash2, Youtube } from "lucide-react";
 import { Card, Field, IDLE, PageHeader, SaveStatus, type SaveState } from "@/components/admin/ui";
 import ImagePickerField from "@/components/admin/ImagePickerField";
 import { useVideos } from "@/hooks/useSiteData";
@@ -29,6 +29,8 @@ const empty = (): VideoItem => ({
   youtubeId: "",
   views: "1.000",
   description: "",
+  downloadUrl: "",
+  showDownload: false,
 });
 
 function extractYoutubeId(input: string): string {
@@ -167,6 +169,43 @@ export default function VideoEditor() {
                 onChange={(v) => setForm({ ...form, description: v })}
               />
 
+              {/* Videoyu İndir (Google Drive) Ayarı */}
+              <div className="rounded-xl border border-emerald-200 bg-emerald-50/50 p-3.5 space-y-3">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <Download size={15} className="text-emerald-700" />
+                    <span className="text-xs font-bold text-emerald-950">Videoyu İndir Butonu</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setForm((prev) => ({ ...prev, showDownload: !prev.showDownload }))}
+                    className={`rounded-full px-3 py-1 text-[11px] font-bold transition ${
+                      form.showDownload
+                        ? "bg-emerald-600 text-white shadow-sm"
+                        : "bg-slate-200 text-slate-600 hover:bg-slate-300"
+                    }`}
+                  >
+                    {form.showDownload ? "Aktif (Görünür)" : "Pasif (Gizli)"}
+                  </button>
+                </div>
+
+                <div>
+                  <label className="mb-1 block text-[11px] font-semibold text-slate-700">
+                    Google Drive / İndirme Bağlantısı
+                  </label>
+                  <input
+                    type="text"
+                    value={form.downloadUrl || ""}
+                    onChange={(e) => setForm({ ...form, downloadUrl: e.target.value })}
+                    placeholder="https://drive.google.com/file/d/... veya klasör linki"
+                    className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-mono focus:border-emerald-600 focus:outline-none"
+                  />
+                  <p className="mt-1 text-[10.5px] text-slate-500">
+                    Aktif edildiğinde ve link girildiğinde videonun altında &ldquo;Videoyu İndir&rdquo; butonu görünür.
+                  </p>
+                </div>
+              </div>
+
               <div className="flex flex-wrap items-center gap-2 pt-2">
                 <button
                   type="submit"
@@ -223,9 +262,14 @@ export default function VideoEditor() {
 
                   <div className="flex-1 min-w-0 flex flex-col justify-between">
                     <div>
-                      <div className="flex items-center gap-2 mb-1">
+                      <div className="flex flex-wrap items-center gap-2 mb-1">
                         <span className="text-[10px] font-bold uppercase tracking-wider text-gold">{vid.category}</span>
                         <span className="text-[11px] text-slate-400">{vid.date}</span>
+                        {vid.showDownload && vid.downloadUrl && (
+                          <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 border border-emerald-200 px-2 py-0.5 text-[10px] font-bold text-emerald-700">
+                            <Download size={10} /> İndir Aktif
+                          </span>
+                        )}
                       </div>
                       <h3 className="text-sm font-bold text-ink line-clamp-2 mb-1">{vid.title}</h3>
                       <p className="text-xs text-slate-500 line-clamp-2">{vid.description}</p>

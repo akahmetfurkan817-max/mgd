@@ -48,12 +48,25 @@ export default function DynamicHomeSections() {
   const { data: settings } = useSiteSettings();
   const remoteSections = settings.sections || [];
   const enabledCount = remoteSections.filter((s) => s.enabled).length;
-  const sections =
-    remoteSections.length > 0 && enabledCount <= 8
+  const baseSections =
+    remoteSections.length > 0 && enabledCount <= 9
       ? remoteSections
       : DEFAULT_SECTIONS;
 
-  const activeSections = sections.filter((sec) => sec.enabled);
+  const activeSections = baseSections.filter((sec) => sec.enabled);
+
+  // Yönetim (team) bölümü aktifse ve takvim (events) eski Firestore kaydında kapalı kaldıysa hemen altına yerleştir
+  if (!activeSections.some((s) => s.id === "events")) {
+    const teamIdx = activeSections.findIndex((s) => s.id === "team");
+    const defaultEvents = DEFAULT_SECTIONS.find((s) => s.id === "events");
+    if (defaultEvents) {
+      if (teamIdx >= 0) {
+        activeSections.splice(teamIdx + 1, 0, defaultEvents);
+      } else {
+        activeSections.push(defaultEvents);
+      }
+    }
+  }
 
   return (
     <>

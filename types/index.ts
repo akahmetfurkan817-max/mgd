@@ -213,6 +213,8 @@ export interface VideoItem {
   youtubeId?: string;
   views?: string;
   description: string;
+  downloadUrl?: string;
+  showDownload?: boolean;
 }
 
 export interface PrincipleItem {

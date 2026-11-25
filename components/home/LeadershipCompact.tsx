@@ -4,6 +4,8 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
+  ArrowRight,
+  ArrowUpRight,
   Briefcase,
   Folder,
   Home,
@@ -23,157 +25,216 @@ export default function LeadershipCompact() {
 
   const showDormitory = Boolean(settings.managementCards?.showDormitory);
   const dormitoryPhoto = settings.managementCards?.dormitoryPhoto || "";
+  const presidentSlug = slugify(president.name) || "ahmet-ozvatan";
+
+  const quickItems: {
+    key: string;
+    title: string;
+    desc: string;
+    tag: string;
+    icon: typeof Users;
+    href?: string;
+    onClick?: () => void;
+    photo?: string;
+  }[] = [
+    {
+      key: "divan",
+      title: "Başkanlık Divanı",
+      desc: `${leaders.length} kişilik Genel Merkez yönetim kadromuz`,
+      tag: "Yönetim",
+      icon: Users,
+      href: "/baskanlik-divani",
+    },
+    {
+      key: "subeler",
+      title: "Şube Başkanları",
+      desc: "81 ilde aktif teşkilat ve il başkanlıklarımız",
+      tag: "Teşkilat",
+      icon: Map,
+      href: "/#teskilat",
+    },
+    ...(showDormitory
+      ? [
+          {
+            key: "yurt",
+            title: "Ev ve Yurt Sorumluları",
+            desc: "81 ilde öğrenci evleri ve yurt sorumlularımız",
+            tag: "Teşkilat",
+            icon: Home,
+            href: "/#teskilat",
+            photo: dormitoryPhoto,
+          },
+        ]
+      : []),
+    {
+      key: "komisyonlar",
+      title: "Komisyonlar",
+      desc: "Üniversite, ortaöğretim ve ihtisas komisyonları",
+      tag: "Birimler",
+      icon: Briefcase,
+      href: "/faaliyetler",
+    },
+    {
+      key: "tuzuk",
+      title: "Tüzüğümüz",
+      desc: "Milli Gençlik Derneği resmî kuruluş esasları",
+      tag: "Kurumsal",
+      icon: ScrollText,
+      onClick: () => setActiveDoc("tuzuk"),
+    },
+    {
+      key: "arsiv",
+      title: "Dosya Arşivi",
+      desc: "Kurumsal kimlik, konsept ve dönem dokümanları",
+      tag: "Arşiv",
+      icon: Folder,
+      href: "/dosya-arsivi",
+    },
+  ];
 
   return (
-    <section id="yonetim" className="bg-white py-14 sm:py-20">
+    <section id="yonetim" className="bg-slate-50/80 py-16 sm:py-20 border-y border-slate-200/70">
       <div className="container-x">
-        {/* Başlık: | Yönetim */}
-        <div className="mb-7 flex items-center gap-3">
-          <span className="h-7 w-1 rounded-full bg-[#0071BC]" />
-          <h2 className="font-display text-2xl sm:text-3xl font-extrabold tracking-tight text-[#0A365C]">
-            Yönetim
-          </h2>
+        {/* Bölüm Başlığı */}
+        <div className="mb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+          <div>
+            <span className="inline-flex items-center gap-2 text-[11px] font-extrabold uppercase tracking-[0.2em] text-secondary mb-2">
+              <span className="h-[2px] w-6 rounded-full bg-gold" />
+              Kurumsal Yapı &amp; Teşkilat
+            </span>
+            <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-primary-dark">
+              Yönetim ve Teşkilat
+            </h2>
+          </div>
+
+          <Link
+            href="/baskanlik-divani"
+            className="inline-flex items-center gap-1.5 text-xs font-bold text-primary hover:text-secondary transition self-start sm:self-auto"
+          >
+            Tüm Yönetim Kadrosu <ArrowRight size={14} />
+          </Link>
         </div>
 
-        {/* Ana Grid: Sol Genel Başkan Portresi + Sağ Kurumsal Kartlar */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-5 items-stretch">
-          {/* Sol: Genel Başkan Portre Kartı (4 sütun) */}
-          <Link
-            href={`/baskanlik-divani/${slugify(president.name) || "ahmet-ozvatan"}`}
-            className="lg:col-span-4 group relative block min-h-[360px] sm:min-h-[410px] overflow-hidden rounded-2xl bg-[#0A365C] shadow-sm transition-transform duration-300 hover:-translate-y-1 hover:shadow-xl"
-          >
-            <Image
-              src={president.photo || "/images/ahmet-ozvatan.jpg"}
-              alt={president.name}
-              fill
-              sizes="(max-width: 1024px) 100vw, 34vw"
-              className="object-cover object-top transition-transform duration-500 group-hover:scale-105"
-              unoptimized
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#06223C]/95 via-[#06223C]/25 to-transparent" />
-            <div className="absolute bottom-0 inset-x-0 p-6">
-              <h3 className="font-display text-xl sm:text-2xl font-extrabold text-white tracking-tight">
+        {/* Üst Vurgu: Genel Başkan Yatay Editoryal Kart */}
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#071832] via-[#0B254A] to-[#12366B] text-white shadow-xl border border-white/10 mb-6">
+          <div className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-gold/15 blur-3xl" />
+          <div className="pointer-events-none absolute -left-24 -bottom-24 h-64 w-64 rounded-full bg-blue-400/10 blur-3xl" />
+
+          <div className="relative grid grid-cols-1 md:grid-cols-12 items-center gap-6 sm:gap-8 p-6 sm:p-8 lg:p-10">
+            {/* Genel Başkan Portresi */}
+            <div className="md:col-span-4 lg:col-span-3 flex justify-center md:justify-start">
+              <Link
+                href={`/baskanlik-divani/${presidentSlug}`}
+                className="group relative block aspect-[4/4.6] w-52 sm:w-56 md:w-full max-w-[240px] overflow-hidden rounded-2xl border-2 border-gold/60 ring-4 ring-gold/15 bg-[#061529] shadow-2xl"
+              >
+                <Image
+                  src={president.photo || "/images/ahmet-ozvatan.jpg"}
+                  alt={president.name}
+                  fill
+                  sizes="(max-width: 768px) 224px, 240px"
+                  className="object-cover object-top transition-transform duration-500 group-hover:scale-105"
+                  unoptimized
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#061529]/50 via-transparent to-transparent" />
+              </Link>
+            </div>
+
+            {/* Genel Başkan Bilgisi ve Aksiyonlar */}
+            <div className="md:col-span-8 lg:col-span-9 text-center md:text-left">
+              <span className="inline-flex items-center rounded-full bg-gold/20 border border-gold/40 px-3.5 py-1 text-[11px] font-extrabold uppercase tracking-[0.16em] text-gold-light">
+                MGD Genel Başkanı
+              </span>
+
+              <h3 className="mt-3 font-display text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-white">
                 {president.name}
               </h3>
-              <p className="mt-0.5 text-xs sm:text-sm font-medium text-blue-100/90">
-                {president.title || "MGD Genel Başkanı"}
+              <p className="mt-1 text-sm font-semibold text-blue-200/90">
+                {president.title || "Milli Gençlik Derneği Genel Başkanı"}
               </p>
-            </div>
-          </Link>
 
-          {/* Sağ: 2 Sıra Kurumsal Kartlar (8 sütun) */}
-          <div className="lg:col-span-8 flex flex-col gap-4 sm:gap-5">
-            {/* Üst Sıra: Koyu Lacivert (#0A365C) */}
-            <div className={`grid grid-cols-1 gap-4 sm:gap-5 flex-1 ${showDormitory ? "sm:grid-cols-3" : "sm:grid-cols-2"}`}>
-              <Link
-                href="/baskanlik-divani"
-                className="group flex flex-col justify-between min-h-[168px] sm:min-h-[195px] rounded-2xl bg-[#0A365C] p-6 text-white transition-all duration-200 hover:-translate-y-1 hover:bg-[#0D4270] hover:shadow-lg"
-              >
-                <Users size={26} strokeWidth={1.6} className="text-[#4DA8DA]" />
-                <div>
-                  <h3 className="font-display text-base sm:text-[17px] font-bold text-white">
-                    Başkanlık Divanı
-                  </h3>
-                  <p className="mt-1 text-xs text-blue-100/75">
-                    {leaders.length} üye
-                  </p>
-                </div>
-              </Link>
-
-              <Link
-                href="/#teskilat"
-                className="group flex flex-col justify-between min-h-[168px] sm:min-h-[195px] rounded-2xl bg-[#0A365C] p-6 text-white transition-all duration-200 hover:-translate-y-1 hover:bg-[#0D4270] hover:shadow-lg"
-              >
-                <Map size={26} strokeWidth={1.6} className="text-[#4DA8DA]" />
-                <div>
-                  <h3 className="font-display text-base sm:text-[17px] font-bold text-white">
-                    Şube Başkanları
-                  </h3>
-                  <p className="mt-1 text-xs text-blue-100/75">
-                    81 il teşkilatı
-                  </p>
-                </div>
-              </Link>
-
-              {showDormitory && (
-                <Link
-                  href="/#teskilat"
-                  className="group relative overflow-hidden flex flex-col justify-between min-h-[168px] sm:min-h-[195px] rounded-2xl bg-[#0A365C] p-6 text-white transition-all duration-200 hover:-translate-y-1 hover:bg-[#0D4270] hover:shadow-lg"
-                >
-                  {dormitoryPhoto && (
-                    <>
-                      <Image
-                        src={dormitoryPhoto}
-                        alt="Ev ve Yurt Sorumluları"
-                        fill
-                        className="object-cover opacity-35 group-hover:scale-105 transition-transform duration-500"
-                        unoptimized
-                      />
-                      <div className="absolute inset-0 bg-[#0A365C]/65" />
-                    </>
-                  )}
-                  <Home size={26} strokeWidth={1.6} className="relative z-10 text-[#4DA8DA]" />
-                  <div className="relative z-10">
-                    <h3 className="font-display text-base sm:text-[17px] font-bold text-white">
-                      Ev ve Yurt Sorumluları
-                    </h3>
-                    <p className="mt-1 text-xs text-blue-100/75">
-                      81 ilde sorumlu
-                    </p>
-                  </div>
-                </Link>
+              {(president.message || president.bio) && (
+                <p className="mt-4 max-w-2xl text-xs sm:text-sm leading-relaxed text-slate-200/90 line-clamp-3 mx-auto md:mx-0">
+                  {president.message || president.bio}
+                </p>
               )}
-            </div>
 
-            {/* Alt Sıra: Kurumsal Parlak Mavi (#006BB6) */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5 flex-1">
-              <Link
-                href="/faaliyetler"
-                className="group flex flex-col justify-between min-h-[168px] sm:min-h-[195px] rounded-2xl bg-[#006BB6] p-6 text-white transition-all duration-200 hover:-translate-y-1 hover:bg-[#0078CC] hover:shadow-lg"
-              >
-                <Briefcase size={26} strokeWidth={1.6} className="text-white/90" />
-                <div>
-                  <h3 className="font-display text-base sm:text-[17px] font-bold text-white">
-                    Komisyonlar
-                  </h3>
-                  <p className="mt-1 text-xs text-blue-100/85">
-                    Komisyon ve görev alanları
-                  </p>
-                </div>
-              </Link>
-
-              <button
-                type="button"
-                onClick={() => setActiveDoc("tuzuk")}
-                className="group flex flex-col justify-between min-h-[168px] sm:min-h-[195px] rounded-2xl bg-[#006BB6] p-6 text-left text-white transition-all duration-200 hover:-translate-y-1 hover:bg-[#0078CC] hover:shadow-lg"
-              >
-                <ScrollText size={26} strokeWidth={1.6} className="text-white/90" />
-                <div>
-                  <h3 className="font-display text-base sm:text-[17px] font-bold text-white">
-                    Tüzüğümüz
-                  </h3>
-                  <p className="mt-1 text-xs text-blue-100/85">
-                    Derneğimizin kuruluş esasları
-                  </p>
-                </div>
-              </button>
-
-              <Link
-                href="/dosya-arsivi"
-                className="group flex flex-col justify-between min-h-[168px] sm:min-h-[195px] rounded-2xl bg-[#006BB6] p-6 text-white transition-all duration-200 hover:-translate-y-1 hover:bg-[#0078CC] hover:shadow-lg"
-              >
-                <Folder size={26} strokeWidth={1.6} className="text-white/90" />
-                <div>
-                  <h3 className="font-display text-base sm:text-[17px] font-bold text-white">
-                    Dosya Arşivi
-                  </h3>
-                  <p className="mt-1 text-xs text-blue-100/85">
-                    Kurumsal kimlik ve dönem dosyaları
-                  </p>
-                </div>
-              </Link>
+              <div className="mt-6 flex flex-wrap items-center justify-center md:justify-start gap-3">
+                <Link
+                  href={`/baskanlik-divani/${presidentSlug}`}
+                  className="inline-flex items-center gap-2 rounded-xl bg-gold hover:bg-gold-light px-5 py-2.5 text-xs sm:text-sm font-extrabold text-primary-dark shadow-md transition"
+                >
+                  Özgeçmiş &amp; Mesaj <ArrowRight size={15} />
+                </Link>
+                <Link
+                  href="/baskanlik-divani"
+                  className="inline-flex items-center gap-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/15 px-5 py-2.5 text-xs sm:text-sm font-bold text-white transition"
+                >
+                  <Users size={15} /> Başkanlık Divanı ({leaders.length})
+                </Link>
+              </div>
             </div>
           </div>
+        </div>
+
+        {/* Alt Kurumsal Erişim Kartları — Özgün Açık Zeminli Mimari Grid */}
+        <div
+          className={`grid grid-cols-1 sm:grid-cols-2 gap-4 ${
+            quickItems.length >= 6 ? "lg:grid-cols-3" : "lg:grid-cols-5"
+          }`}
+        >
+          {quickItems.map((item) => {
+            const Icon = item.icon;
+            const cardInner = (
+              <>
+                {item.photo && (
+                  <>
+                    <Image
+                      src={item.photo}
+                      alt={item.title}
+                      fill
+                      className="object-cover opacity-15 group-hover:opacity-25 group-hover:scale-105 transition-all duration-500"
+                      unoptimized
+                    />
+                  </>
+                )}
+                <div className="relative z-10 flex items-start justify-between gap-3">
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/8 text-primary border border-primary/10 group-hover:bg-primary group-hover:text-white transition-colors duration-200">
+                    <Icon size={20} strokeWidth={1.8} />
+                  </div>
+                  <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 group-hover:bg-blue-50 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-slate-500 group-hover:text-primary transition-colors">
+                    {item.tag}
+                    <ArrowUpRight size={12} className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                  </span>
+                </div>
+
+                <div className="relative z-10 mt-4">
+                  <h3 className="font-display text-base font-extrabold text-ink group-hover:text-primary transition-colors">
+                    {item.title}
+                  </h3>
+                  <p className="mt-1 text-xs leading-relaxed text-slate-500">
+                    {item.desc}
+                  </p>
+                </div>
+              </>
+            );
+
+            const baseClass =
+              "group relative overflow-hidden flex flex-col justify-between rounded-2xl border border-slate-200/90 bg-white p-5 text-left shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-primary/40 hover:shadow-lg";
+
+            if (item.onClick) {
+              return (
+                <button key={item.key} type="button" onClick={item.onClick} className={baseClass}>
+                  {cardInner}
+                </button>
+              );
+            }
+
+            return (
+              <Link key={item.key} href={item.href || "/"} className={baseClass}>
+                {cardInner}
+              </Link>
+            );
+          })}
         </div>
       </div>
 

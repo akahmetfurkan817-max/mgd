@@ -1,8 +1,15 @@
 "use client";
 
 import { useEffect } from "react";
-import { Share2, Video, X } from "lucide-react";
+import { Download, Share2, X } from "lucide-react";
 import type { VideoItem } from "@/types";
+
+function normalizeDownloadUrl(raw?: string): string {
+  const trimmed = (raw || "").trim();
+  if (!trimmed) return "";
+  if (trimmed.startsWith("/") || /^https?:\/\//i.test(trimmed)) return trimmed;
+  return `https://${trimmed}`;
+}
 
 interface VideoModalProps {
   video: VideoItem | null;
@@ -86,13 +93,25 @@ export default function VideoModal({ video, onClose }: VideoModalProps) {
               </div>
             </div>
 
-            <button
-              type="button"
-              onClick={handleShare}
-              className="px-3 py-1.5 text-xs font-medium text-slate-300 bg-slate-800 hover:bg-slate-700 rounded-lg flex items-center gap-1.5 transition self-start border border-slate-700"
-            >
-              <Share2 size={13} /> Paylaş
-            </button>
+            <div className="flex flex-wrap items-center gap-2 self-start">
+              {video.showDownload && normalizeDownloadUrl(video.downloadUrl) && (
+                <a
+                  href={normalizeDownloadUrl(video.downloadUrl)}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="px-3.5 py-1.5 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-500 rounded-lg inline-flex items-center gap-1.5 transition shadow-sm"
+                >
+                  <Download size={13} /> Videoyu İndir
+                </a>
+              )}
+              <button
+                type="button"
+                onClick={handleShare}
+                className="px-3 py-1.5 text-xs font-medium text-slate-300 bg-slate-800 hover:bg-slate-700 rounded-lg flex items-center gap-1.5 transition border border-slate-700"
+              >
+                <Share2 size={13} /> Paylaş
+              </button>
+            </div>
           </div>
 
           <p className="text-sm text-slate-300 leading-relaxed border-t border-slate-800 pt-3">

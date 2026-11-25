@@ -18,6 +18,8 @@ export interface SahsiyetVideo {
   category: string;
   description: string;
   thumbnail?: string;
+  downloadUrl?: string;
+  showDownload?: boolean;
 }
 
 export interface SahsiyetPhoto {

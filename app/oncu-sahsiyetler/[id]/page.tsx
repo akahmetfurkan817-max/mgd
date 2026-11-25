@@ -56,6 +56,8 @@ export default function OncuSahsiyetDetayPage() {
       thumbnail: getVideoThumb(vid),
       youtubeId: vid.youtubeId,
       description: vid.description,
+      downloadUrl: vid.downloadUrl,
+      showDownload: vid.showDownload,
     });
   };
 
@@ -284,11 +286,29 @@ export default function OncuSahsiyetDetayPage() {
                             <p className="text-xs text-slate-500 mt-1 line-clamp-2">{vid.description}</p>
                           </div>
                         </div>
-                        <div className="px-5 py-3.5 flex items-center justify-between text-xs text-slate-400 border-t border-slate-100">
+                        <div className="px-5 py-3.5 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-400 border-t border-slate-100">
                           <span>{vid.date}</span>
-                          <span className="text-primary font-bold flex items-center gap-1">
-                            <Youtube size={14} /> İzle
-                          </span>
+                          <div className="flex items-center gap-2.5">
+                            {vid.showDownload && vid.downloadUrl?.trim() && (
+                              <a
+                                href={
+                                  vid.downloadUrl.trim().startsWith("/") ||
+                                  /^https?:\/\//i.test(vid.downloadUrl.trim())
+                                    ? vid.downloadUrl.trim()
+                                    : `https://${vid.downloadUrl.trim()}`
+                                }
+                                target="_blank"
+                                rel="noreferrer"
+                                onClick={(e) => e.stopPropagation()}
+                                className="inline-flex items-center gap-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 px-2.5 py-1 text-[11px] font-bold text-white transition"
+                              >
+                                <Download size={12} /> Videoyu İndir
+                              </a>
+                            )}
+                            <span className="text-primary font-bold flex items-center gap-1">
+                              <Youtube size={14} /> İzle
+                            </span>
+                          </div>
                         </div>
                       </div>
                     </ScrollReveal>
