@@ -163,7 +163,7 @@ export default function LeadershipCompact() {
               <div className="mt-6 flex flex-wrap items-center justify-center md:justify-start gap-3">
                 <Link
                   href={`/baskanlik-divani/${presidentSlug}`}
-                  className="inline-flex items-center gap-2 rounded-xl bg-gold hover:bg-gold-light px-5 py-2.5 text-xs sm:text-sm font-extrabold text-primary-dark shadow-md transition"
+                  className="inline-flex items-center gap-2 rounded-xl bg-white hover:bg-blue-50 px-5 py-2.5 text-xs sm:text-sm font-extrabold text-primary-dark shadow-md transition"
                 >
                   Özgeçmiş &amp; Mesaj <ArrowRight size={15} />
                 </Link>
