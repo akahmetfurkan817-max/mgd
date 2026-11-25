@@ -48,34 +48,34 @@ export default function BaskanlikDivaniPage() {
 
           {/* Genel Başkan Öne Çıkan Kart (Üstte Ortada, Diğerleriyle Aynı Portre Tarzında & Daha Büyük/Seçkin) */}
           {president && (
-            <ScrollReveal delay={50} y={22} duration={700} className="mb-14">
-              <div className="group mx-auto flex w-full max-w-[340px] sm:max-w-[360px] flex-col">
+            <ScrollReveal delay={50} y={22} duration={700} className="mb-16">
+              <div className="group mx-auto flex w-full max-w-[400px] sm:max-w-[440px] lg:max-w-[460px] flex-col">
                 {/* Büyük & Seçkin Portre Kutusu */}
                 <Link
                   href={`/baskanlik-divani/${presidentSlug}`}
-                  className="relative aspect-[4/4.3] w-full overflow-hidden rounded-3xl bg-[#07182E] border-2 border-gold/60 ring-4 ring-gold/15 shadow-2xl shadow-black/40 block"
+                  className="relative aspect-[4/4.3] w-full overflow-hidden rounded-3xl bg-[#07182E] border-2 border-gold/70 ring-4 ring-gold/20 shadow-2xl shadow-black/50 block"
                 >
                   <Image
                     src={president.photo || "/images/ahmet-ozvatan.jpg"}
                     alt={president.name}
                     fill
-                    sizes="(max-width: 640px) 100vw, 360px"
+                    sizes="(max-width: 640px) 100vw, 460px"
                     className="object-cover object-top transition-transform duration-500 group-hover:scale-105"
                     unoptimized
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent" />
-                  <span className="absolute top-3.5 left-3.5 rounded-full bg-gold px-3.5 py-1 text-[10.5px] font-extrabold uppercase tracking-[0.14em] text-primary-dark shadow-lg">
+                  <span className="absolute top-4 left-4 rounded-full bg-gold px-4 py-1.5 text-xs font-extrabold uppercase tracking-[0.14em] text-primary-dark shadow-lg">
                     Genel Başkan
                   </span>
                 </Link>
 
                 {/* Alt Seçkin İsim / Unvan + Özgeçmiş & Sosyal Medya Bandı */}
-                <div className="mt-3 flex flex-col justify-between rounded-2xl bg-gradient-to-b from-white/[0.14] to-white/[0.08] group-hover:from-white/[0.18] group-hover:to-white/[0.11] border border-gold/35 px-6 py-5 text-center shadow-xl backdrop-blur-md transition-all duration-300">
+                <div className="mt-3.5 flex flex-col justify-between rounded-2xl bg-gradient-to-b from-white/[0.15] to-white/[0.08] group-hover:from-white/[0.20] group-hover:to-white/[0.12] border border-gold/40 px-7 py-6 text-center shadow-xl backdrop-blur-md transition-all duration-300">
                   <Link href={`/baskanlik-divani/${presidentSlug}`} className="block">
-                    <h2 className="font-display text-xl sm:text-2xl font-extrabold text-white group-hover:text-gold-light transition-colors leading-snug">
+                    <h2 className="font-display text-2xl sm:text-3xl font-extrabold text-white group-hover:text-gold-light transition-colors leading-snug">
                       {president.name}
                     </h2>
-                    <p className="mt-1 text-xs sm:text-sm font-semibold text-gold-light/90">
+                    <p className="mt-1.5 text-sm sm:text-base font-semibold text-gold-light/90">
                       {president.title}
                     </p>
                   </Link>

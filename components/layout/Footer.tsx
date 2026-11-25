@@ -48,19 +48,6 @@ export default function Footer() {
   return (
     <>
       <footer id="iletisim" className="relative overflow-hidden bg-[#061529] text-slate-300 border-t border-white/10">
-        {/* Sağ Arka Plan Büyük Selçuklu Yıldızı Filigranı (TÜGVA ilhamlı) */}
-        <svg
-          aria-hidden="true"
-          viewBox="0 0 200 200"
-          className="pointer-events-none select-none absolute -right-16 bottom-6 h-[420px] w-[420px] text-white/[0.045]"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="12"
-        >
-          <rect x="42" y="42" width="116" height="116" rx="4" />
-          <rect x="42" y="42" width="116" height="116" rx="4" transform="rotate(45 100 100)" />
-        </svg>
-
         {/* E-Bülten Şeridi */}
         <div className="relative border-b border-white/10 bg-gradient-to-r from-[#0B2245] via-primary to-[#0D2B5C]">
           <div className="container-x py-9 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
