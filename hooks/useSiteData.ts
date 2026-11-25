@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { collection, doc, onSnapshot } from "firebase/firestore";
-import { COLLECTIONS, getDb } from "@/lib/firebase";
+import { COLLECTIONS, getDb, isFirebaseConfigured } from "@/lib/firebase";
 import { NEWS } from "@/data/news";
 import { PROVINCES } from "@/data/provinces";
 import { LEADERS, PRESIDENT } from "@/data/leaders";
@@ -33,30 +33,45 @@ interface Live<T> {
   data: T;
   /** Firestore'dan canlı veri geldi mi (false: örnek veri gösteriliyor) */
   live: boolean;
+  /** İlk canlı veri veya önbellek henüz yüklenmediyse true */
+  loading?: boolean;
 }
 
+const memoryCache = new Map<string, unknown>();
+
 function useCollection<T>(name: string, seed: T[], combine: (remote: T[], seed: T[]) => T[]): Live<T[]> {
-  const [state, setState] = useState<Live<T[]>>({ data: seed, live: false });
+  const cacheKey = `mgd_col_${name}`;
+  const [state, setState] = useState<Live<T[]>>(() => {
+    const mem = memoryCache.get(cacheKey);
+    if (Array.isArray(mem)) {
+      return { data: combine(mem as T[], seed), live: true, loading: false };
+    }
+    return { data: seed, live: false, loading: isFirebaseConfigured };
+  });
 
   useEffect(() => {
-    const cacheKey = `mgd_col_${name}`;
     try {
       const cached = localStorage.getItem(cacheKey);
       if (cached) {
         const parsed = JSON.parse(cached);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          setState({ data: combine(parsed, seed), live: true });
+          memoryCache.set(cacheKey, parsed);
+          setState({ data: combine(parsed, seed), live: true, loading: false });
         }
       }
     } catch {}
 
     const db = getDb();
-    if (!db) return;
+    if (!db) {
+      setState((prev) => (prev.loading ? { ...prev, loading: false } : prev));
+      return;
+    }
     return onSnapshot(
       collection(db, name),
       (snap) => {
         const remote = snap.docs.map((d) => d.data() as T);
-        setState({ data: combine(remote, seed), live: true });
+        memoryCache.set(cacheKey, remote);
+        setState({ data: combine(remote, seed), live: true, loading: false });
         try {
           if (remote.length > 0) {
             localStorage.setItem(cacheKey, JSON.stringify(remote));
@@ -65,46 +80,64 @@ function useCollection<T>(name: string, seed: T[], combine: (remote: T[], seed: 
           }
         } catch {}
       },
-      (err) => console.error(`${name} dinlenemedi:`, err),
+      (err) => {
+        console.error(`${name} dinlenemedi:`, err);
+        setState((prev) => (prev.loading ? { ...prev, loading: false } : prev));
+      },
     );
-  }, [name, seed, combine]);
+  }, [cacheKey, name, seed, combine]);
 
   return state;
 }
 
 function useDocument<T>(col: string, id: string, seed: T): Live<T> {
-  const [state, setState] = useState<Live<T>>({ data: seed, live: false });
+  const cacheKey = `mgd_doc_${col}_${id}`;
+  const [state, setState] = useState<Live<T>>(() => {
+    const mem = memoryCache.get(cacheKey);
+    if (mem && typeof mem === "object") {
+      return { data: { ...seed, ...(mem as Partial<T>) }, live: true, loading: false };
+    }
+    return { data: seed, live: false, loading: isFirebaseConfigured };
+  });
 
   useEffect(() => {
-    const cacheKey = `mgd_doc_${col}_${id}`;
     try {
       const cached = localStorage.getItem(cacheKey);
       if (cached) {
         const parsed = JSON.parse(cached);
         if (parsed && typeof parsed === "object") {
-          setState({ data: { ...seed, ...parsed }, live: true });
+          memoryCache.set(cacheKey, parsed);
+          setState({ data: { ...seed, ...parsed }, live: true, loading: false });
         }
       }
     } catch {}
 
     const db = getDb();
-    if (!db) return;
+    if (!db) {
+      setState((prev) => (prev.loading ? { ...prev, loading: false } : prev));
+      return;
+    }
     return onSnapshot(
       doc(db, col, id),
       (snap) => {
         if (snap.exists()) {
-          const val = { ...seed, ...snap.data() } as T;
-          setState({ data: val, live: true });
+          const raw = snap.data();
+          memoryCache.set(cacheKey, raw);
+          const val = { ...seed, ...raw } as T;
+          setState({ data: val, live: true, loading: false });
           try {
-            localStorage.setItem(cacheKey, JSON.stringify(snap.data()));
+            localStorage.setItem(cacheKey, JSON.stringify(raw));
           } catch {}
         } else {
-          setState({ data: seed, live: true });
+          setState({ data: seed, live: true, loading: false });
         }
       },
-      (err) => console.error(`${col}/${id} dinlenemedi:`, err),
+      (err) => {
+        console.error(`${col}/${id} dinlenemedi:`, err);
+        setState((prev) => (prev.loading ? { ...prev, loading: false } : prev));
+      },
     );
-  }, [col, id, seed]);
+  }, [cacheKey, col, id, seed]);
 
   return state;
 }

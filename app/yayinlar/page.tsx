@@ -25,7 +25,7 @@ const ICONS: Record<PublicationCategory, typeof BookOpen> = {
 };
 
 export default function YayinlarPage() {
-  const { data: publications } = usePublications();
+  const { data: publications, loading } = usePublications();
   const [filter, setFilter] = useState<(typeof CATEGORIES)[number]>("Tümü");
 
   const filtered = publications.filter((p) => filter === "Tümü" || p.category === filter);
@@ -72,7 +72,25 @@ export default function YayinlarPage() {
               ))}
             </div>
 
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {loading ? (
+              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {[0, 1, 2].map((n) => (
+                  <div
+                    key={n}
+                    className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm animate-pulse"
+                  >
+                    <div className="h-52 w-full bg-slate-200" />
+                    <div className="p-6 space-y-3">
+                      <div className="h-3 w-24 rounded bg-slate-200" />
+                      <div className="h-5 w-3/4 rounded bg-slate-200" />
+                      <div className="h-3 w-full rounded bg-slate-100" />
+                      <div className="h-3 w-2/3 rounded bg-slate-100" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {filtered.map((pub) => {
                 const IconComponent = ICONS[pub.category] || BookOpen;
                 const hasPdf = Boolean(pub.pdfUrl && pub.pdfUrl !== "#");
@@ -154,7 +172,8 @@ export default function YayinlarPage() {
                   </div>
                 );
               })}
-            </div>
+              </div>
+            )}
           </div>
         </section>
       </main>
