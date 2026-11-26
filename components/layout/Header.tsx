@@ -48,6 +48,21 @@ export default function Header() {
   const { data: president } = usePresident();
   const presidentHref = `/baskanlik-divani/${slugify(president?.name || "ahmet-ozvatan")}`;
 
+  const navLabels = {
+    programTakvimi: settings.headerLabels?.programTakvimi || "Program Takvimi",
+    kurumsal: settings.headerLabels?.kurumsal || "Kurumsal",
+    yonetim: settings.headerLabels?.yonetim || "Yönetim",
+    oncuSahsiyetler: settings.headerLabels?.oncuSahsiyetler || "Öncü Şahsiyetler",
+    haberler: settings.headerLabels?.haberler || "Haberler",
+    dosyaArsivi: settings.headerLabels?.dosyaArsivi || "Dosya Arşivi",
+    medya: settings.headerLabels?.medya || "Medya",
+    iletisim: settings.headerLabels?.iletisim || "İletişim",
+    bagisYap: settings.headerLabels?.bagisYap || "Bağış Yap",
+    uyelikBasvuru: settings.headerLabels?.uyelikBasvuru || "Üyelik / Başvuru",
+    milbisGiris: settings.headerLabels?.milbisGiris || "MİLBİS Giriş",
+    milbisUrl: settings.headerLabels?.milbisUrl || "https://milbis.net/giris",
+  };
+
   const contact = settings.contact || {
     phone: "0 (312) 472 54 54",
     email: "iletisim@milligenclik.org.tr",
@@ -93,7 +108,7 @@ export default function Header() {
               className="inline-flex items-center gap-1.5 text-white/90 hover:text-white font-semibold transition-colors"
             >
               <Calendar size={13} className="text-blue-300" />
-              <span>Program Takvimi</span>
+              <span>{navLabels.programTakvimi}</span>
             </Link>
           </div>
 
@@ -210,7 +225,7 @@ export default function Header() {
                   onClick={() => setActiveDropdown(activeDropdown === "kurumsal" ? null : "kurumsal")}
                   className={navBtnClass(isActive("/kurumsal") || isActive("/protokollerimiz"))}
                 >
-                  <span>Kurumsal</span>
+                  <span>{navLabels.kurumsal}</span>
                   <ChevronDown
                     size={13}
                     className={`text-white/70 transition-transform duration-200 ${
@@ -292,7 +307,7 @@ export default function Header() {
                   onClick={() => setActiveDropdown(activeDropdown === "yonetim" ? null : "yonetim")}
                   className={navBtnClass(isActive("/genel-baskan") || isActive("/baskanlik-divani"))}
                 >
-                  <span>Yönetim</span>
+                  <span>{navLabels.yonetim}</span>
                   <ChevronDown
                     size={13}
                     className={`text-white/70 transition-transform duration-200 ${
@@ -340,7 +355,7 @@ export default function Header() {
                   onClick={() => setActiveDropdown(activeDropdown === "oncu" ? null : "oncu")}
                   className={navBtnClass(isActive("/oncu-sahsiyetler"))}
                 >
-                  <span>Öncü Şahsiyetler</span>
+                  <span>{navLabels.oncuSahsiyetler}</span>
                   <ChevronDown
                     size={13}
                     className={`text-white/70 transition-transform duration-200 ${
@@ -390,7 +405,7 @@ export default function Header() {
                       isActive("/yayinlar"),
                   )}
                 >
-                  <span>Haberler</span>
+                  <span>{navLabels.haberler}</span>
                   <ChevronDown
                     size={13}
                     className={`text-white/70 transition-transform duration-200 ${
@@ -446,7 +461,7 @@ export default function Header() {
 
               {/* DOSYA ARŞİVİ */}
               <Link href="/dosya-arsivi" className={navBtnClass(isActive("/dosya-arsivi"))}>
-                <span>Dosya Arşivi</span>
+                <span>{navLabels.dosyaArsivi}</span>
                 {isActive("/dosya-arsivi") && (
                   <span className="absolute bottom-0 inset-x-0 h-0.5 rounded-full bg-white" />
                 )}
@@ -463,7 +478,7 @@ export default function Header() {
                   onClick={() => setActiveDropdown(activeDropdown === "medya" ? null : "medya")}
                   className={navBtnClass(isActive("/videolar") || isActive("/etkinlikler"))}
                 >
-                  <span>Medya</span>
+                  <span>{navLabels.medya}</span>
                   <ChevronDown
                     size={13}
                     className={`text-white/70 transition-transform duration-200 ${
@@ -495,7 +510,7 @@ export default function Header() {
 
               {/* İLETİŞİM */}
               <Link href="/iletisim" className={navBtnClass(isActive("/iletisim"))}>
-                <span>İletişim</span>
+                <span>{navLabels.iletisim}</span>
                 {isActive("/iletisim") && (
                   <span className="absolute bottom-0 inset-x-0 h-0.5 rounded-full bg-white" />
                 )}
@@ -520,7 +535,7 @@ export default function Header() {
               className="hidden sm:inline-flex shrink-0 whitespace-nowrap items-center gap-1.5 rounded-xl bg-gold px-3.5 py-2 text-[12px] font-extrabold text-white shadow-sm transition hover:bg-[#2563EB] active:scale-[0.98]"
             >
               <Landmark size={14} />
-              <span>Bağış Yap</span>
+              <span>{navLabels.bagisYap}</span>
             </Link>
 
             <button
@@ -529,17 +544,17 @@ export default function Header() {
               className="hidden sm:inline-flex shrink-0 whitespace-nowrap items-center gap-1.5 rounded-xl bg-white px-3.5 py-2 text-[12px] font-bold text-[#0F2B63] shadow-sm transition hover:bg-blue-50 active:scale-[0.98]"
             >
               <User size={14} />
-              <span>Üyelik / Başvuru</span>
+              <span>{navLabels.uyelikBasvuru}</span>
             </button>
 
             <a
-              href="https://milbis.net/giris"
+              href={navLabels.milbisUrl}
               target="_blank"
               rel="noreferrer"
               className="hidden sm:inline-flex shrink-0 whitespace-nowrap items-center gap-1.5 rounded-xl border border-white/30 bg-white/15 px-3 py-2 text-[12px] font-bold text-white shadow-sm transition hover:bg-white/25 active:scale-[0.98]"
             >
               <LogIn size={14} />
-              <span>MİLBİS Giriş</span>
+              <span>{navLabels.milbisGiris}</span>
             </a>
 
             <button

@@ -13,6 +13,7 @@ import {
   Layers,
   LayoutDashboard,
   LogOut,
+  Mail,
   MapPin,
   Menu,
   Newspaper,
@@ -38,6 +39,7 @@ const SECTION_ICONS: Record<AdminSection, typeof Newspaper> = {
   archive: FolderArchive,
   publications: BookOpen,
   applications: UserCheck,
+  newsletter: Mail,
   provinces: MapPin,
   iban: Landmark,
   videos: Video,
@@ -46,7 +48,7 @@ const SECTION_ICONS: Record<AdminSection, typeof Newspaper> = {
 const NAV_GROUPS: { title: string; ids: AdminSection[] }[] = [
   { title: "Vitrin & Medya", ids: ["slides", "media", "layout", "content"] },
   { title: "İçerik & Arşiv", ids: ["news", "videos", "pioneers", "archive", "publications"] },
-  { title: "Teşkilat & Kurumsal", ids: ["board", "provinces", "applications", "iban"] },
+  { title: "Teşkilat & Kurumsal", ids: ["board", "provinces", "applications", "newsletter", "iban"] },
 ];
 
 export default function AdminSidebar({ user }: { user: AdminUser }) {

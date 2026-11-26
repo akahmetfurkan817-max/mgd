@@ -1,4 +1,19 @@
-import type { SectionBlock, SiteCategoriesConfig, SiteSettings } from "@/types";
+import type { HeaderLabelsConfig, SectionBlock, SiteCategoriesConfig, SiteSettings } from "@/types";
+
+export const DEFAULT_HEADER_LABELS: Required<HeaderLabelsConfig> = {
+  programTakvimi: "Program Takvimi",
+  kurumsal: "Kurumsal",
+  yonetim: "Yönetim",
+  oncuSahsiyetler: "Öncü Şahsiyetler",
+  haberler: "Haberler",
+  dosyaArsivi: "Dosya Arşivi",
+  medya: "Medya",
+  iletisim: "İletişim",
+  bagisYap: "Bağış Yap",
+  uyelikBasvuru: "Üyelik / Başvuru",
+  milbisGiris: "MİLBİS Giriş",
+  milbisUrl: "https://milbis.net/giris",
+};
 
 export const DEFAULT_SITE_CATEGORIES: Required<SiteCategoriesConfig> = {
   news: [
@@ -235,5 +250,6 @@ export const DEFAULT_SITE_SETTINGS: SiteSettings = {
     secondaryColor: "#1D56B8",
   },
   categories: DEFAULT_SITE_CATEGORIES,
+  headerLabels: DEFAULT_HEADER_LABELS,
   sliderZoomEnabled: false,
 };

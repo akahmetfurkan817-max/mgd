@@ -33,6 +33,7 @@ const SECTIONS: readonly AdminSection[] = [
   "content",
   "videos",
   "pioneers",
+  "newsletter",
 ];
 
 const fail = (error: string, status: number) => NextResponse.json({ error }, { status });
@@ -178,7 +179,7 @@ export async function PUT(req: Request, { params }: { params: { section: string 
 export async function DELETE(req: Request, { params }: { params: { section: string } }) {
   const g = await guard(params.section);
   if ("error" in g) return g.error;
-  const allowed = ["news", "archive", "publications", "applications", "board", "videos"];
+  const allowed = ["news", "archive", "publications", "applications", "board", "videos", "newsletter"];
   if (!allowed.includes(g.section)) return fail("Silme bu bölümde desteklenmiyor.", 405);
   const id = new URL(req.url).searchParams.get("id");
   if (!id) return fail("id gerekli.", 400);
@@ -190,6 +191,7 @@ export async function DELETE(req: Request, { params }: { params: { section: stri
     applications: COLLECTIONS.applications,
     board: COLLECTIONS.board,
     videos: COLLECTIONS.videos,
+    newsletter: COLLECTIONS.newsletter,
   };
 
   await g.db.collection(colMap[g.section]).doc(id).delete();

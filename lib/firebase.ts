@@ -27,6 +27,7 @@ export const COLLECTIONS = {
   archive: "dosya_arsivi",
   media: "medya",
   mediaChunks: "medya_parcalari",
+  newsletter: "ebulten",
 } as const;
 
 let app: FirebaseApp | null = null;

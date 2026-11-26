@@ -11,6 +11,7 @@ import {
   Image as ImageIcon,
   Landmark,
   Layers,
+  Mail,
   MapPin,
   Newspaper,
   ShieldAlert,
@@ -64,6 +65,11 @@ const SECTION_META: Record<AdminSection, { icon: typeof Newspaper; desc: string;
     icon: FolderArchive,
     tag: "Arşiv",
     desc: "Konsept, rapor, broşür, yayın ve kurumsal medya dosya arşivini yönetin.",
+  },
+  newsletter: {
+    icon: Mail,
+    tag: "E-Bülten",
+    desc: "E-bülten abonelerini görüntüleyin, tek tıkla kopyalayın veya Excel (CSV) olarak indirin.",
   },
   videos: {
     icon: Video,

@@ -13,7 +13,14 @@ export type AdminSection =
   | "content"
   | "videos"
   | "pioneers"
-  | "archive";
+  | "archive"
+  | "newsletter";
+
+export interface NewsletterSubscriber {
+  id: string;
+  email: string;
+  createdAt: string;
+}
 
 export interface HomeSlideItem {
   id: string;
@@ -324,6 +331,21 @@ export interface SiteCategoriesConfig {
   donationPurposes?: DonationPurposeItem[];
 }
 
+export interface HeaderLabelsConfig {
+  programTakvimi?: string;
+  kurumsal?: string;
+  yonetim?: string;
+  oncuSahsiyetler?: string;
+  haberler?: string;
+  dosyaArsivi?: string;
+  medya?: string;
+  iletisim?: string;
+  bagisYap?: string;
+  uyelikBasvuru?: string;
+  milbisGiris?: string;
+  milbisUrl?: string;
+}
+
 export interface SiteSettings {
   sections: SectionBlock[];
   hero: HeroConfig;
@@ -335,5 +357,6 @@ export interface SiteSettings {
   managementCards?: ManagementCardsConfig;
   corporatePdfs?: CorporatePdfsConfig;
   categories?: SiteCategoriesConfig;
+  headerLabels?: HeaderLabelsConfig;
   sliderZoomEnabled?: boolean;
 }

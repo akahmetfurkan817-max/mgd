@@ -11,7 +11,7 @@ import { PUBLICATIONS } from "@/data/publications";
 import { SAMPLE_APPLICATIONS } from "@/data/applications";
 import { SOCIAL_POSTS } from "@/data/social";
 import { VIDEOS } from "@/data/videos";
-import { DEFAULT_SECTIONS, DEFAULT_SITE_CATEGORIES, DEFAULT_SITE_SETTINGS } from "@/data/site-settings";
+import { DEFAULT_HEADER_LABELS, DEFAULT_SECTIONS, DEFAULT_SITE_CATEGORIES, DEFAULT_SITE_SETTINGS } from "@/data/site-settings";
 import { HOME_SLIDES, type HomeSlideItem } from "@/data/slides";
 import { ONCU_SAHSIYETLER, type OncuSahsiyet } from "@/data/oncu-sahsiyetler";
 import { ARCHIVE_ITEMS } from "@/data/archive";
@@ -20,6 +20,7 @@ import type {
   IbanInfo,
   Leader,
   NewsItem,
+  NewsletterSubscriber,
   President,
   Province,
   Publication,
@@ -251,6 +252,10 @@ export function useSiteSettings(): Live<SiteSettings> {
             ? safe.categories.donationPurposes
             : DEFAULT_SITE_CATEGORIES.donationPurposes,
       },
+      headerLabels: {
+        ...DEFAULT_HEADER_LABELS,
+        ...(safe.headerLabels && typeof safe.headerLabels === "object" ? safe.headerLabels : {}),
+      },
       sections: Array.isArray(safe.sections) && safe.sections.length > 0 ? safe.sections : DEFAULT_SECTIONS,
     },
     live,
@@ -317,4 +322,14 @@ const combineArchive = (remote: ArchiveItem[], seed: ArchiveItem[]): ArchiveItem
 
 export function useArchiveItems(): Live<ArchiveItem[]> {
   return useCollection<ArchiveItem>(COLLECTIONS.archive, ARCHIVE_ITEMS, combineArchive);
+}
+
+const EMPTY_SUBSCRIBERS: NewsletterSubscriber[] = [];
+const combineSubscribers = (remote: NewsletterSubscriber[], seed: NewsletterSubscriber[]): NewsletterSubscriber[] => {
+  if (!remote || remote.length === 0) return seed;
+  return [...remote].sort((a, b) => String(b.createdAt || "").localeCompare(String(a.createdAt || "")));
+};
+
+export function useNewsletterSubscribers(): Live<NewsletterSubscriber[]> {
+  return useCollection<NewsletterSubscriber>(COLLECTIONS.newsletter, EMPTY_SUBSCRIBERS, combineSubscribers);
 }

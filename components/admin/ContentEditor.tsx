@@ -22,11 +22,12 @@ import ImagePickerField from "@/components/admin/ImagePickerField";
 import { useSiteSettings } from "@/hooks/useSiteData";
 import { saveSection } from "@/lib/adminApi";
 import { uploadMedia } from "@/lib/uploadMedia";
-import { DEFAULT_SITE_SETTINGS } from "@/data/site-settings";
+import { DEFAULT_HEADER_LABELS, DEFAULT_SITE_SETTINGS } from "@/data/site-settings";
 import type {
   ContactConfig,
   CorporatePdfsConfig,
   ErbakanConfig,
+  HeaderLabelsConfig,
   HeroConfig,
   ManagementCardsConfig,
   StatsItemConfig,
@@ -89,6 +90,10 @@ export default function ContentEditor() {
     dormitoryPhoto: settings.managementCards?.dormitoryPhoto || "",
   });
   const [corporatePdfs, setCorporatePdfs] = useState<CorporatePdfsConfig>(settings.corporatePdfs || {});
+  const [headerLabels, setHeaderLabels] = useState<HeaderLabelsConfig>({
+    ...DEFAULT_HEADER_LABELS,
+    ...(settings.headerLabels || {}),
+  });
   const [uploadingPdfKey, setUploadingPdfKey] = useState<keyof CorporatePdfsConfig | null>(null);
   const [state, setState] = useState<SaveState>(IDLE);
 
@@ -100,6 +105,9 @@ export default function ContentEditor() {
     if (settings.theme) setTheme(settings.theme);
     if (settings.managementCards) setManagementCards(settings.managementCards);
     if (settings.corporatePdfs) setCorporatePdfs(settings.corporatePdfs);
+    if (settings.headerLabels) {
+      setHeaderLabels({ ...DEFAULT_HEADER_LABELS, ...settings.headerLabels });
+    }
     if (settings.erbakan) {
       setErbakan({
         ...DEFAULT_ERBAKAN,
@@ -157,7 +165,7 @@ export default function ContentEditor() {
 
   const handleSaveAll = async () => {
     setState({ status: "saving" });
-    const payload = { hero, stats, vision, contact, theme, erbakan, managementCards, corporatePdfs };
+    const payload = { hero, stats, vision, contact, theme, erbakan, managementCards, corporatePdfs, headerLabels };
     const res = await saveSection("content", payload);
     if (res.ok) {
       setState({ status: "saved" });
@@ -187,6 +195,82 @@ export default function ContentEditor() {
       </div>
 
       <SaveStatus state={state} />
+
+      {/* 0. Üst Menü (App Bar) Başlıkları & Buton İsimleri */}
+      <Card>
+        <div className="flex items-center gap-2 border-b border-slate-100 pb-3 mb-4">
+          <Type size={18} className="text-primary" />
+          <div>
+            <h2 className="text-base font-bold text-primary-dark">Üst Menü (App Bar) Başlıkları &amp; Buton İsimleri</h2>
+            <p className="text-xs text-slate-500">
+              Sitenin en üstündeki menü başlıklarının ve sağ üstteki butonların isimlerini buradan anlık olarak değiştirebilirsiniz.
+            </p>
+          </div>
+        </div>
+
+        <div className="grid gap-3.5 sm:grid-cols-2 lg:grid-cols-3">
+          <Field
+            label="Üst Bar: Program Takvimi"
+            value={headerLabels.programTakvimi || ""}
+            onChange={(v) => setHeaderLabels((p) => ({ ...p, programTakvimi: v }))}
+          />
+          <Field
+            label="Menü 1: Kurumsal"
+            value={headerLabels.kurumsal || ""}
+            onChange={(v) => setHeaderLabels((p) => ({ ...p, kurumsal: v }))}
+          />
+          <Field
+            label="Menü 2: Yönetim"
+            value={headerLabels.yonetim || ""}
+            onChange={(v) => setHeaderLabels((p) => ({ ...p, yonetim: v }))}
+          />
+          <Field
+            label="Menü 3: Öncü Şahsiyetler"
+            value={headerLabels.oncuSahsiyetler || ""}
+            onChange={(v) => setHeaderLabels((p) => ({ ...p, oncuSahsiyetler: v }))}
+          />
+          <Field
+            label="Menü 4: Haberler"
+            value={headerLabels.haberler || ""}
+            onChange={(v) => setHeaderLabels((p) => ({ ...p, haberler: v }))}
+          />
+          <Field
+            label="Menü 5: Dosya Arşivi"
+            value={headerLabels.dosyaArsivi || ""}
+            onChange={(v) => setHeaderLabels((p) => ({ ...p, dosyaArsivi: v }))}
+          />
+          <Field
+            label="Menü 6: Medya"
+            value={headerLabels.medya || ""}
+            onChange={(v) => setHeaderLabels((p) => ({ ...p, medya: v }))}
+          />
+          <Field
+            label="Menü 7: İletişim"
+            value={headerLabels.iletisim || ""}
+            onChange={(v) => setHeaderLabels((p) => ({ ...p, iletisim: v }))}
+          />
+          <Field
+            label="Sağ Buton 1: Bağış Yap"
+            value={headerLabels.bagisYap || ""}
+            onChange={(v) => setHeaderLabels((p) => ({ ...p, bagisYap: v }))}
+          />
+          <Field
+            label="Sağ Buton 2: Üyelik / Başvuru"
+            value={headerLabels.uyelikBasvuru || ""}
+            onChange={(v) => setHeaderLabels((p) => ({ ...p, uyelikBasvuru: v }))}
+          />
+          <Field
+            label="Sağ Buton 3: MİLBİS Giriş"
+            value={headerLabels.milbisGiris || ""}
+            onChange={(v) => setHeaderLabels((p) => ({ ...p, milbisGiris: v }))}
+          />
+          <Field
+            label="MİLBİS Giriş Bağlantı (URL)"
+            value={headerLabels.milbisUrl || ""}
+            onChange={(v) => setHeaderLabels((p) => ({ ...p, milbisUrl: v }))}
+          />
+        </div>
+      </Card>
 
       {/* 1. Yönetim Kartı Kontrolleri */}
       <Card>
