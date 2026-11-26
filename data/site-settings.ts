@@ -101,27 +101,27 @@ export const DEFAULT_SECTIONS: SectionBlock[] = [
     enabled: true,
   },
   {
-    id: "team",
-    label: "Genel Başkan & Yönetim",
-    desc: "Genel Başkan vitrini, Başkanlık Divanı, şubeler, komisyonlar, tüzük ve dosya arşivi",
-    enabled: true,
-  },
-  {
     id: "events",
     label: "Program Takvimi",
     desc: "İl kongreleri, üniversite buluşmaları ve ziyaret takvimi",
     enabled: true,
   },
   {
-    id: "principles",
-    label: "Öncü Şahsiyetler Vitrini",
-    desc: "Ana sayfada kademeli küçülen premium Öncü Şahsiyetler vitrini",
-    enabled: true,
-  },
-  {
     id: "news",
     label: "Haberler & Duyurular Vitrini",
     desc: "Kategorilere göre filtrelenebilir son gelişmeler ve burs duyuruları",
+    enabled: true,
+  },
+  {
+    id: "team",
+    label: "Genel Başkan & Yönetim",
+    desc: "Genel Başkan vitrini, Başkanlık Divanı, şubeler, komisyonlar, tüzük ve dosya arşivi",
+    enabled: true,
+  },
+  {
+    id: "principles",
+    label: "Öncü Şahsiyetler Vitrini",
+    desc: "Ana sayfada kademeli küçülen premium Öncü Şahsiyetler vitrini",
     enabled: true,
   },
   {
