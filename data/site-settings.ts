@@ -1,4 +1,76 @@
-import type { SectionBlock, SiteSettings } from "@/types";
+import type { SectionBlock, SiteCategoriesConfig, SiteSettings } from "@/types";
+
+export const DEFAULT_SITE_CATEGORIES: Required<SiteCategoriesConfig> = {
+  news: [
+    "Genel Merkez",
+    "Duyurular & Burs",
+    "Teşkilattan Haberler",
+    "Basın Bildirisi & Rapor",
+    "Yayınlar & Kütüphane",
+    "Programlar",
+    "Üniversite",
+    "Basın Açıklaması",
+  ],
+  videos: [
+    "MGD TV",
+    "Erbakan Hoca Videoları",
+    "Fatih Erbakan Videoları",
+    "Genel Başkan Konuşması",
+    "Teşkilat & Kongre",
+    "Belgesel & Arşiv",
+    "Gençlik Buluşması",
+  ],
+  archive: [
+    "Konsept",
+    "Raporlar",
+    "Broşürler",
+    "Yayınlar",
+    "Kurumsal Medya",
+  ],
+  publications: [
+    "Bülten",
+    "Faaliyet Raporu",
+    "Dergi",
+    "Kitapçık",
+  ],
+  commissions: [
+    "Üniversiteliler Teşkilatı",
+    "Liseler & Ortaöğretim Birimi",
+    "Hanımlar Gençlik Birimi",
+    "Medya, İletişim ve Tasarım",
+    "Kültür, Sanat ve Edebiyat",
+    "Ar-Ge, Teknoloji ve Bilişim",
+    "Spor ve Doğa Faaliyetleri",
+    "Sosyal Sorumluluk ve İnsani Yardım",
+    "Teşkilatlanma ve Saha",
+  ],
+  donationPurposes: [
+    {
+      id: "burs",
+      title: "Öğrenci Bursu",
+      desc: "Üniversite ve lise öğrencilerinin eğitim bursu fonuna doğrudan katkı sağlayın.",
+      note: "Öğrenci Bursu Bağışı",
+    },
+    {
+      id: "egitim",
+      title: "Eğitim & Okuma Halkaları",
+      desc: "Kitap, dergi, seminer ve milli maarif eğitim programlarına destek olun.",
+      note: "Eğitim ve Kültür Bağışı",
+    },
+    {
+      id: "kamp",
+      title: "Gençlik Kampları",
+      desc: "Yaz ve kış liderlik kampları ile gençlik buluşmalarına omuz verin.",
+      note: "Gençlik Kampı Bağışı",
+    },
+    {
+      id: "genel",
+      title: "Genel Teşkilat Desteği",
+      desc: "81 ildeki teşkilat faaliyetleri ve sosyal sorumluluk projelerine bağış yapın.",
+      note: "Genel Bağış",
+    },
+  ],
+};
 
 export const DEFAULT_SECTIONS: SectionBlock[] = [
   {
@@ -162,5 +234,6 @@ export const DEFAULT_SITE_SETTINGS: SiteSettings = {
     primaryColor: "#1B3B7B",
     secondaryColor: "#1D56B8",
   },
+  categories: DEFAULT_SITE_CATEGORIES,
   sliderZoomEnabled: false,
 };

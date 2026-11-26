@@ -1,4 +1,4 @@
-import type { ApplicationStatus, ArchiveCategory, ArchiveItem, IbanInfo, Leader, NewsCategory, NewsItem, President, Province, Publication, PublicationCategory, SocialPost, VideoCategory, VideoItem, VolunteerApplication } from "@/types";
+import type { ApplicationStatus, ArchiveItem, DistrictChair, IbanInfo, Leader, NewsItem, President, Province, Publication, SocialPost, VideoItem, VolunteerApplication } from "@/types";
 import type { OncuSahsiyet, SahsiyetBook, SahsiyetPhoto, SahsiyetVideo } from "@/data/oncu-sahsiyetler";
 
 type Obj = Record<string, unknown>;
@@ -6,41 +6,14 @@ type Obj = Record<string, unknown>;
 const isObj = (v: unknown): v is Obj => typeof v === "object" && v !== null && !Array.isArray(v);
 const str = (v: unknown, max = 5000): string => (typeof v === "string" ? v.trim().slice(0, max) : "");
 
-const CATEGORIES: readonly NewsCategory[] = [
-  "Genel Merkez",
-  "Üniversite",
-  "Basın Açıklaması",
-  "Duyurular & Burs",
-  "Programlar",
-  "Teşkilattan Haberler",
-  "Yayınlar & Kütüphane",
-  "Basın Bildirisi & Rapor",
-];
-const ARCHIVE_CATEGORIES: readonly ArchiveCategory[] = [
-  "Konsept",
-  "Raporlar",
-  "Broşürler",
-  "Yayınlar",
-  "Kurumsal Medya",
-];
-const PUBLICATION_CATEGORIES: readonly PublicationCategory[] = ["Bülten", "Faaliyet Raporu", "Dergi", "Kitapçık"];
-const VIDEO_CATEGORIES: readonly VideoCategory[] = [
-  "Genel Başkan Konuşması",
-  "Teşkilat & Kongre",
-  "Belgesel & Arşiv",
-  "Gençlik Buluşması",
-  "Erbakan Hoca Videoları",
-  "Fatih Erbakan Videoları",
-  "MGD TV",
-];
 const APPLICATION_STATUSES: readonly ApplicationStatus[] = ["BEKLIYOR", "ILETISIME_GECILDI", "ONAYLANDI", "REDDEDILDI"];
 
 export function parseNews(v: unknown): NewsItem | null {
   if (!isObj(v)) return null;
   const title = str(v.title, 300);
-  const category = CATEGORIES.find((c) => c === v.category);
+  const category = str(v.category, 100) || "Genel Merkez";
   const date = str(v.date, 10);
-  if (!title || !category || !/^\d{4}-\d{2}-\d{2}$/.test(date)) return null;
+  if (!title || !/^\d{4}-\d{2}-\d{2}$/.test(date)) return null;
   const content = str(v.content, 20000);
   return {
     id: str(v.id, 100),
@@ -56,7 +29,7 @@ export function parseNews(v: unknown): NewsItem | null {
 export function parseArchiveItem(v: unknown): ArchiveItem | null {
   if (!isObj(v)) return null;
   const title = str(v.title, 300);
-  const category = ARCHIVE_CATEGORIES.find((c) => c === v.category) || "Konsept";
+  const category = str(v.category, 100) || "Konsept";
   const fileUrl = str(v.fileUrl, 1000);
   if (!title || !fileUrl) return null;
   const downloadUrl = str(v.downloadUrl, 1000);
@@ -76,6 +49,17 @@ export function parseProvince(v: unknown): Province | null {
   if (!isObj(v)) return null;
   const plate = Number(v.plate);
   if (!Number.isInteger(plate) || plate < 1 || plate > 81) return null;
+  const districts: DistrictChair[] | undefined = Array.isArray(v.districts)
+    ? v.districts
+        .filter(isObj)
+        .map((d, idx) => ({
+          id: str(d.id, 100) || `dist-${plate}-${idx}`,
+          name: str(d.name, 120),
+          chairName: str(d.chairName, 200),
+          phone: str(d.phone, 50),
+        }))
+        .filter((d) => Boolean(d.name))
+    : undefined;
   return {
     plate,
     name: str(v.name, 100),
@@ -84,6 +68,7 @@ export function parseProvince(v: unknown): Province | null {
     address: str(v.address, 500),
     phone: str(v.phone, 50),
     email: str(v.email, 200),
+    ...(districts ? { districts } : {}),
   };
 }
 
@@ -141,10 +126,10 @@ export function parseIbanList(v: unknown): IbanInfo[] | null {
 export function parsePublication(v: unknown): Publication | null {
   if (!isObj(v)) return null;
   const title = str(v.title, 300);
-  const category = PUBLICATION_CATEGORIES.find((c) => c === v.category);
+  const category = str(v.category, 100) || "Bülten";
   const date = str(v.date, 10);
   const description = str(v.description, 2000);
-  if (!title || !category) return null;
+  if (!title) return null;
   return {
     id: str(v.id, 100),
     title,
@@ -206,7 +191,7 @@ export function parseVideo(v: unknown): VideoItem | null {
   if (!isObj(v)) return null;
   const title = str(v.title, 300);
   if (!title) return null;
-  const cat = VIDEO_CATEGORIES.find((c) => c === v.category) || "Genel Başkan Konuşması";
+  const cat = str(v.category, 100) || "Genel Başkan Konuşması";
   const downloadUrl = str(v.downloadUrl, 1000);
   return {
     id: str(v.id, 100),
@@ -219,7 +204,7 @@ export function parseVideo(v: unknown): VideoItem | null {
     views: str(v.views, 50) || "1.000",
     description: str(v.description, 2000),
     ...(downloadUrl ? { downloadUrl } : {}),
-    showDownload: Boolean(v.showDownload),
+    showDownload: Boolean(downloadUrl),
   };
 }
 
@@ -261,7 +246,7 @@ export function parseOncuSahsiyetList(v: unknown): OncuSahsiyet[] | null {
             description: str(vid.description, 2000),
             ...(str(vid.thumbnail, 500) ? { thumbnail: str(vid.thumbnail, 500) } : {}),
             ...(str(vid.downloadUrl, 1000) ? { downloadUrl: str(vid.downloadUrl, 1000) } : {}),
-            showDownload: Boolean(vid.showDownload),
+            showDownload: Boolean(str(vid.downloadUrl, 1000)),
           }))
           .filter((vid) => Boolean(vid.title))
       : [];

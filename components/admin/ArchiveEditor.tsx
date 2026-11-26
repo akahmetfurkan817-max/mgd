@@ -5,23 +5,16 @@ import Image from "next/image";
 import { FolderArchive, Loader2, Pencil, Plus, Trash2, Upload } from "lucide-react";
 import { Card, Field, IDLE, PageHeader, SaveStatus, type SaveState } from "@/components/admin/ui";
 import ImagePickerField from "@/components/admin/ImagePickerField";
-import { useArchiveItems } from "@/hooks/useSiteData";
+import CategoryManagerBar from "@/components/admin/CategoryManagerBar";
+import { useArchiveItems, useSiteSettings } from "@/hooks/useSiteData";
 import { deleteItem, saveSection } from "@/lib/adminApi";
 import { uploadMedia } from "@/lib/uploadMedia";
 import type { ArchiveCategory, ArchiveItem } from "@/types";
 
-const CATEGORIES: ArchiveCategory[] = [
-  "Konsept",
-  "Raporlar",
-  "Broşürler",
-  "Yayınlar",
-  "Kurumsal Medya",
-];
-
-const empty = (): ArchiveItem => ({
+const empty = (defaultCat = "Konsept"): ArchiveItem => ({
   id: "",
   title: "",
-  category: "Konsept",
+  category: defaultCat,
   date: new Date().toISOString().slice(0, 10),
   coverImage: "/images/mgd/haydi-milli-genclik.jpg",
   fileUrl: "",
@@ -31,7 +24,9 @@ const empty = (): ArchiveItem => ({
 
 export default function ArchiveEditor() {
   const { data: items, live } = useArchiveItems();
-  const [form, setForm] = useState<ArchiveItem>(empty());
+  const { data: settings } = useSiteSettings();
+  const categories = settings.categories?.archive || ["Konsept"];
+  const [form, setForm] = useState<ArchiveItem>(() => empty(categories[0]));
   const [state, setState] = useState<SaveState>(IDLE);
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -97,6 +92,8 @@ export default function ArchiveEditor() {
         description="Konsept, rapor, broşür, yayın ve kurumsal medya dosyalarını ekleyin; Görüntüle ve İndir bağlantılarını yönetin."
       />
 
+      <CategoryManagerBar listKey="archive" title="Dosya Arşivi Kategorileri" placeholder="Yeni arşiv kategorisi..." />
+
       <div className="grid gap-6 lg:grid-cols-12">
         <div className="lg:col-span-5">
           <Card className="sticky top-6">
@@ -121,7 +118,7 @@ export default function ArchiveEditor() {
                     onChange={(e) => setForm({ ...form, category: e.target.value as ArchiveCategory })}
                     className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm focus:border-primary focus:outline-none"
                   >
-                    {CATEGORIES.map((c) => (
+                    {categories.map((c) => (
                       <option key={c} value={c}>
                         {c}
                       </option>

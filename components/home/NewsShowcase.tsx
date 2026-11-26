@@ -4,20 +4,13 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, CalendarDays } from "lucide-react";
-import { useNews } from "@/hooks/useSiteData";
+import { useNews, useSiteSettings } from "@/hooks/useSiteData";
 import { slugify } from "@/lib/slug";
-
-const CATEGORY_TABS = [
-  "Tümü",
-  "Duyurular & Burs",
-  "Programlar",
-  "Teşkilattan Haberler",
-  "Basın Açıklaması",
-  "Genel Merkez",
-];
 
 export default function NewsShowcase() {
   const { data: news } = useNews();
+  const { data: settings } = useSiteSettings();
+  const categoryTabs = ["Tümü", ...(settings.categories?.news || [])];
   const [activeCategory, setActiveCategory] = useState("Tümü");
 
   const filtered =
@@ -51,7 +44,7 @@ export default function NewsShowcase() {
 
         {/* Kategori Sekmeleri */}
         <div className="mt-6 mb-8 flex items-center gap-2 overflow-x-auto pb-2">
-          {CATEGORY_TABS.map((cat) => (
+          {categoryTabs.map((cat) => (
             <button
               key={cat}
               type="button"

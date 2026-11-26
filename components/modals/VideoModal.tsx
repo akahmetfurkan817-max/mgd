@@ -94,7 +94,7 @@ export default function VideoModal({ video, onClose }: VideoModalProps) {
             </div>
 
             <div className="flex flex-wrap items-center gap-2 self-start">
-              {video.showDownload && normalizeDownloadUrl(video.downloadUrl) && (
+              {normalizeDownloadUrl(video.downloadUrl) && (
                 <a
                   href={normalizeDownloadUrl(video.downloadUrl)}
                   target="_blank"

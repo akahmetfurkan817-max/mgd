@@ -5,17 +5,16 @@ import Image from "next/image";
 import { BookOpen, Loader2, Pencil, Plus, Trash2, Upload } from "lucide-react";
 import { Card, Field, IDLE, PageHeader, SaveStatus, type SaveState } from "@/components/admin/ui";
 import ImagePickerField from "@/components/admin/ImagePickerField";
-import { usePublications } from "@/hooks/useSiteData";
+import CategoryManagerBar from "@/components/admin/CategoryManagerBar";
+import { usePublications, useSiteSettings } from "@/hooks/useSiteData";
 import { saveSection } from "@/lib/adminApi";
 import { uploadMedia } from "@/lib/uploadMedia";
 import type { Publication, PublicationCategory } from "@/types";
 
-const CATEGORIES: PublicationCategory[] = ["Bülten", "Faaliyet Raporu", "Dergi", "Kitapçık"];
-
-const empty = (): Publication => ({
+const empty = (defaultCat = "Bülten"): Publication => ({
   id: "",
   title: "",
-  category: "Bülten",
+  category: defaultCat,
   date: new Date().toISOString().slice(0, 10),
   description: "",
   coverImage: "",
@@ -24,7 +23,9 @@ const empty = (): Publication => ({
 
 export default function PublicationEditor() {
   const { data: publications } = usePublications();
-  const [form, setForm] = useState<Publication>(empty());
+  const { data: settings } = useSiteSettings();
+  const categories = settings.categories?.publications || ["Bülten"];
+  const [form, setForm] = useState<Publication>(() => empty(categories[0]));
   const [state, setState] = useState<SaveState>(IDLE);
   const [uploadingPdf, setUploadingPdf] = useState(false);
   const pdfInputRef = useRef<HTMLInputElement>(null);
@@ -88,6 +89,10 @@ export default function PublicationEditor() {
         description="Teşkilat bültenleri, faaliyet raporları ve dergileri ekleyin veya düzenleyin."
       />
 
+      <div className="mb-6">
+        <CategoryManagerBar listKey="publications" title="Yayın Kategorileri" placeholder="Yeni yayın kategorisi..." />
+      </div>
+
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Form Kartı */}
         <Card>
@@ -109,7 +114,7 @@ export default function PublicationEditor() {
                   onChange={(e) => setForm({ ...form, category: e.target.value as PublicationCategory })}
                   className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm focus:border-secondary focus:outline-none"
                 >
-                  {CATEGORIES.map((c) => (
+                  {categories.map((c) => (
                     <option key={c} value={c}>
                       {c}
                     </option>

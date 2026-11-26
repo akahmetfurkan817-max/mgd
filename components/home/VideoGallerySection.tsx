@@ -94,7 +94,7 @@ export default function VideoGallerySection() {
               <p className="mt-2 text-xs sm:text-sm text-slate-300 line-clamp-2 max-w-xl">
                 {featured.description}
               </p>
-              {featured.showDownload && featured.downloadUrl?.trim() && (
+              {featured.downloadUrl?.trim() && (
                 <div className="mt-3">
                   <a
                     href={
@@ -159,7 +159,7 @@ export default function VideoGallerySection() {
                       <span>{vid.date}</span>
                       {vid.views && <span>• {vid.views}</span>}
                     </div>
-                    {vid.showDownload && vid.downloadUrl?.trim() && (
+                    {vid.downloadUrl?.trim() && (
                       <a
                         href={
                           vid.downloadUrl.trim().startsWith("/") ||

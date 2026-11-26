@@ -8,33 +8,24 @@ import { ArrowLeft, Clock, Download, Play, Tv, Video as VideoIcon } from "lucide
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import ScrollReveal from "@/components/ui/ScrollReveal";
-import { useVideos } from "@/hooks/useSiteData";
+import { useSiteSettings, useVideos } from "@/hooks/useSiteData";
 import VideoModal from "@/components/modals/VideoModal";
-import type { VideoCategory, VideoItem } from "@/types";
-
-const VIDEO_FILTERS: ("Tümü" | VideoCategory)[] = [
-  "Tümü",
-  "MGD TV",
-  "Erbakan Hoca Videoları",
-  "Fatih Erbakan Videoları",
-  "Genel Başkan Konuşması",
-  "Teşkilat & Kongre",
-  "Belgesel & Arşiv",
-  "Gençlik Buluşması",
-];
+import type { VideoItem } from "@/types";
 
 function VideolarContent() {
   const searchParams = useSearchParams();
   const { data: videos } = useVideos();
+  const { data: settings } = useSiteSettings();
+  const videoFilters = ["Tümü", ...(settings.categories?.videos || [])];
   const [selectedVideo, setSelectedVideo] = useState<VideoItem | null>(null);
-  const [activeCategory, setActiveCategory] = useState<(typeof VIDEO_FILTERS)[number]>("Tümü");
+  const [activeCategory, setActiveCategory] = useState<string>("Tümü");
 
   useEffect(() => {
     const cat = searchParams.get("cat");
-    if (cat && VIDEO_FILTERS.includes(cat as (typeof VIDEO_FILTERS)[number])) {
-      setActiveCategory(cat as (typeof VIDEO_FILTERS)[number]);
+    if (cat && videoFilters.includes(cat)) {
+      setActiveCategory(cat);
     }
-  }, [searchParams]);
+  }, [searchParams, videoFilters]);
 
   const filtered =
     activeCategory === "Tümü"
@@ -66,7 +57,7 @@ function VideolarContent() {
 
               {/* Kategori Sekmeleri */}
               <div className="mt-7 flex flex-wrap items-center gap-2">
-                {VIDEO_FILTERS.map((cat) => (
+                {videoFilters.map((cat) => (
                   <button
                     key={cat}
                     type="button"
@@ -146,7 +137,7 @@ function VideolarContent() {
                           <div className="mt-4 pt-3 border-t border-white/10 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-400">
                             <span>{video.date}</span>
                             <div className="flex items-center gap-2">
-                              {video.showDownload && video.downloadUrl?.trim() && (
+                              {video.downloadUrl?.trim() && (
                                 <a
                                   href={
                                     video.downloadUrl.trim().startsWith("/") ||

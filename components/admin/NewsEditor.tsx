@@ -5,34 +5,26 @@ import Image from "next/image";
 import { Pencil, Plus, Trash2 } from "lucide-react";
 import { Card, Field, IDLE, PageHeader, SaveStatus, type SaveState } from "@/components/admin/ui";
 import ImagePickerField from "@/components/admin/ImagePickerField";
-import { useNews } from "@/hooks/useSiteData";
+import CategoryManagerBar from "@/components/admin/CategoryManagerBar";
+import { useNews, useSiteSettings } from "@/hooks/useSiteData";
 import { deleteNews, saveSection } from "@/lib/adminApi";
 import type { NewsCategory, NewsItem } from "@/types";
 
-const CATEGORIES: NewsCategory[] = [
-  "Genel Merkez",
-  "Duyurular & Burs",
-  "Teşkilattan Haberler",
-  "Basın Bildirisi & Rapor",
-  "Yayınlar & Kütüphane",
-  "Programlar",
-  "Üniversite",
-  "Basın Açıklaması",
-];
-
-const empty = (): NewsItem => ({
+const empty = (defaultCat = "Genel Merkez"): NewsItem => ({
   id: "",
   title: "",
   summary: "",
   content: "",
-  category: "Genel Merkez",
+  category: defaultCat,
   date: new Date().toISOString().slice(0, 10),
   image: "/images/basinda-biz/teskilat.png",
 });
 
 export default function NewsEditor() {
   const { data: items, live } = useNews();
-  const [form, setForm] = useState<NewsItem>(empty());
+  const { data: settings } = useSiteSettings();
+  const categories = settings.categories?.news || ["Genel Merkez"];
+  const [form, setForm] = useState<NewsItem>(() => empty(categories[0]));
   const [state, setState] = useState<SaveState>(IDLE);
 
   const save = async () => {
@@ -40,7 +32,7 @@ export default function NewsEditor() {
     setState({ status: "saving" });
     const res = await saveSection("news", form);
     if (res.ok) {
-      setForm(empty());
+      setForm(empty(categories[0]));
       setState({ status: "saved" });
       setTimeout(() => setState(IDLE), 2500);
     } else {
@@ -61,6 +53,9 @@ export default function NewsEditor() {
         title="Haberler & Duyurular"
         description="Haber, burs duyurusu ve basın açıklamalarını ekleyin, kapak fotoğraflarını değiştirin veya silin."
       />
+      <div className="mb-6">
+        <CategoryManagerBar listKey="news" title="Haber Kategorileri" placeholder="Yeni haber kategorisi..." />
+      </div>
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>
           <h2 className="mb-4 font-bold text-primary">{form.id ? "Haberi Düzenle" : "Yeni Haber Ekle"}</h2>
@@ -90,7 +85,7 @@ export default function NewsEditor() {
                   onChange={(e) => setForm({ ...form, category: e.target.value as NewsCategory })}
                   className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm focus:border-primary focus:outline-none"
                 >
-                  {CATEGORIES.map((c) => (
+                  {categories.map((c) => (
                     <option key={c}>{c}</option>
                   ))}
                 </select>

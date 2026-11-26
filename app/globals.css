@@ -146,22 +146,6 @@ select {
   animation: slideInRight 0.28s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
-/* Kullanıcının seçtiği Altıgen/Yıldız İslami Geometrik Motif (Koyu ve Açık Zeminler) */
-.islamic-pattern-bg {
-  background-image: url("/images/islamic-pattern.jpg");
-  background-size: 260px auto;
-  background-repeat: repeat;
-  mix-blend-mode: soft-light;
-}
-
-.islamic-pattern-light {
-  background-image: url("/images/islamic-pattern.jpg");
-  background-size: 320px auto;
-  background-repeat: repeat;
-  opacity: 0.14;
-  filter: saturate(0.75) contrast(1.05);
-}
-
 nextjs-portal,
 #nextjs-dev-overlay,
 [data-nextjs-dialog-overlay],

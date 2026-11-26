@@ -554,14 +554,19 @@ export default function SlideEditor() {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Hedef Bağlantı (Opsiyonel)</label>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">
+                    Hedef Bağlantı — Site İçi veya Harici URL (Opsiyonel)
+                  </label>
                   <input
                     type="text"
                     value={form.linkUrl}
                     onChange={(e) => setForm({ ...form, linkUrl: e.target.value })}
-                    placeholder="/kurumsal veya /haberler"
+                    placeholder="/haberler veya https://ornek-site.com"
                     className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm font-mono focus:border-primary focus:outline-none"
                   />
+                  <p className="mt-1 text-[11px] text-slate-500">
+                    Site içi sayfa (/haberler) veya farklı bir site adresi (https://...) yapıştırabilirsiniz. Harici linkler yeni sekmede açılır; buton metni boşsa görsele tıklanınca yönlendirir.
+                  </p>
                 </div>
               </div>
 

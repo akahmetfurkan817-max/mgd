@@ -6,17 +6,7 @@ import { CalendarDays, Download, FolderArchive, Search } from "lucide-react";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import ScrollReveal from "@/components/ui/ScrollReveal";
-import { useArchiveItems } from "@/hooks/useSiteData";
-import type { ArchiveCategory } from "@/types";
-
-const CATEGORIES: ("Tümü" | ArchiveCategory)[] = [
-  "Tümü",
-  "Konsept",
-  "Raporlar",
-  "Broşürler",
-  "Yayınlar",
-  "Kurumsal Medya",
-];
+import { useArchiveItems, useSiteSettings } from "@/hooks/useSiteData";
 
 function formatTrDate(dateStr: string) {
   try {
@@ -34,7 +24,9 @@ function formatTrDate(dateStr: string) {
 
 export default function DosyaArsiviPage() {
   const { data: items } = useArchiveItems();
-  const [category, setCategory] = useState<(typeof CATEGORIES)[number]>("Tümü");
+  const { data: settings } = useSiteSettings();
+  const categories = ["Tümü", ...(settings.categories?.archive || [])];
+  const [category, setCategory] = useState<string>("Tümü");
   const [search, setSearch] = useState("");
 
   const filtered = items.filter((item) => {
@@ -75,7 +67,7 @@ export default function DosyaArsiviPage() {
 
             {/* Kategori Filtre Hapları */}
             <div className="flex flex-wrap items-center gap-2 mb-10">
-              {CATEGORIES.map((cat) => (
+              {categories.map((cat) => (
                 <button
                   key={cat}
                   type="button"

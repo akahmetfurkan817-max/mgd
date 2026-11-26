@@ -6,18 +6,9 @@ import Image from "next/image";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { ArrowLeft, BookOpen, Calendar, Download, ExternalLink, FileText, Newspaper } from "lucide-react";
-import { usePublications } from "@/hooks/useSiteData";
-import type { PublicationCategory } from "@/types";
+import { usePublications, useSiteSettings } from "@/hooks/useSiteData";
 
-const CATEGORIES: ("Tümü" | PublicationCategory)[] = [
-  "Tümü",
-  "Bülten",
-  "Faaliyet Raporu",
-  "Dergi",
-  "Kitapçık",
-];
-
-const ICONS: Record<PublicationCategory, typeof BookOpen> = {
+const ICONS: Record<string, typeof BookOpen> = {
   Bülten: Newspaper,
   "Faaliyet Raporu": FileText,
   Dergi: BookOpen,
@@ -26,7 +17,9 @@ const ICONS: Record<PublicationCategory, typeof BookOpen> = {
 
 export default function YayinlarPage() {
   const { data: publications, loading } = usePublications();
-  const [filter, setFilter] = useState<(typeof CATEGORIES)[number]>("Tümü");
+  const { data: settings } = useSiteSettings();
+  const categories = ["Tümü", ...(settings.categories?.publications || [])];
+  const [filter, setFilter] = useState<string>("Tümü");
 
   const filtered = publications.filter((p) => filter === "Tümü" || p.category === filter);
 
@@ -56,7 +49,7 @@ export default function YayinlarPage() {
         <section className="py-12">
           <div className="container-x">
             <div className="flex flex-wrap items-center gap-2 mb-10 pb-6 border-b border-slate-200">
-              {CATEGORIES.map((cat) => (
+              {categories.map((cat) => (
                 <button
                   key={cat}
                   type="button"

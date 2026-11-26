@@ -21,36 +21,7 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { useIban, useSiteSettings } from "@/hooks/useSiteData";
 
-const DONATION_PURPOSES = [
-  {
-    id: "burs",
-    title: "Öğrenci Bursu",
-    desc: "Üniversite ve lise öğrencilerinin eğitim bursu fonuna doğrudan katkı sağlayın.",
-    note: "Öğrenci Bursu Bağışı",
-    icon: GraduationCap,
-  },
-  {
-    id: "egitim",
-    title: "Eğitim & Okuma Halkaları",
-    desc: "Kitap, dergi, seminer ve milli maarif eğitim programlarına destek olun.",
-    note: "Eğitim ve Kültür Bağışı",
-    icon: BookOpen,
-  },
-  {
-    id: "kamp",
-    title: "Gençlik Kampları",
-    desc: "Yaz ve kış liderlik kampları ile gençlik buluşmalarına omuz verin.",
-    note: "Gençlik Kampı Bağışı",
-    icon: Tent,
-  },
-  {
-    id: "genel",
-    title: "Genel Teşkilat Desteği",
-    desc: "81 ildeki teşkilat faaliyetleri ve sosyal sorumluluk projelerine bağış yapın.",
-    note: "Genel Bağış",
-    icon: Users,
-  },
-];
+const PURPOSE_ICONS = [GraduationCap, BookOpen, Tent, Users, HeartHandshake];
 
 async function copyText(text: string): Promise<boolean> {
   try {
@@ -72,7 +43,11 @@ async function copyText(text: string): Promise<boolean> {
 export default function BagisPage() {
   const { data: ibanList } = useIban();
   const { data: settings } = useSiteSettings();
-  const [selectedPurpose, setSelectedPurpose] = useState(DONATION_PURPOSES[0]);
+  const donationPurposes = settings.categories?.donationPurposes || [];
+  const [selectedId, setSelectedId] = useState<string>("");
+  const selectedPurpose =
+    donationPurposes.find((p) => p.id === selectedId) ||
+    donationPurposes[0] || { id: "genel", title: "Genel Bağış", desc: "", note: "Genel Bağış" };
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
 
   const contact = settings.contact;
@@ -144,14 +119,14 @@ export default function BagisPage() {
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              {DONATION_PURPOSES.map((p) => {
-                const Icon = p.icon;
+              {donationPurposes.map((p, idx) => {
+                const Icon = PURPOSE_ICONS[idx % PURPOSE_ICONS.length];
                 const active = selectedPurpose.id === p.id;
                 return (
                   <button
                     key={p.id}
                     type="button"
-                    onClick={() => setSelectedPurpose(p)}
+                    onClick={() => setSelectedId(p.id)}
                     className={`text-left rounded-2xl border p-5 transition-all ${
                       active
                         ? "border-primary bg-primary text-white shadow-lg ring-2 ring-primary/25"

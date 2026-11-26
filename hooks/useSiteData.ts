@@ -11,7 +11,7 @@ import { PUBLICATIONS } from "@/data/publications";
 import { SAMPLE_APPLICATIONS } from "@/data/applications";
 import { SOCIAL_POSTS } from "@/data/social";
 import { VIDEOS } from "@/data/videos";
-import { DEFAULT_SECTIONS, DEFAULT_SITE_SETTINGS } from "@/data/site-settings";
+import { DEFAULT_SECTIONS, DEFAULT_SITE_CATEGORIES, DEFAULT_SITE_SETTINGS } from "@/data/site-settings";
 import { HOME_SLIDES, type HomeSlideItem } from "@/data/slides";
 import { ONCU_SAHSIYETLER, type OncuSahsiyet } from "@/data/oncu-sahsiyetler";
 import { ARCHIVE_ITEMS } from "@/data/archive";
@@ -240,6 +240,17 @@ export function useSiteSettings(): Live<SiteSettings> {
         ...(safe.contact && typeof safe.contact === "object" ? safe.contact : {}),
       },
       theme: { ...DEFAULT_SITE_SETTINGS.theme, ...(safe.theme && typeof safe.theme === "object" ? safe.theme : {}) },
+      categories: {
+        news: Array.isArray(safe.categories?.news) && safe.categories.news.length > 0 ? safe.categories.news : DEFAULT_SITE_CATEGORIES.news,
+        videos: Array.isArray(safe.categories?.videos) && safe.categories.videos.length > 0 ? safe.categories.videos : DEFAULT_SITE_CATEGORIES.videos,
+        archive: Array.isArray(safe.categories?.archive) && safe.categories.archive.length > 0 ? safe.categories.archive : DEFAULT_SITE_CATEGORIES.archive,
+        publications: Array.isArray(safe.categories?.publications) && safe.categories.publications.length > 0 ? safe.categories.publications : DEFAULT_SITE_CATEGORIES.publications,
+        commissions: Array.isArray(safe.categories?.commissions) && safe.categories.commissions.length > 0 ? safe.categories.commissions : DEFAULT_SITE_CATEGORIES.commissions,
+        donationPurposes:
+          Array.isArray(safe.categories?.donationPurposes) && safe.categories.donationPurposes.length > 0
+            ? safe.categories.donationPurposes
+            : DEFAULT_SITE_CATEGORIES.donationPurposes,
+      },
       sections: Array.isArray(safe.sections) && safe.sections.length > 0 ? safe.sections : DEFAULT_SECTIONS,
     },
     live,

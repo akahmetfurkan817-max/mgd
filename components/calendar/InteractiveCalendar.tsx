@@ -44,10 +44,10 @@ interface InteractiveCalendarProps {
 }
 
 export default function InteractiveCalendar({ onSelectEvent }: InteractiveCalendarProps) {
-  // Varsayılan olarak Kasım 2026 (Etkinliklerin yoğun olduğu ay)
-  const [currentYear, setCurrentYear] = useState(2026);
-  const [currentMonth, setCurrentMonth] = useState(10); // 0-indexed: 10 = Kasım
-  const [selectedDay, setSelectedDay] = useState<number>(15);
+  // Gerçek günün tarihiyle başla
+  const [currentYear, setCurrentYear] = useState(() => new Date().getFullYear());
+  const [currentMonth, setCurrentMonth] = useState(() => new Date().getMonth());
+  const [selectedDay, setSelectedDay] = useState<number>(() => new Date().getDate());
 
   const prevMonth = () => {
     if (currentMonth === 0) {
@@ -68,9 +68,10 @@ export default function InteractiveCalendar({ onSelectEvent }: InteractiveCalend
   };
 
   const setToday = () => {
-    setCurrentYear(2026);
-    setCurrentMonth(10);
-    setSelectedDay(15);
+    const now = new Date();
+    setCurrentYear(now.getFullYear());
+    setCurrentMonth(now.getMonth());
+    setSelectedDay(now.getDate());
   };
 
   // Ayın gün sayısını ve ilk günün haftanın hangi günü olduğunu hesaplama

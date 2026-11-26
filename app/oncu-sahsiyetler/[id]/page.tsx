@@ -289,7 +289,7 @@ export default function OncuSahsiyetDetayPage() {
                         <div className="px-5 py-3.5 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-400 border-t border-slate-100">
                           <span>{vid.date}</span>
                           <div className="flex items-center gap-2.5">
-                            {vid.showDownload && vid.downloadUrl?.trim() && (
+                            {vid.downloadUrl?.trim() && (
                               <a
                                 href={
                                   vid.downloadUrl.trim().startsWith("/") ||

@@ -177,6 +177,18 @@ export default function HomeSlider() {
 
   if (total === 0) return null;
 
+  const resolveSlideLink = (raw?: string) => {
+    const trimmed = (raw || "").trim();
+    if (!trimmed) return { href: "", isExternal: false };
+    if (trimmed.startsWith("/") || trimmed.startsWith("#")) {
+      return { href: trimmed, isExternal: false };
+    }
+    if (/^https?:\/\//i.test(trimmed)) {
+      return { href: trimmed, isExternal: true };
+    }
+    return { href: `https://${trimmed}`, isExternal: true };
+  };
+
   return (
     <section id="manset-slider" aria-label="Ana Sayfa Manşetleri" className="relative bg-white select-none">
       {/* Üst Tam Genişlik Slayt Alanı */}
@@ -205,11 +217,23 @@ export default function HomeSlider() {
               const isActive = idx === current;
               const parallaxPx = isActive && isDragging ? dragOffset * -0.14 : 0;
               const hasText = Boolean(item.title?.trim() || item.subtitle?.trim() || item.buttonText?.trim());
+              const { href: resolvedHref, isExternal } = resolveSlideLink(item.linkUrl);
+              const slideClickable = !item.buttonText?.trim() && Boolean(resolvedHref);
 
               return (
                 <div
                   key={item.id || idx}
-                  className="relative w-full shrink-0 min-h-[480px] sm:min-h-[540px] lg:min-h-[600px] flex items-center"
+                  onClick={() => {
+                    if (!slideClickable || didDragRef.current) return;
+                    if (isExternal) {
+                      window.open(resolvedHref, "_blank", "noopener,noreferrer");
+                    } else {
+                      window.location.href = resolvedHref;
+                    }
+                  }}
+                  className={`relative w-full shrink-0 min-h-[480px] sm:min-h-[540px] lg:min-h-[600px] flex items-center ${
+                    slideClickable ? "cursor-pointer" : ""
+                  }`}
                 >
                   {/* Arka Plan Fotoğrafı */}
                   <div
@@ -264,19 +288,37 @@ export default function HomeSlider() {
 
                         {item.buttonText?.trim() && (
                           <div className="mt-7">
-                            <Link
-                              href={item.linkUrl || "/kurumsal"}
-                              draggable={false}
-                              onPointerDown={(e) => e.stopPropagation()}
-                              className="group inline-flex items-stretch overflow-hidden rounded-xl bg-white shadow-xl transition-transform duration-200 hover:-translate-y-0.5 active:scale-[0.98]"
-                            >
-                              <span className="flex items-center px-6 py-3.5 text-sm font-bold text-ink">
-                                {item.buttonText.replace(/\s*→\s*$/, "")}
-                              </span>
-                              <span className="flex items-center justify-center bg-secondary px-4 text-white transition-colors group-hover:bg-primary">
-                                <ArrowRight size={17} className="transition-transform group-hover:translate-x-0.5" />
-                              </span>
-                            </Link>
+                            {isExternal ? (
+                              <a
+                                href={resolvedHref}
+                                target="_blank"
+                                rel="noreferrer"
+                                draggable={false}
+                                onPointerDown={(e) => e.stopPropagation()}
+                                className="group inline-flex items-stretch overflow-hidden rounded-xl bg-white shadow-xl transition-transform duration-200 hover:-translate-y-0.5 active:scale-[0.98]"
+                              >
+                                <span className="flex items-center px-6 py-3.5 text-sm font-bold text-ink">
+                                  {item.buttonText.replace(/\s*→\s*$/, "")}
+                                </span>
+                                <span className="flex items-center justify-center bg-secondary px-4 text-white transition-colors group-hover:bg-primary">
+                                  <ArrowRight size={17} className="transition-transform group-hover:translate-x-0.5" />
+                                </span>
+                              </a>
+                            ) : (
+                              <Link
+                                href={resolvedHref || "/kurumsal"}
+                                draggable={false}
+                                onPointerDown={(e) => e.stopPropagation()}
+                                className="group inline-flex items-stretch overflow-hidden rounded-xl bg-white shadow-xl transition-transform duration-200 hover:-translate-y-0.5 active:scale-[0.98]"
+                              >
+                                <span className="flex items-center px-6 py-3.5 text-sm font-bold text-ink">
+                                  {item.buttonText.replace(/\s*→\s*$/, "")}
+                                </span>
+                                <span className="flex items-center justify-center bg-secondary px-4 text-white transition-colors group-hover:bg-primary">
+                                  <ArrowRight size={17} className="transition-transform group-hover:translate-x-0.5" />
+                                </span>
+                              </Link>
+                            )}
                           </div>
                         )}
                       </div>

@@ -55,6 +55,13 @@ export interface President extends Person {
   instagramUrl?: string;
 }
 
+export interface DistrictChair {
+  id: string;
+  name: string;
+  chairName: string;
+  phone: string;
+}
+
 export interface Province {
   plate: number;
   name: string;
@@ -63,17 +70,10 @@ export interface Province {
   address: string;
   phone: string;
   email: string;
+  districts?: DistrictChair[];
 }
 
-export type NewsCategory =
-  | "Genel Merkez"
-  | "Üniversite"
-  | "Basın Açıklaması"
-  | "Duyurular & Burs"
-  | "Programlar"
-  | "Teşkilattan Haberler"
-  | "Yayınlar & Kütüphane"
-  | "Basın Bildirisi & Rapor";
+export type NewsCategory = string;
 
 export interface NewsItem {
   id: string;
@@ -85,12 +85,7 @@ export interface NewsItem {
   image?: string;
 }
 
-export type ArchiveCategory =
-  | "Konsept"
-  | "Raporlar"
-  | "Broşürler"
-  | "Yayınlar"
-  | "Kurumsal Medya";
+export type ArchiveCategory = string;
 
 export interface ArchiveItem {
   id: string;
@@ -132,7 +127,7 @@ export interface VolunteerApplication {
   createdAt: string; // ISO
 }
 
-export type PublicationCategory = "Bülten" | "Faaliyet Raporu" | "Dergi" | "Kitapçık";
+export type PublicationCategory = string;
 
 export interface Publication {
   id: string;
@@ -194,14 +189,7 @@ export interface EventItem {
   status: "Yaklaşan" | "Tamamlandı";
 }
 
-export type VideoCategory =
-  | "Genel Başkan Konuşması"
-  | "Teşkilat & Kongre"
-  | "Belgesel & Arşiv"
-  | "Gençlik Buluşması"
-  | "Erbakan Hoca Videoları"
-  | "Fatih Erbakan Videoları"
-  | "MGD TV";
+export type VideoCategory = string;
 
 export interface VideoItem {
   id: string;
@@ -320,6 +308,22 @@ export interface CorporatePdfsConfig {
   kurumsalKimlik?: string;
 }
 
+export interface DonationPurposeItem {
+  id: string;
+  title: string;
+  desc: string;
+  note: string;
+}
+
+export interface SiteCategoriesConfig {
+  news?: string[];
+  videos?: string[];
+  archive?: string[];
+  publications?: string[];
+  commissions?: string[];
+  donationPurposes?: DonationPurposeItem[];
+}
+
 export interface SiteSettings {
   sections: SectionBlock[];
   hero: HeroConfig;
@@ -330,5 +334,6 @@ export interface SiteSettings {
   erbakan?: ErbakanConfig;
   managementCards?: ManagementCardsConfig;
   corporatePdfs?: CorporatePdfsConfig;
+  categories?: SiteCategoriesConfig;
   sliderZoomEnabled?: boolean;
 }

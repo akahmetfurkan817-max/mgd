@@ -517,7 +517,7 @@ export default function Header() {
 
             <Link
               href="/bagis"
-              className="hidden sm:inline-flex shrink-0 whitespace-nowrap items-center gap-1.5 rounded-xl bg-gold px-3.5 py-2 text-[12px] font-extrabold text-[#0B1E42] shadow-sm transition hover:bg-gold-light active:scale-[0.98]"
+              className="hidden sm:inline-flex shrink-0 whitespace-nowrap items-center gap-1.5 rounded-xl bg-gold px-3.5 py-2 text-[12px] font-extrabold text-white shadow-sm transition hover:bg-[#2563EB] active:scale-[0.98]"
             >
               <Landmark size={14} />
               <span>Bağış Yap</span>

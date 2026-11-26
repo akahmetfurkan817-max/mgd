@@ -4,31 +4,22 @@ import { useState, type FormEvent } from "react";
 import { CheckCircle2, HeartHandshake, Loader2, Send } from "lucide-react";
 import Modal from "@/components/ui/Modal";
 import { MAP_PROVINCES } from "@/data/turkey-map";
+import { useSiteSettings } from "@/hooks/useSiteData";
 
 interface VolunteerModalProps {
   open: boolean;
   onClose: () => void;
 }
 
-const COMMISSIONS = [
-  "Üniversiteliler Teşkilatı",
-  "Liseler & Ortaöğretim Birimi",
-  "Hanımlar Gençlik Birimi",
-  "Medya, İletişim ve Tasarım",
-  "Kültür, Sanat ve Edebiyat",
-  "Ar-Ge, Teknoloji ve Bilişim",
-  "Spor ve Doğa Faaliyetleri",
-  "Sosyal Sorumluluk ve İnsani Yardım",
-  "Teşkilatlanma ve Saha",
-];
-
 export default function VolunteerModal({ open, onClose }: VolunteerModalProps) {
+  const { data: settings } = useSiteSettings();
+  const commissions = settings.categories?.commissions || ["Üniversiteliler Teşkilatı"];
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [city, setCity] = useState("Ankara");
   const [university, setUniversity] = useState("");
-  const [commission, setCommission] = useState(COMMISSIONS[0]);
+  const [commission, setCommission] = useState(commissions[0] || "");
   const [notes, setNotes] = useState("");
 
   const [loading, setLoading] = useState(false);
@@ -41,7 +32,7 @@ export default function VolunteerModal({ open, onClose }: VolunteerModalProps) {
     setEmail("");
     setCity("Ankara");
     setUniversity("");
-    setCommission(COMMISSIONS[0]);
+    setCommission(commissions[0] || "");
     setNotes("");
     setSuccess(false);
     setError("");
@@ -193,7 +184,7 @@ export default function VolunteerModal({ open, onClose }: VolunteerModalProps) {
               onChange={(e) => setCommission(e.target.value)}
               className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm focus:border-secondary focus:outline-none"
             >
-              {COMMISSIONS.map((c) => (
+              {commissions.map((c) => (
                 <option key={c} value={c}>
                   {c}
                 </option>

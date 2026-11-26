@@ -17,21 +17,8 @@ import {
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import ScrollReveal from "@/components/ui/ScrollReveal";
-import { useNews } from "@/hooks/useSiteData";
+import { useNews, useSiteSettings } from "@/hooks/useSiteData";
 import { slugify } from "@/lib/slug";
-import type { NewsCategory } from "@/types";
-
-const FILTERS: ("Tümü" | NewsCategory)[] = [
-  "Tümü",
-  "Duyurular & Burs",
-  "Teşkilattan Haberler",
-  "Genel Merkez",
-  "Basın Açıklaması",
-  "Programlar",
-  "Üniversite",
-  "Yayınlar & Kütüphane",
-  "Basın Bildirisi & Rapor",
-];
 
 function formatTrDate(dateStr: string) {
   try {
@@ -50,15 +37,17 @@ function formatTrDate(dateStr: string) {
 function HaberlerContent() {
   const searchParams = useSearchParams();
   const { data: news } = useNews();
-  const [filter, setFilter] = useState<(typeof FILTERS)[number]>("Tümü");
+  const { data: settings } = useSiteSettings();
+  const filters = ["Tümü", ...(settings.categories?.news || [])];
+  const [filter, setFilter] = useState<string>("Tümü");
   const [search, setSearch] = useState("");
 
   useEffect(() => {
     const catParam = searchParams.get("cat");
-    if (catParam && FILTERS.includes(catParam as (typeof FILTERS)[number])) {
-      setFilter(catParam as (typeof FILTERS)[number]);
+    if (catParam && filters.includes(catParam)) {
+      setFilter(catParam);
     }
-  }, [searchParams]);
+  }, [searchParams, filters]);
 
   const filtered = news.filter((n) => {
     const matchesCat = filter === "Tümü" || n.category === filter;
@@ -139,7 +128,7 @@ function HaberlerContent() {
 
             {/* Kategori Filtre Hapları */}
             <div className="mt-6 flex flex-wrap items-center gap-2">
-              {FILTERS.map((f) => (
+              {filters.map((f) => (
                 <button
                   key={f}
                   type="button"

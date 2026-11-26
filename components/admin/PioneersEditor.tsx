@@ -519,7 +519,13 @@ export default function PioneersEditor() {
                     <input
                       type="text"
                       value={videoForm.downloadUrl || ""}
-                      onChange={(e) => setVideoForm({ ...videoForm, downloadUrl: e.target.value })}
+                      onChange={(e) =>
+                        setVideoForm({
+                          ...videoForm,
+                          downloadUrl: e.target.value,
+                          showDownload: Boolean(e.target.value.trim()),
+                        })
+                      }
                       placeholder="https://drive.google.com/file/d/... veya klasör linki"
                       className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-mono focus:border-emerald-600 focus:outline-none"
                     />

@@ -14,6 +14,7 @@ import {
   UserCheck,
 } from "lucide-react";
 import { Card, PageHeader, SaveStatus, type SaveState, IDLE } from "@/components/admin/ui";
+import CategoryManagerBar from "@/components/admin/CategoryManagerBar";
 import { useApplications } from "@/hooks/useSiteData";
 import { saveSection } from "@/lib/adminApi";
 import type { ApplicationStatus, VolunteerApplication } from "@/types";
@@ -78,8 +79,14 @@ export default function ApplicationManager() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Gönüllü Başvuruları"
-        description="Web sitesi üzerinden gelen gençlik ve teşkilat gönüllülük talepleri."
+        title="Üyelik / Gönüllü Başvuruları"
+        description="Gelen başvuruları inceleyin, durumlarını güncelleyin ve başvuru formundaki birim/komisyon kategorilerini yönetin."
+      />
+
+      <CategoryManagerBar
+        listKey="commissions"
+        title="Üyelik / Başvuru Birim Kategorileri"
+        placeholder="Yeni birim veya komisyon adı..."
       />
 
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
