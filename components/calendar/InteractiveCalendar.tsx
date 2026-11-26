@@ -110,6 +110,36 @@ export default function InteractiveCalendar({ onSelectEvent }: InteractiveCalend
 
   const selectedDayEvents = eventsByDay.get(selectedDay) || [];
 
+  const parseEventDate = (dateStr: string): { day: number; month: number; year: number; ts: number } | null => {
+    const parts = dateStr.trim().split(/\s+/);
+    if (parts.length < 3) return null;
+    const day = parseInt(parts[0], 10);
+    const month = MONTH_NAMES.indexOf(parts[1]);
+    const year = parseInt(parts[2], 10);
+    if (isNaN(day) || month < 0 || isNaN(year)) return null;
+    return { day, month, year, ts: new Date(year, month, day).getTime() };
+  };
+
+  const upcomingEvents = useMemo(() => {
+    const selectedTs = new Date(currentYear, currentMonth, selectedDay).getTime();
+    const withDates = EVENTS.map((evt) => ({ evt, parsed: parseEventDate(evt.date) })).filter(
+      (item): item is { evt: EventItem; parsed: NonNullable<ReturnType<typeof parseEventDate>> } =>
+        item.parsed !== null,
+    );
+    const afterSelected = withDates
+      .filter((item) => item.parsed.ts > selectedTs)
+      .sort((a, b) => a.parsed.ts - b.parsed.ts);
+
+    const list =
+      afterSelected.length > 0
+        ? afterSelected
+        : withDates
+            .filter((item) => item.parsed.ts !== selectedTs)
+            .sort((a, b) => Math.abs(a.parsed.ts - selectedTs) - Math.abs(b.parsed.ts - selectedTs));
+
+    return list.slice(0, 3);
+  }, [currentYear, currentMonth, selectedDay]);
+
   return (
     <div className="bg-white rounded-3xl border border-slate-200/90 shadow-xl overflow-hidden">
       {/* Üst Bar: Ay / Yıl ve Butonlar */}
@@ -321,19 +351,66 @@ export default function InteractiveCalendar({ onSelectEvent }: InteractiveCalend
                 })}
               </div>
             ) : (
-              <div className="text-center py-12 px-4 rounded-2xl bg-white border border-slate-200">
-                <CalendarIcon size={36} className="mx-auto text-slate-300 mb-3" />
-                <h5 className="text-sm font-bold text-slate-700">Program Bulunmuyor</h5>
-                <p className="text-xs text-slate-500 mt-1 max-w-xs mx-auto">
-                  Bu tarihte henüz resmî bir program ilan edilmemiştir. Yaklaşan ilk etkinliklerimizi incelemek için takvimdeki kırmızı noktalı günlere tıklayabilirsiniz.
+              <div className="text-center py-6 px-4 rounded-2xl bg-white border border-slate-200">
+                <CalendarIcon size={28} className="mx-auto text-slate-300 mb-2" />
+                <h5 className="text-sm font-bold text-slate-700">Bu Tarihte Program Bulunmuyor</h5>
+                <p className="text-xs text-slate-500 mt-1">
+                  Aşağıdaki yaklaşan programları inceleyebilir veya kırmızı noktalı günlere tıklayabilirsiniz.
                 </p>
               </div>
             )}
-          </div>
 
-          <div className="pt-6 border-t border-slate-200 mt-6 text-xs text-slate-500 flex items-center justify-between">
-            <span>T.C. Genel Merkez Koordinasyonu</span>
-            <span className="font-bold text-primary">MGD Ajanda v2.0</span>
+            {/* Yaklaşan Programlar */}
+            {upcomingEvents.length > 0 && (
+              <div className="mt-6 pt-5 border-t border-slate-200">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-[11px] font-extrabold uppercase tracking-wider text-primary">
+                    Yaklaşan Programlar
+                  </span>
+                  <span className="text-[11px] font-semibold text-slate-400">
+                    {upcomingEvents.length} etkinlik
+                  </span>
+                </div>
+
+                <div className="space-y-2.5">
+                  {upcomingEvents.map(({ evt, parsed }) => {
+                    const style =
+                      CATEGORY_COLORS[evt.category] || CATEGORY_COLORS["Gençlik Şöleni"];
+                    return (
+                      <button
+                        key={evt.id}
+                        type="button"
+                        onClick={() => {
+                          setCurrentYear(parsed.year);
+                          setCurrentMonth(parsed.month);
+                          setSelectedDay(parsed.day);
+                        }}
+                        className="w-full text-left p-3.5 rounded-xl bg-white border border-slate-200 hover:border-secondary hover:shadow-sm transition flex items-start justify-between gap-3 group"
+                      >
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className={`h-2 w-2 rounded-full shrink-0 ${style.dot}`} />
+                            <span className="text-[11px] font-bold text-secondary">
+                              {evt.date}
+                              {evt.time ? ` • ${evt.time}` : ""}
+                            </span>
+                          </div>
+                          <p className="text-xs sm:text-sm font-bold text-slate-900 group-hover:text-primary truncate">
+                            {evt.title}
+                          </p>
+                          <p className="text-[11px] text-slate-500 mt-0.5 truncate">
+                            {evt.city} • {evt.venue}
+                          </p>
+                        </div>
+                        <span className="text-xs font-bold text-primary shrink-0 mt-1 group-hover:translate-x-0.5 transition-transform">
+                          →
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
