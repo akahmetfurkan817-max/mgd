@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Building2,
   CalendarCheck,
@@ -61,7 +61,8 @@ const DEFAULT_ERBAKAN: ErbakanConfig = {
 };
 
 export default function ContentEditor() {
-  const { data: settings } = useSiteSettings();
+  const { data: settings, live } = useSiteSettings();
+  const syncedLiveRef = useRef(false);
   const [hero, setHero] = useState<HeroConfig>(settings.hero || DEFAULT_SITE_SETTINGS.hero);
   const [stats, setStats] = useState<StatsItemConfig[]>(settings.stats || DEFAULT_SITE_SETTINGS.stats);
   const [vision, setVision] = useState<VisionConfig>(settings.vision || DEFAULT_SITE_SETTINGS.vision);
@@ -98,6 +99,8 @@ export default function ContentEditor() {
   const [state, setState] = useState<SaveState>(IDLE);
 
   useEffect(() => {
+    if (!live || syncedLiveRef.current) return;
+    syncedLiveRef.current = true;
     if (settings.hero) setHero(settings.hero);
     if (settings.stats) setStats(settings.stats);
     if (settings.vision) setVision(settings.vision);
@@ -115,7 +118,7 @@ export default function ContentEditor() {
         quotes: settings.erbakan.quotes?.length ? settings.erbakan.quotes : DEFAULT_ERBAKAN.quotes,
       });
     }
-  }, [settings]);
+  }, [live, settings]);
 
   const updateStat = (index: number, patch: Partial<StatsItemConfig>) => {
     setStats((prev) => prev.map((s, idx) => (idx === index ? { ...s, ...patch } : s)));
@@ -269,6 +272,18 @@ export default function ContentEditor() {
             value={headerLabels.milbisUrl || ""}
             onChange={(v) => setHeaderLabels((p) => ({ ...p, milbisUrl: v }))}
           />
+        </div>
+
+        <div className="mt-4 pt-4 border-t border-slate-100 flex items-center gap-3">
+          <button
+            type="button"
+            onClick={handleSaveAll}
+            disabled={state.status === "saving"}
+            className="btn-primary text-xs px-4 py-2"
+          >
+            <Save size={14} /> {state.status === "saving" ? "Kaydediliyor..." : "Üst Menü İsimlerini Kaydet"}
+          </button>
+          <SaveStatus state={state} />
         </div>
       </Card>
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { collection, doc, onSnapshot } from "firebase/firestore";
 import { COLLECTIONS, getDb, isFirebaseConfigured } from "@/lib/firebase";
 import { NEWS } from "@/data/news";
@@ -228,9 +228,9 @@ export function useVideos(): Live<VideoItem[]> {
 
 export function useSiteSettings(): Live<SiteSettings> {
   const { data, live } = useDocument<SiteSettings>(COLLECTIONS.settings, "site", DEFAULT_SITE_SETTINGS);
-  const safe = data && typeof data === "object" ? data : DEFAULT_SITE_SETTINGS;
-  return {
-    data: {
+  const merged = useMemo<SiteSettings>(() => {
+    const safe = data && typeof data === "object" ? data : DEFAULT_SITE_SETTINGS;
+    return {
       ...DEFAULT_SITE_SETTINGS,
       ...safe,
       hero: { ...DEFAULT_SITE_SETTINGS.hero, ...(safe.hero && typeof safe.hero === "object" ? safe.hero : {}) },
@@ -257,9 +257,9 @@ export function useSiteSettings(): Live<SiteSettings> {
         ...(safe.headerLabels && typeof safe.headerLabels === "object" ? safe.headerLabels : {}),
       },
       sections: Array.isArray(safe.sections) && safe.sections.length > 0 ? safe.sections : DEFAULT_SECTIONS,
-    },
-    live,
-  };
+    };
+  }, [data]);
+  return { data: merged, live };
 }
 
 const SLIDES_SEED = { list: HOME_SLIDES };
