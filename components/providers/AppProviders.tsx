@@ -3,7 +3,7 @@
 import { useEffect, type ReactNode } from "react";
 import { DonateProvider } from "@/components/donate/DonateProvider";
 import { VolunteerProvider } from "@/components/volunteer/VolunteerProvider";
-import { useSiteSettings } from "@/hooks/useSiteData";
+import { hydrateSiteCache, useSiteSettings } from "@/hooks/useSiteData";
 
 function ThemeSync() {
   const { data: settings } = useSiteSettings();
@@ -21,7 +21,16 @@ function ThemeSync() {
   return null;
 }
 
-export function AppProviders({ children }: { children: ReactNode }) {
+export function AppProviders({
+  children,
+  initialCache,
+}: {
+  children: ReactNode;
+  initialCache?: Record<string, unknown>;
+}) {
+  // İlk render'dan önce sunucudan gelen canlı Firestore verilerini bellek önbelleğine yaz
+  hydrateSiteCache(initialCache);
+
   return (
     <DonateProvider>
       <VolunteerProvider>

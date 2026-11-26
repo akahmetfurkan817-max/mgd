@@ -40,6 +40,19 @@ interface Live<T> {
 
 const memoryCache = new Map<string, unknown>();
 
+/**
+ * Sunucudan (SSR) gelen canlı Firestore verilerini ilk render'dan önce bellek önbelleğine yazar.
+ * Böylece sayfa yenilendiğinde eski örnek veriler asla yanıp sönmez.
+ */
+export function hydrateSiteCache(initial?: Record<string, unknown> | null) {
+  if (!initial || typeof initial !== "object") return;
+  for (const [key, val] of Object.entries(initial)) {
+    if (val !== undefined && val !== null) {
+      memoryCache.set(key, val);
+    }
+  }
+}
+
 function useCollection<T>(name: string, seed: T[], combine: (remote: T[], seed: T[]) => T[]): Live<T[]> {
   const cacheKey = `mgd_col_${name}`;
   const [state, setState] = useState<Live<T[]>>(() => {
@@ -52,12 +65,19 @@ function useCollection<T>(name: string, seed: T[], combine: (remote: T[], seed: 
 
   useEffect(() => {
     try {
-      const cached = localStorage.getItem(cacheKey);
-      if (cached) {
-        const parsed = JSON.parse(cached);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          memoryCache.set(cacheKey, parsed);
-          setState({ data: combine(parsed, seed), live: true, loading: false });
+      if (memoryCache.has(cacheKey)) {
+        const current = memoryCache.get(cacheKey);
+        if (Array.isArray(current) && current.length > 0) {
+          localStorage.setItem(cacheKey, JSON.stringify(current));
+        }
+      } else {
+        const cached = localStorage.getItem(cacheKey);
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            memoryCache.set(cacheKey, parsed);
+            setState({ data: combine(parsed, seed), live: true, loading: false });
+          }
         }
       }
     } catch {}
@@ -103,12 +123,19 @@ function useDocument<T>(col: string, id: string, seed: T): Live<T> {
 
   useEffect(() => {
     try {
-      const cached = localStorage.getItem(cacheKey);
-      if (cached) {
-        const parsed = JSON.parse(cached);
-        if (parsed && typeof parsed === "object") {
-          memoryCache.set(cacheKey, parsed);
-          setState({ data: { ...seed, ...parsed }, live: true, loading: false });
+      if (memoryCache.has(cacheKey)) {
+        const current = memoryCache.get(cacheKey);
+        if (current && typeof current === "object") {
+          localStorage.setItem(cacheKey, JSON.stringify(current));
+        }
+      } else {
+        const cached = localStorage.getItem(cacheKey);
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          if (parsed && typeof parsed === "object") {
+            memoryCache.set(cacheKey, parsed);
+            setState({ data: { ...seed, ...parsed }, live: true, loading: false });
+          }
         }
       }
     } catch {}

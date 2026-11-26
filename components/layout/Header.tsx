@@ -184,17 +184,12 @@ export default function Header() {
                 className={`group absolute left-0 right-0 z-50 flex items-center justify-center bg-[#253573] transition-all duration-300 ${
                   scrolled
                     ? "top-0 h-[82px] rounded-b-2xl shadow-[0_12px_28px_-8px_rgba(4,12,32,0.6)]"
-                    : "-top-10 h-[142px] rounded-b-[20px] shadow-[0_18px_36px_-10px_rgba(4,12,32,0.65)]"
+                    : "-top-10 h-[134px] rounded-b-2xl shadow-[0_18px_36px_-10px_rgba(4,12,32,0.65)]"
                 }`}
-                style={
-                  scrolled
-                    ? undefined
-                    : { clipPath: "polygon(0 0, 100% 0, 100% 90%, 0 100%)" }
-                }
               >
                 <div
                   className={`relative z-10 transition-all duration-300 group-hover:scale-105 ${
-                    scrolled ? "h-16 w-16" : "h-[104px] w-[104px] mb-2"
+                    scrolled ? "h-16 w-16" : "h-[104px] w-[104px]"
                   }`}
                 >
                   <Image
