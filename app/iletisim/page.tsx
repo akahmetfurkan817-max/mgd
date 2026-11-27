@@ -14,6 +14,7 @@ import {
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import ScrollReveal from "@/components/ui/ScrollReveal";
+import PageHero from "@/components/ui/PageHero";
 import { useSiteSettings } from "@/hooks/useSiteData";
 
 export default function IletisimPage() {
@@ -44,21 +45,12 @@ export default function IletisimPage() {
 
       <main className="flex-1">
         {/* Üst Banner */}
-        <section className="bg-gradient-to-r from-[#061124] via-primary-dark to-[#122D61] text-white py-14 sm:py-20 border-b border-white/10">
-          <div className="container-x">
-            <ScrollReveal y={18} duration={650}>
-              <span className="inline-block text-[11px] font-extrabold uppercase tracking-[0.22em] text-blue-300 mb-2">
-                Milli Gençlik Derneği Genel Merkezi
-              </span>
-              <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight">
-                İletişim
-              </h1>
-              <p className="mt-3 text-sm sm:text-base text-blue-100/85 max-w-2xl">
-                Genel Merkezimizle doğrudan iletişime geçebilir, görüş ve önerilerinizi iletebilir veya 81 il teşkilatımızın bilgilerine ulaşabilirsiniz.
-              </p>
-            </ScrollReveal>
-          </div>
-        </section>
+        <PageHero
+          pageKey="iletisim"
+          defaultEyebrow="Milli Gençlik Derneği Genel Merkezi"
+          defaultTitle="İletişim"
+          defaultSubtitle="Genel Merkezimizle doğrudan iletişime geçebilir, görüş ve önerilerinizi iletebilir veya 81 il teşkilatımızın bilgilerine ulaşabilirsiniz."
+        />
 
         {/* İletişim Kartları & Form */}
         <section className="py-12 sm:py-16">

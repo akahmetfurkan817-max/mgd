@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import PageHero from "@/components/ui/PageHero";
 import { ArrowLeft, Calendar, Download, FileCheck, FileText, User } from "lucide-react";
 import { REPORTS } from "@/data/reports";
 import ReportModal from "@/components/modals/ReportModal";
@@ -27,23 +28,12 @@ export default function RaporlarPage() {
       <Header />
 
       <main className="flex-1">
-        <section className="bg-gradient-to-r from-slate-950 via-primary-dark to-slate-900 text-white py-16 sm:py-20 border-b border-blue-900/30">
-          <div className="container-x">
-            <div className="flex items-center gap-2 mb-3 text-xs font-bold text-blue-300 uppercase tracking-widest">
-              <Link href="/" className="hover:underline flex items-center gap-1">
-                <ArrowLeft size={14} /> Ana Sayfa
-              </Link>
-              <span>/</span>
-              <span>Raporlar & Bildiriler</span>
-            </div>
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold font-heading">
-              Basın Bildirileri ve Raporlar
-            </h1>
-            <p className="mt-3 text-sm sm:text-base text-slate-300 max-w-2xl">
-              Milli Gençlik Derneği Genel Merkezimiz ve AR-GE birimlerimiz tarafından hazırlanan haftalık faaliyet raporları, kamuoyu bildirileri ve politika belgeleri.
-            </p>
-          </div>
-        </section>
+        <PageHero
+          pageKey="raporlar"
+          breadcrumbLabel="Raporlar & Bildiriler"
+          defaultTitle="Basın Bildirileri ve Raporlar"
+          defaultSubtitle="Milli Gençlik Derneği Genel Merkezimiz ve AR-GE birimlerimiz tarafından hazırlanan haftalık faaliyet raporları, kamuoyu bildirileri ve politika belgeleri."
+        />
 
         <section className="py-12">
           <div className="container-x">

@@ -10,12 +10,13 @@ import {
   Sparkles,
   User,
 } from "lucide-react";
-import { EVENTS } from "@/data/events";
+import { useEvents } from "@/hooks/useSiteData";
 import EventModal from "@/components/modals/EventModal";
 import InteractiveCalendar from "@/components/calendar/InteractiveCalendar";
 import type { EventItem } from "@/types";
 
 export default function CalendarEventsSection() {
+  const { data: events } = useEvents();
   const [selectedEvent, setSelectedEvent] = useState<EventItem | null>(null);
 
   return (
@@ -40,7 +41,7 @@ export default function CalendarEventsSection() {
             href="/etkinlikler"
             className="inline-flex items-center gap-1.5 text-xs font-bold text-primary hover:text-secondary transition group self-start sm:self-auto"
           >
-            Tüm Takvimi Tam Ekran İncele ({EVENTS.length}) <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
+            Tüm Takvimi Tam Ekran İncele ({events.length}) <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
           </Link>
         </div>
 

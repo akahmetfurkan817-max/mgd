@@ -6,6 +6,7 @@ import { ArrowLeft, ArrowRight, BookOpen, Film, Image as ImageIcon, Quote, Spark
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import ScrollReveal from "@/components/ui/ScrollReveal";
+import PageHero from "@/components/ui/PageHero";
 import { useOncuSahsiyetler } from "@/hooks/useSiteData";
 
 export default function OncuSahsiyetlerPage() {
@@ -17,33 +18,13 @@ export default function OncuSahsiyetlerPage() {
 
       <main className="flex-1">
         {/* Premium Editorial Banner */}
-        <section className="relative overflow-hidden bg-gradient-to-b from-[#091D3D] via-[#07152D] to-[#061124] py-16 sm:py-24 border-b border-white/10">
-          <div className="pointer-events-none absolute -top-24 right-1/4 h-96 w-96 rounded-full bg-secondary/20 blur-3xl" />
-
-          <div className="container-x relative">
-            <ScrollReveal y={20} duration={650}>
-              <div className="flex items-center gap-2 mb-4 text-xs font-bold text-blue-300 uppercase tracking-widest">
-                <Link href="/" className="hover:text-white flex items-center gap-1 transition">
-                  <ArrowLeft size={14} /> Ana Sayfa
-                </Link>
-                <span>/</span>
-                <span>Davamızın Mimarları</span>
-              </div>
-
-              <div className="inline-flex items-center gap-2 rounded-full border border-amber-400/30 bg-amber-400/10 px-3.5 py-1 text-[11px] font-extrabold uppercase tracking-[0.2em] text-amber-300 mb-4">
-                <Sparkles size={12} />
-                <span>Külliyat &amp; Rehber Şahsiyetler</span>
-              </div>
-
-              <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white">
-                Öncü Şahsiyetlerimiz
-              </h1>
-              <p className="mt-4 text-sm sm:text-base lg:text-lg text-slate-300 max-w-2xl leading-relaxed">
-                Milli Gençlik hareketine ruh veren, ömrünü ahlak, ilim ve medeniyet davasına adayan büyük önderlerimizin her biri için hazırlanan özel biyografi, video, fotoğraf ve kitap arşivi.
-              </p>
-            </ScrollReveal>
-          </div>
-        </section>
+        <PageHero
+          pageKey="oncu-sahsiyetler"
+          breadcrumbLabel="Davamızın Mimarları"
+          defaultEyebrow="Külliyat & Rehber Şahsiyetler"
+          defaultTitle="Öncü Şahsiyetlerimiz"
+          defaultSubtitle="Milli Gençlik hareketine ruh veren, ömrünü ahlak, ilim ve medeniyet davasına adayan büyük önderlerimizin her biri için hazırlanan özel biyografi, video, fotoğraf ve kitap arşivi."
+        />
 
         {/* Alt Alta Premium Tam Genişlik Şahsiyet Kartları */}
         <section className="py-12 sm:py-16">

@@ -11,7 +11,7 @@ import {
   User,
   Users,
 } from "lucide-react";
-import { EVENTS } from "@/data/events";
+import { useEvents } from "@/hooks/useSiteData";
 import type { EventItem } from "@/types";
 
 const MONTH_NAMES = [
@@ -44,6 +44,7 @@ interface InteractiveCalendarProps {
 }
 
 export default function InteractiveCalendar({ onSelectEvent }: InteractiveCalendarProps) {
+  const { data: events } = useEvents();
   // Gerçek günün tarihiyle başla
   const [currentYear, setCurrentYear] = useState(() => new Date().getFullYear());
   const [currentMonth, setCurrentMonth] = useState(() => new Date().getMonth());
@@ -90,7 +91,7 @@ export default function InteractiveCalendar({ onSelectEvent }: InteractiveCalend
     const map = new Map<number, EventItem[]>();
     const monthName = MONTH_NAMES[currentMonth];
 
-    EVENTS.forEach((evt) => {
+    events.forEach((evt) => {
       // Örn: "15 Kasım 2026"
       const parts = evt.date.split(" ");
       if (parts.length >= 3) {
@@ -106,7 +107,7 @@ export default function InteractiveCalendar({ onSelectEvent }: InteractiveCalend
     });
 
     return map;
-  }, [currentYear, currentMonth]);
+  }, [currentYear, currentMonth, events]);
 
   const selectedDayEvents = eventsByDay.get(selectedDay) || [];
 
@@ -122,7 +123,7 @@ export default function InteractiveCalendar({ onSelectEvent }: InteractiveCalend
 
   const upcomingEvents = useMemo(() => {
     const selectedTs = new Date(currentYear, currentMonth, selectedDay).getTime();
-    const withDates = EVENTS.map((evt) => ({ evt, parsed: parseEventDate(evt.date) })).filter(
+    const withDates = events.map((evt) => ({ evt, parsed: parseEventDate(evt.date) })).filter(
       (item): item is { evt: EventItem; parsed: NonNullable<ReturnType<typeof parseEventDate>> } =>
         item.parsed !== null,
     );
@@ -138,7 +139,7 @@ export default function InteractiveCalendar({ onSelectEvent }: InteractiveCalend
             .sort((a, b) => Math.abs(a.parsed.ts - selectedTs) - Math.abs(b.parsed.ts - selectedTs));
 
     return list.slice(0, 3);
-  }, [currentYear, currentMonth, selectedDay]);
+  }, [currentYear, currentMonth, selectedDay, events]);
 
   return (
     <div className="bg-white rounded-3xl border border-slate-200/90 shadow-xl overflow-hidden">

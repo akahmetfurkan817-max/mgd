@@ -6,6 +6,7 @@ import {
   ArrowRight,
   Award,
   BookOpen,
+  Calendar,
   ExternalLink,
   FolderArchive,
   Image as ImageIcon,
@@ -60,6 +61,11 @@ const SECTION_META: Record<AdminSection, { icon: typeof Newspaper; desc: string;
     icon: Newspaper,
     tag: "Yayın",
     desc: "Genel Merkez, Üniversite ve Basın Açıklamalarını yayınlayın.",
+  },
+  events: {
+    icon: Calendar,
+    tag: "Takvim",
+    desc: "Program takvimindeki etkinlikleri, kongreleri ve buluşmaları ekleyin, düzenleyin veya silin.",
   },
   archive: {
     icon: FolderArchive,

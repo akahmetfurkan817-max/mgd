@@ -8,6 +8,7 @@ const DOC_TARGETS: readonly { col: string; id: string }[] = [
   { col: COLLECTIONS.settings, id: "baskan" },
   { col: COLLECTIONS.settings, id: "iban" },
   { col: COLLECTIONS.settings, id: "slides" },
+  { col: COLLECTIONS.settings, id: "events" },
   { col: COLLECTIONS.settings, id: "oncu_sahsiyetler" },
 ];
 

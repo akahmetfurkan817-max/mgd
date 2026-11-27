@@ -5,42 +5,33 @@ import Link from "next/link";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { ArrowLeft, Calendar as CalendarIcon, Clock, List, MapPin, User } from "lucide-react";
-import { EVENTS } from "@/data/events";
+import { useEvents } from "@/hooks/useSiteData";
 import EventModal from "@/components/modals/EventModal";
 import InteractiveCalendar from "@/components/calendar/InteractiveCalendar";
+import PageHero from "@/components/ui/PageHero";
 import type { EventItem } from "@/types";
 
 export default function EtkinliklerPage() {
+  const { data: events } = useEvents();
   const [viewMode, setViewMode] = useState<"calendar" | "list">("calendar");
   const [filter, setFilter] = useState<string>("all");
   const [selectedEvent, setSelectedEvent] = useState<EventItem | null>(null);
 
-  const categories = ["all", "İl Kongresi", "Üniversite Buluşması", "Gençlik Şöleni", "Basın Toplantısı"];
+  const categories = ["all", "İl Kongresi", "Üniversite Buluşması", "Gençlik Şöleni", "İl Divanı", "Basın Toplantısı"];
 
-  const filtered = filter === "all" ? EVENTS : EVENTS.filter((e) => e.category === filter);
+  const filtered = filter === "all" ? events : events.filter((e) => e.category === filter);
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
       <Header />
 
       <main className="flex-1">
-        <section className="bg-gradient-to-r from-slate-950 via-primary-dark to-slate-900 text-white py-16 sm:py-20 border-b border-blue-900/30">
-          <div className="container-x">
-            <div className="flex items-center gap-2 mb-3 text-xs font-bold text-blue-300 uppercase tracking-widest">
-              <Link href="/" className="hover:underline flex items-center gap-1">
-                <ArrowLeft size={14} /> Ana Sayfa
-              </Link>
-              <span>/</span>
-              <span>Teşkilat Takvimi</span>
-            </div>
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold font-heading">
-              Program Takvimi & Etkinlikler
-            </h1>
-            <p className="mt-3 text-sm sm:text-base text-slate-300 max-w-2xl">
-              Genel Başkanımız Sayın Ahmet Özvatan&apos;ın ve Genel Merkez heyetimizin 81 ildeki ziyaretleri, kongreleri, üniversite buluşmaları ve gençlik etkinlikleri.
-            </p>
-          </div>
-        </section>
+        <PageHero
+          pageKey="etkinlikler"
+          breadcrumbLabel="Teşkilat Takvimi"
+          defaultTitle="Program Takvimi & Etkinlikler"
+          defaultSubtitle="Genel Başkanımız Sayın Ahmet Özvatan'ın ve Genel Merkez heyetimizin 81 ildeki ziyaretleri, kongreleri, üniversite buluşmaları ve gençlik etkinlikleri."
+        />
 
         <section className="py-12">
           <div className="container-x">

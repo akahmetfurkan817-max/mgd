@@ -12,6 +12,7 @@ export type AdminSection =
   | "layout"
   | "content"
   | "videos"
+  | "events"
   | "pioneers"
   | "archive"
   | "newsletter";
@@ -351,6 +352,14 @@ export interface HeaderLabelsConfig {
   milbisUrl?: string;
 }
 
+export interface PageHeroConfig {
+  eyebrow?: string;
+  title?: string;
+  subtitle?: string;
+  backgroundImage?: string;
+  hideText?: boolean;
+}
+
 export interface SiteSettings {
   sections: SectionBlock[];
   hero: HeroConfig;
@@ -363,6 +372,7 @@ export interface SiteSettings {
   corporatePdfs?: CorporatePdfsConfig;
   categories?: SiteCategoriesConfig;
   headerLabels?: HeaderLabelsConfig;
+  pageHeroes?: Record<string, PageHeroConfig>;
   sliderZoomEnabled?: boolean;
   sliderMobileMode?: "new" | "classic";
   managedCollections?: Record<string, boolean>;

@@ -36,6 +36,7 @@ const SECTIONS: readonly AdminSection[] = [
   "layout",
   "content",
   "videos",
+  "events",
   "pioneers",
   "newsletter",
 ];
@@ -171,6 +172,14 @@ export async function PUT(req: Request, { params }: { params: { section: string 
       await ref.set({ ...item, id: ref.id });
       await db.collection(COLLECTIONS.settings).doc("site").set({ managedCollections: { archive: true } }, { merge: true });
       return NextResponse.json({ ok: true, id: ref.id });
+    }
+
+    case "events": {
+      const b = body as { list?: unknown } | unknown[] | null;
+      const list = Array.isArray(b) ? b : Array.isArray((b as { list?: unknown })?.list) ? (b as { list: unknown[] }).list : null;
+      if (!list) return bad;
+      await db.collection(COLLECTIONS.settings).doc("events").set({ list });
+      return NextResponse.json({ ok: true });
     }
 
     case "pioneers": {

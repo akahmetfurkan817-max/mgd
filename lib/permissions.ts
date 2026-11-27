@@ -18,13 +18,14 @@ export const ROLE_PERMISSIONS: Record<RoleId, readonly AdminSection[]> = {
     "archive",
     "publications",
     "videos",
+    "events",
     "applications",
     "newsletter",
     "provinces",
     "iban",
   ],
-  NEWS_EDITOR: ["slides", "media", "content", "pioneers", "news", "archive", "publications", "videos", "newsletter"],
-  ORG_MANAGER: ["provinces", "applications"],
+  NEWS_EDITOR: ["slides", "media", "content", "pioneers", "news", "archive", "publications", "videos", "events", "newsletter"],
+  ORG_MANAGER: ["provinces", "applications", "events"],
 };
 
 export function can(role: RoleId, section: AdminSection): boolean {
@@ -39,6 +40,7 @@ export const ADMIN_SECTIONS: { id: AdminSection; label: string; href: string }[]
   { id: "board", label: "Yönetim Kurulu & Kadro", href: "/admin/board" },
   { id: "pioneers", label: "Öncü Şahsiyetler", href: "/admin/pioneers" },
   { id: "videos", label: "Videolar & Video Galerisi", href: "/admin/videos" },
+  { id: "events", label: "Program Takvimi", href: "/admin/events" },
   { id: "news", label: "Haber Ekle / Düzenle", href: "/admin/news" },
   { id: "archive", label: "Dosya Arşivi", href: "/admin/archive" },
   { id: "publications", label: "Yayınlar & E-Kütüphane", href: "/admin/publications" },

@@ -30,10 +30,21 @@ import type {
   HeaderLabelsConfig,
   HeroConfig,
   ManagementCardsConfig,
+  PageHeroConfig,
   StatsItemConfig,
   ThemeConfig,
   VisionConfig,
 } from "@/types";
+
+const HERO_PAGES: { key: string; label: string; defaultTitle: string }[] = [
+  { key: "iletisim", label: "İletişim", defaultTitle: "İletişim" },
+  { key: "kurumsal", label: "Kurumsal Belgeler", defaultTitle: "Kurumsal Belgeler & Resmî Tüzük" },
+  { key: "etkinlikler", label: "Program Takvimi", defaultTitle: "Program Takvimi & Etkinlikler" },
+  { key: "oncu-sahsiyetler", label: "Öncü Şahsiyetler", defaultTitle: "Öncü Şahsiyetlerimiz" },
+  { key: "yayinlar", label: "Yayınlar & E-Kütüphane", defaultTitle: "Yayınlar & E-Kütüphane" },
+  { key: "faaliyetler", label: "Faaliyetler", defaultTitle: "Faaliyetlerimiz & Basın Arşivi" },
+  { key: "raporlar", label: "Raporlar & Bildiriler", defaultTitle: "Basın Bildirileri ve Raporlar" },
+];
 
 const DEFAULT_ERBAKAN: ErbakanConfig = {
   badge: "Milli Görüş Lideri",
@@ -95,6 +106,8 @@ export default function ContentEditor() {
     ...DEFAULT_HEADER_LABELS,
     ...(settings.headerLabels || {}),
   });
+  const [pageHeroes, setPageHeroes] = useState<Record<string, PageHeroConfig>>(settings.pageHeroes || {});
+  const [selectedHeroPage, setSelectedHeroPage] = useState<string>("iletisim");
   const [uploadingPdfKey, setUploadingPdfKey] = useState<keyof CorporatePdfsConfig | null>(null);
   const [state, setState] = useState<SaveState>(IDLE);
 
@@ -110,6 +123,9 @@ export default function ContentEditor() {
     if (settings.corporatePdfs) setCorporatePdfs(settings.corporatePdfs);
     if (settings.headerLabels) {
       setHeaderLabels({ ...DEFAULT_HEADER_LABELS, ...settings.headerLabels });
+    }
+    if (settings.pageHeroes) {
+      setPageHeroes(settings.pageHeroes);
     }
     if (settings.erbakan) {
       setErbakan({
@@ -168,7 +184,7 @@ export default function ContentEditor() {
 
   const handleSaveAll = async () => {
     setState({ status: "saving" });
-    const payload = { hero, stats, vision, contact, theme, erbakan, managementCards, corporatePdfs, headerLabels };
+    const payload = { hero, stats, vision, contact, theme, erbakan, managementCards, corporatePdfs, headerLabels, pageHeroes };
     const res = await saveSection("content", payload);
     if (res.ok) {
       setState({ status: "saved" });
@@ -198,6 +214,116 @@ export default function ContentEditor() {
       </div>
 
       <SaveStatus state={state} />
+
+      {/* 0.5. İç Sayfa Üst Banner (Hero) Yönetimi */}
+      <Card>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3 mb-4">
+          <div className="flex items-center gap-2">
+            <Palette size={18} className="text-primary" />
+            <div>
+              <h2 className="text-base font-bold text-primary-dark">İç Sayfa Üst Banner (Hero) Yönetimi</h2>
+              <p className="text-xs text-slate-500">
+                İletişim ve diğer iç sayfalardaki koyu lacivert üst alana dilediğiniz fotoğrafı koyabilir, yazıları değiştirebilir veya tamamen gizleyebilirsiniz.
+              </p>
+            </div>
+          </div>
+          {pageHeroes[selectedHeroPage] && (
+            <button
+              type="button"
+              onClick={() => {
+                setPageHeroes((prev) => {
+                  const next = { ...prev };
+                  delete next[selectedHeroPage];
+                  return next;
+                });
+              }}
+              className="text-xs font-bold text-red-600 hover:underline self-start sm:self-auto"
+            >
+              Bu Sayfayı Varsayılana Sıfırla
+            </button>
+          )}
+        </div>
+
+        <div className="flex flex-wrap gap-1.5 mb-5">
+          {HERO_PAGES.map((p) => {
+            const hasCustom = Boolean(pageHeroes[p.key]?.backgroundImage || pageHeroes[p.key]?.title !== undefined || pageHeroes[p.key]?.hideText);
+            return (
+              <button
+                key={p.key}
+                type="button"
+                onClick={() => setSelectedHeroPage(p.key)}
+                className={`rounded-lg px-3 py-1.5 text-xs font-bold transition border ${
+                  selectedHeroPage === p.key
+                    ? "bg-primary text-white border-primary shadow-sm"
+                    : hasCustom
+                      ? "bg-emerald-50 text-emerald-800 border-emerald-200 hover:bg-emerald-100"
+                      : "bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100"
+                }`}
+              >
+                {p.label}
+                {hasCustom ? " •" : ""}
+              </button>
+            );
+          })}
+        </div>
+
+        {(() => {
+          const cur = pageHeroes[selectedHeroPage] || {};
+          const updateCur = (patch: Partial<PageHeroConfig>) =>
+            setPageHeroes((prev) => ({
+              ...prev,
+              [selectedHeroPage]: { ...(prev[selectedHeroPage] || {}), ...patch },
+            }));
+          const activeMeta = HERO_PAGES.find((p) => p.key === selectedHeroPage);
+          return (
+            <div className="space-y-4">
+              <ImagePickerField
+                label={`${activeMeta?.label || selectedHeroPage} — Arka Plan Fotoğrafı (Opsiyonel)`}
+                recommendedSize="1920 × 480 px (Yatay Geniş • Kayıpsız)"
+                value={cur.backgroundImage || ""}
+                onChange={(url) => updateCur({ backgroundImage: url })}
+                highQuality
+              />
+
+              <label className="inline-flex items-center gap-2 text-xs font-bold text-slate-700 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={Boolean(cur.hideText)}
+                  onChange={(e) => updateCur({ hideText: e.target.checked })}
+                  className="h-4 w-4 rounded border-slate-300 text-primary focus:ring-primary"
+                />
+                <span>Üst alandaki tüm yazıları gizle (Sadece fotoğraf / temiz banner göster)</span>
+              </label>
+
+              {!cur.hideText && (
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <Field
+                    label="Üst Etiket (Opsiyonel — Boş bırakırsanız varsayılan kullanılır)"
+                    value={cur.eyebrow ?? ""}
+                    onChange={(v) => updateCur({ eyebrow: v })}
+                    placeholder="Örn: Milli Gençlik Derneği Genel Merkezi"
+                  />
+                  <Field
+                    label="Ana Başlık (Opsiyonel)"
+                    value={cur.title ?? ""}
+                    onChange={(v) => updateCur({ title: v })}
+                    placeholder={activeMeta?.defaultTitle || ""}
+                  />
+                  <div className="sm:col-span-2">
+                    <Field
+                      label="Alt Açıklama Metni (Opsiyonel)"
+                      multiline
+                      value={cur.subtitle ?? ""}
+                      onChange={(v) => updateCur({ subtitle: v })}
+                      placeholder="Açıklama metnini değiştirmek için yazın..."
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        })()}
+      </Card>
 
       {/* 0. Üst Menü (App Bar) Başlıkları & Buton İsimleri */}
       <Card>

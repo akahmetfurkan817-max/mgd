@@ -11,12 +11,14 @@ import { PUBLICATIONS } from "@/data/publications";
 import { SAMPLE_APPLICATIONS } from "@/data/applications";
 import { SOCIAL_POSTS } from "@/data/social";
 import { VIDEOS } from "@/data/videos";
+import { EVENTS } from "@/data/events";
 import { DEFAULT_HEADER_LABELS, DEFAULT_SECTIONS, DEFAULT_SITE_CATEGORIES, DEFAULT_SITE_SETTINGS } from "@/data/site-settings";
 import { HOME_SLIDES, type HomeSlideItem } from "@/data/slides";
 import { ONCU_SAHSIYETLER, type OncuSahsiyet } from "@/data/oncu-sahsiyetler";
 import { ARCHIVE_ITEMS } from "@/data/archive";
 import type {
   ArchiveItem,
+  EventItem,
   IbanInfo,
   Leader,
   NewsItem,
@@ -339,6 +341,15 @@ export function useSlides(): Live<HomeSlideItem[]> {
 
 const IBAN_SEED = { list: IBAN_LIST };
 const PIONEERS_SEED = { list: ONCU_SAHSIYETLER };
+const EVENTS_SEED = { list: EVENTS };
+
+export function useEvents(): Live<EventItem[]> {
+  const { data, live } = useDocument<{ list: EventItem[] }>(COLLECTIONS.settings, "events", EVENTS_SEED);
+  return {
+    data: Array.isArray(data?.list) ? data.list : EVENTS,
+    live,
+  };
+}
 
 export function useOncuSahsiyetler(): Live<OncuSahsiyet[]> {
   const { data, live } = useDocument<{ list: OncuSahsiyet[] }>(

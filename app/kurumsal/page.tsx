@@ -5,6 +5,7 @@ import Link from "next/link";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import ScrollReveal from "@/components/ui/ScrollReveal";
+import PageHero from "@/components/ui/PageHero";
 import FlipbookModal from "@/components/corporate/FlipbookModal";
 import { CORPORATE_DOCS, PROTOCOL_PARTNERS } from "@/data/corporate";
 import {
@@ -32,23 +33,12 @@ export default function KurumsalPage() {
 
       <main className="flex-1">
         {/* Banner */}
-        <section className="bg-gradient-to-r from-[#060e20] via-primary-dark to-[#0f214a] text-white py-16 sm:py-20 border-b border-blue-900/40">
-          <div className="container-x">
-            <div className="flex items-center gap-2 mb-3 text-xs font-bold text-blue-300 uppercase tracking-widest">
-              <Link href="/" className="hover:underline flex items-center gap-1">
-                <ArrowLeft size={14} /> Ana Sayfa
-              </Link>
-              <span>/</span>
-              <span>Kurumsal Neşriyat</span>
-            </div>
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold font-heading text-white">
-              Kurumsal Belgeler & Resmî Tüzük
-            </h1>
-            <p className="mt-3 text-sm sm:text-base text-blue-100/90 max-w-2xl leading-relaxed">
-              Milli Gençlik Derneği tarihçesi, resmî tüzüğü, bakanlık ve kurumlarla imzalanan protokoller ve kurumsal kimlik standartları.
-            </p>
-          </div>
-        </section>
+        <PageHero
+          pageKey="kurumsal"
+          breadcrumbLabel="Kurumsal Neşriyat"
+          defaultTitle="Kurumsal Belgeler & Resmî Tüzük"
+          defaultSubtitle="Milli Gençlik Derneği tarihçesi, resmî tüzüğü, bakanlık ve kurumlarla imzalanan protokoller ve kurumsal kimlik standartları."
+        />
 
         {/* 4 Ana Sekme: Hakkımızda, Tüzüğümüz, Protokollerimiz, Kurumsal Kimlik */}
         <section className="py-10">

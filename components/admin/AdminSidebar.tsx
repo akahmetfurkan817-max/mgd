@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import {
   Award,
   BookOpen,
+  Calendar,
   ExternalLink,
   FolderArchive,
   Image as ImageIcon,
@@ -43,11 +44,12 @@ const SECTION_ICONS: Record<AdminSection, typeof Newspaper> = {
   provinces: MapPin,
   iban: Landmark,
   videos: Video,
+  events: Calendar,
 };
 
 const NAV_GROUPS: { title: string; ids: AdminSection[] }[] = [
   { title: "Vitrin & Medya", ids: ["slides", "media", "layout", "content"] },
-  { title: "İçerik & Arşiv", ids: ["news", "videos", "pioneers", "archive", "publications"] },
+  { title: "İçerik & Arşiv", ids: ["news", "events", "videos", "pioneers", "archive", "publications"] },
   { title: "Teşkilat & Kurumsal", ids: ["board", "provinces", "applications", "newsletter", "iban"] },
 ];
 

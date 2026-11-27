@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import PageHero from "@/components/ui/PageHero";
 import { ArrowLeft, Calendar, Camera, ChevronLeft, ChevronRight, MapPin, X } from "lucide-react";
 import { BASINDA_BIZ_ITEMS, type BasindaBizItem } from "@/data/basinda-biz";
 
@@ -29,23 +30,12 @@ export default function FaaliyetlerPage() {
       <Header />
 
       <main className="flex-1">
-        <section className="bg-gradient-to-r from-slate-950 via-primary-dark to-slate-900 text-white py-16 sm:py-20 border-b border-blue-900/30">
-          <div className="container-x">
-            <div className="flex items-center gap-2 mb-3 text-xs font-bold text-blue-300 uppercase tracking-widest">
-              <Link href="/" className="hover:underline flex items-center gap-1">
-                <ArrowLeft size={14} /> Ana Sayfa
-              </Link>
-              <span>/</span>
-              <span>Faaliyetler & Basında Biz</span>
-            </div>
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold font-heading">
-              Faaliyetlerimiz & Basın Arşivi
-            </h1>
-            <p className="mt-3 text-sm sm:text-base text-slate-300 max-w-2xl">
-              81 il teşkilatımızın açılışları, salon programları, gençlik kampları, robotik kodlama atölyeleri ve saha çalışmalarımızın fotoğraf galerisi.
-            </p>
-          </div>
-        </section>
+        <PageHero
+          pageKey="faaliyetler"
+          breadcrumbLabel="Faaliyetler & Basında Biz"
+          defaultTitle="Faaliyetlerimiz & Basın Arşivi"
+          defaultSubtitle="81 il teşkilatımızın açılışları, salon programları, gençlik kampları, robotik kodlama atölyeleri ve saha çalışmalarımızın fotoğraf galerisi."
+        />
 
         <section className="py-12">
           <div className="container-x">
