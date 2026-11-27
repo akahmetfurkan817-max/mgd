@@ -269,35 +269,6 @@ export default function SlideEditor() {
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <div
-            className="inline-flex items-center rounded-xl border border-slate-200 bg-slate-100 p-0.5"
-            title="Ana sayfa mobil slider görünümünü anında değiştirin"
-          >
-            <button
-              type="button"
-              onClick={() => handleSetMobileMode("classic")}
-              disabled={savingMobileMode}
-              className={`rounded-lg px-3 py-1.5 text-xs font-bold transition ${
-                mobileMode === "classic"
-                  ? "bg-primary text-white shadow-sm"
-                  : "text-slate-600 hover:text-ink"
-              }`}
-            >
-              Eski Görünüm
-            </button>
-            <button
-              type="button"
-              onClick={() => handleSetMobileMode("new")}
-              disabled={savingMobileMode}
-              className={`rounded-lg px-3 py-1.5 text-xs font-bold transition ${
-                mobileMode === "new"
-                  ? "bg-emerald-600 text-white shadow-sm"
-                  : "text-slate-600 hover:text-ink"
-              }`}
-            >
-              Yeni Görünüm
-            </button>
-          </div>
           <button
             type="button"
             onClick={handleToggleZoom}
@@ -331,6 +302,61 @@ export default function SlideEditor() {
           </button>
         </div>
       </div>
+
+      {/* Mobil Slider Görünüm Seçici (Eski Görünüm / Yeni Görünüm) */}
+      <Card className="p-4 sm:p-5 border-primary/20 bg-gradient-to-r from-primary/[0.03] to-sky-50/60">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-start gap-3">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+              <Smartphone size={20} />
+            </span>
+            <div>
+              <div className="flex flex-wrap items-center gap-2">
+                <h2 className="text-sm font-bold text-ink">Mobil Slider Görünüm Modu</h2>
+                <span
+                  className={`rounded-full px-2.5 py-0.5 text-[11px] font-bold ${
+                    mobileMode === "new"
+                      ? "bg-emerald-100 text-emerald-800"
+                      : "bg-primary/10 text-primary"
+                  }`}
+                >
+                  Aktif: {mobileMode === "new" ? "Yeni Görünüm (Tam Afiş)" : "Eski Görünüm (Dikey Kapak)"}
+                </span>
+              </div>
+              <p className="mt-0.5 text-xs text-slate-600">
+                Ana sayfadaki mobil slider’ı tek tıkla <strong>Eski Görünüm</strong> ile <strong>Yeni Görünüm</strong> arasında değiştirebilirsiniz; anında canlı siteye yansır.
+              </p>
+            </div>
+          </div>
+
+          <div className="inline-flex shrink-0 items-center rounded-xl border border-slate-200 bg-white p-1 shadow-sm self-start sm:self-center">
+            <button
+              type="button"
+              onClick={() => handleSetMobileMode("classic")}
+              disabled={savingMobileMode}
+              className={`rounded-lg px-4 py-2 text-xs font-bold transition ${
+                mobileMode === "classic"
+                  ? "bg-primary text-white shadow-sm"
+                  : "text-slate-600 hover:bg-slate-50 hover:text-ink"
+              }`}
+            >
+              Slider Eski Görünüm
+            </button>
+            <button
+              type="button"
+              onClick={() => handleSetMobileMode("new")}
+              disabled={savingMobileMode}
+              className={`rounded-lg px-4 py-2 text-xs font-bold transition ${
+                mobileMode === "new"
+                  ? "bg-emerald-600 text-white shadow-sm"
+                  : "text-slate-600 hover:bg-slate-50 hover:text-ink"
+              }`}
+            >
+              Slider Yeni Görünüm
+            </button>
+          </div>
+        </div>
+      </Card>
 
       {toast && (
         <div
