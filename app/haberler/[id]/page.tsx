@@ -34,16 +34,24 @@ export default function HaberDetayPage() {
     allNews.find((n) => slugify(n.title) === slugParam || n.id === slugParam) || allNews[0];
   const related = allNews.filter((n) => n.id !== item?.id).slice(0, 5);
 
-  const paragraphs = item?.content
+  const contentParagraphs = item?.content
     ? item.content
         .split(/\n+/)
         .map((p) => p.trim())
         .filter(Boolean)
-    : [
-        item?.summary || "",
-        "Milli Gençlik Derneği Genel Merkezi koordinasyonunda; 81 il teşkilatımız, ilçe temsilciliklerimiz, ortaöğretim ve üniversite komisyonlarımızla gençliğimizin ahlaki, ilmi ve fikri gelişimi için çalışmalarımızı kararlılıkla sürdürüyoruz.",
-        "“Önce Ahlak ve Maneviyat” düsturuyla çıktığımız bu kutlu yolda, ülkemizin yarınlarını inşa edecek şuurlu nesiller yetiştirmek adına tüm faaliyetlerimiz kamuoyunun bilgisine açık şekilde devam etmektedir.",
-      ].filter(Boolean);
+    : [];
+
+  const summaryTrimmed = (item?.summary || "").trim();
+  const paragraphs =
+    contentParagraphs.length > 0
+      ? summaryTrimmed && contentParagraphs[0] !== summaryTrimmed
+        ? [summaryTrimmed, ...contentParagraphs]
+        : contentParagraphs
+      : [
+          summaryTrimmed,
+          "Milli Gençlik Derneği Genel Merkezi koordinasyonunda; 81 il teşkilatımız, ilçe temsilciliklerimiz, ortaöğretim ve üniversite komisyonlarımızla gençliğimizin ahlaki, ilmi ve fikri gelişimi için çalışmalarımızı kararlılıkla sürdürüyoruz.",
+          "“Önce Ahlak ve Maneviyat” düsturuyla çıktığımız bu kutlu yolda, ülkemizin yarınlarını inşa edecek şuurlu nesiller yetiştirmek adına tüm faaliyetlerimiz kamuoyunun bilgisine açık şekilde devam etmektedir.",
+        ].filter(Boolean);
 
   const handleShare = async () => {
     if (typeof window === "undefined") return;
