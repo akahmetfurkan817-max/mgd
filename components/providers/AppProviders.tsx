@@ -3,6 +3,7 @@
 import { useEffect, type ReactNode } from "react";
 import { DonateProvider } from "@/components/donate/DonateProvider";
 import { VolunteerProvider } from "@/components/volunteer/VolunteerProvider";
+import GlobalScrollAnimations from "@/components/providers/GlobalScrollAnimations";
 import { hydrateSiteCache, useSiteSettings } from "@/hooks/useSiteData";
 
 function ThemeSync() {
@@ -35,6 +36,7 @@ export function AppProviders({
     <DonateProvider>
       <VolunteerProvider>
         <ThemeSync />
+        <GlobalScrollAnimations />
         {children}
       </VolunteerProvider>
     </DonateProvider>

@@ -13,7 +13,7 @@ interface ScrollRevealProps {
 }
 
 /**
- * ondigital.com.tr tarzı yumuşak (soft) aşağı kaydırma görünürlük animasyonu.
+ * Yumuşak (premium) aşağı kaydırma görünürlük animasyonu.
  * IntersectionObserver ile ekranın görünür alanına giren her bölümü / kartı
  * GPU hızlandırmalı opacity + translateY geçişiyle akıcı biçimde sahneye alır.
  */
@@ -21,8 +21,8 @@ export default function ScrollReveal({
   children,
   className = "",
   delay = 0,
-  duration = 750,
-  y = 28,
+  duration = 820,
+  y = 32,
   scale = 0.985,
   once = true,
 }: ScrollRevealProps) {
@@ -39,7 +39,7 @@ export default function ScrollReveal({
         return;
       }
       const rect = el.getBoundingClientRect();
-      if (rect.top < window.innerHeight + 80) {
+      if (rect.top < window.innerHeight * 0.94) {
         setVisible(true);
         if (once) return;
       }
@@ -57,34 +57,40 @@ export default function ScrollReveal({
         });
       },
       {
-        threshold: 0.01,
-        rootMargin: "0px 0px 80px 0px",
+        threshold: 0.04,
+        rootMargin: "0px 0px -36px 0px",
       },
     );
 
     observer.observe(el);
 
-    // Uzun bölümlerde veya sayfa yenilemede hiçbir bölüm görünmez (opacity: 0) kalmasın
-    const fallbackTimer = once
-      ? window.setTimeout(() => {
-          setVisible(true);
-        }, 900)
-      : null;
+    const onScroll = () => {
+      const rect = el.getBoundingClientRect();
+      if (rect.top < window.innerHeight * 0.96) {
+        setVisible(true);
+        if (once) {
+          observer.unobserve(el);
+          window.removeEventListener("scroll", onScroll);
+        }
+      }
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
 
     return () => {
       observer.disconnect();
-      if (fallbackTimer !== null) window.clearTimeout(fallbackTimer);
+      window.removeEventListener("scroll", onScroll);
     };
   }, [once]);
 
   return (
     <div
       ref={ref}
+      data-scroll-reveal="true"
       className={className}
       style={{
         opacity: visible ? 1 : 0,
         transform: visible ? "translate3d(0, 0, 0) scale(1)" : `translate3d(0, ${y}px, 0) scale(${scale})`,
-        transition: `opacity ${duration}ms cubic-bezier(0.16, 1, 0.3, 1) ${delay}ms, transform ${duration}ms cubic-bezier(0.16, 1, 0.3, 1) ${delay}ms`,
+        transition: `opacity ${duration}ms cubic-bezier(0.22, 1, 0.36, 1) ${delay}ms, transform ${duration}ms cubic-bezier(0.22, 1, 0.36, 1) ${delay}ms`,
         willChange: visible ? "auto" : "opacity, transform",
       }}
     >
