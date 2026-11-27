@@ -151,7 +151,6 @@ export default function HomeSlider() {
     isHorizontalLockRef.current = null;
     setIsDragging(true);
     setDragOffset(0);
-    e.currentTarget.setPointerCapture(e.pointerId);
   };
 
   const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
@@ -168,6 +167,9 @@ export default function HomeSlider() {
           pointerIdRef.current = null;
           return;
         }
+        try {
+          e.currentTarget.setPointerCapture(e.pointerId);
+        } catch {}
       } else {
         return;
       }
