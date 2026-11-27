@@ -31,12 +31,14 @@ export default function ImagePickerField({
   onChange,
   recommendedSize,
   placeholder = "/images/... veya /api/media/...",
+  highQuality = false,
 }: {
   label: string;
   value: string;
   onChange: (url: string) => void;
   recommendedSize?: string;
   placeholder?: string;
+  highQuality?: boolean;
 }) {
   const fileRef = useRef<HTMLInputElement>(null);
   const modalFileRef = useRef<HTMLInputElement>(null);
@@ -86,7 +88,7 @@ export default function ImagePickerField({
     setUploading(true);
     setErrorMsg(null);
     setSuccessMsg(null);
-    const data = await uploadMedia(file);
+    const data = await uploadMedia(file, { highQuality });
     setUploading(false);
 
     if (data.ok && data.url) {

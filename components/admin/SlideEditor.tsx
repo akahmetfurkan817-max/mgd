@@ -11,9 +11,11 @@ import {
   Eye,
   Layers,
   Loader2,
+  Monitor,
   Pencil,
   Plus,
   RefreshCw,
+  Smartphone,
   Trash2,
   X,
 } from "lucide-react";
@@ -40,6 +42,8 @@ const EMPTY_FORM: HomeSlideItem = {
   title: "",
   subtitle: "",
   image: "/images/slider/burs-universite.jpg",
+  mobileImage: "",
+  mobileFit: "contain",
   linkUrl: "/haberler",
   buttonText: "Detayları İncele",
   date: "Yeni Duyuru",
@@ -59,6 +63,8 @@ export default function SlideEditor() {
   const [saving, setSaving] = useState(false);
   const [uploadingIndex, setUploadingIndex] = useState<number | null>(null);
   const [dragIndex, setDragIndex] = useState<number | null>(null);
+  const [formPreviewDevice, setFormPreviewDevice] = useState<"desktop" | "mobile">("desktop");
+  const [modalPreviewDevice, setModalPreviewDevice] = useState<"desktop" | "mobile">("desktop");
 
   const cardFileInputRef = useRef<HTMLInputElement>(null);
   const [activeReplaceIndex, setActiveReplaceIndex] = useState<number | null>(null);
@@ -118,7 +124,7 @@ export default function SlideEditor() {
   const replaceSlideImageFile = async (targetIdx: number, file: File) => {
     setUploadingIndex(targetIdx);
     try {
-      const data = await uploadMedia(file);
+      const data = await uploadMedia(file, { highQuality: true });
       if (data.ok && data.url) {
         const next = slides.map((s, idx) => (idx === targetIdx ? { ...s, image: data.url! } : s));
         await persistSlides(next);
@@ -143,12 +149,19 @@ export default function SlideEditor() {
   const handleOpenAdd = () => {
     setEditingIndex(null);
     setForm({ ...EMPTY_FORM, id: `slide-${Date.now()}` });
+    setFormPreviewDevice("desktop");
     setModalOpen(true);
   };
 
   const handleOpenEdit = (index: number) => {
     setEditingIndex(index);
-    setForm({ ...slides[index] });
+    const currentItem = slides[index];
+    setForm({
+      ...currentItem,
+      mobileImage: currentItem.mobileImage || "",
+      mobileFit: currentItem.mobileFit || (currentItem.mobileImage?.trim() ? "cover" : "contain"),
+    });
+    setFormPreviewDevice("desktop");
     setModalOpen(true);
   };
 
@@ -179,10 +192,15 @@ export default function SlideEditor() {
       notify("err", "Slayt görseli zorunludur.");
       return;
     }
+    const cleanedForm: HomeSlideItem = {
+      ...form,
+      mobileImage: form.mobileImage?.trim() || "",
+      mobileFit: form.mobileFit || (form.mobileImage?.trim() ? "cover" : "contain"),
+    };
     const next =
       editingIndex !== null
-        ? slides.map((s, idx) => (idx === editingIndex ? { ...form } : s))
-        : [{ ...form, id: form.id || `slide-${Date.now()}` }, ...slides];
+        ? slides.map((s, idx) => (idx === editingIndex ? cleanedForm : s))
+        : [{ ...cleanedForm, id: cleanedForm.id || `slide-${Date.now()}` }, ...slides];
 
     setModalOpen(false);
     await persistSlides(next);
@@ -353,7 +371,10 @@ export default function SlideEditor() {
                   </button>
                   <button
                     type="button"
-                    onClick={() => setPreviewSlide(item)}
+                    onClick={() => {
+                      setModalPreviewDevice("desktop");
+                      setPreviewSlide(item);
+                    }}
                     className="w-full py-1.5 px-2 rounded-lg bg-white/90 text-ink text-xs font-bold flex items-center justify-center gap-1 hover:bg-white transition"
                   >
                     <Eye size={13} /> Önizle
@@ -368,6 +389,19 @@ export default function SlideEditor() {
                     {item.badge || "GÖRSEL AFİŞ"}
                   </span>
                   {item.date && <span className="text-xs text-slate-400">• {item.date}</span>}
+                  {item.mobileImage?.trim() ? (
+                    <span className="inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700">
+                      <Smartphone size={10} /> Mobil: Özel Görsel
+                    </span>
+                  ) : item.mobileFit === "cover" ? (
+                    <span className="inline-flex items-center gap-1 rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-[10px] font-bold text-amber-800">
+                      <Smartphone size={10} /> Mobil: Doldur
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1 rounded-full border border-sky-200 bg-sky-50 px-2 py-0.5 text-[10px] font-bold text-sky-700">
+                      <Smartphone size={10} /> Mobil: Otomatik Tam Uyum
+                    </span>
+                  )}
                 </div>
                 <h3 className="font-bold text-ink text-base leading-snug line-clamp-1">
                   {item.title || "(Başlıksız — Sadece Afiş Görseli)"}
@@ -445,45 +479,206 @@ export default function SlideEditor() {
             </div>
 
             <form onSubmit={handleFormSubmit} className="p-6 space-y-4 max-h-[80vh] overflow-y-auto">
-              {/* Canlı Mini Önizleme */}
-              <div className="relative h-44 w-full overflow-hidden rounded-xl border border-slate-200 bg-primary-dark">
-                {form.image && (
-                  <Image src={form.image} alt={form.title || "Önizleme"} fill className="object-cover" unoptimized />
-                )}
-                {(form.title || form.subtitle || form.buttonText) && (
-                  <>
-                    <div className="absolute inset-0 bg-gradient-to-r from-[#06101F]/90 via-[#081529]/65 to-transparent" />
-                    <div className="relative z-10 flex h-full flex-col justify-center p-5 max-w-md text-white">
-                      {form.badge && (
-                        <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-gold-light">
-                          {form.badge}
-                        </span>
-                      )}
-                      {form.title && (
-                        <h3 className="mt-1 font-serif text-lg font-bold leading-snug line-clamp-2">{form.title}</h3>
-                      )}
-                      {form.subtitle && (
-                        <p className="mt-1 text-[11px] text-slate-200 line-clamp-2">{form.subtitle}</p>
-                      )}
-                      {form.buttonText && (
-                        <span className="mt-2.5 inline-flex w-fit items-center rounded-md bg-white px-3 py-1 text-[10px] font-bold text-primary-dark">
-                          {form.buttonText}
-                        </span>
-                      )}
-                    </div>
-                  </>
-                )}
-                <span className="absolute top-2 right-2 rounded bg-black/60 px-2 py-0.5 text-[10px] font-semibold text-white">
-                  Canlı Önizleme
-                </span>
+              {/* Masaüstü / Mobil Canlı Önizleme Seçici */}
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-xs font-bold text-slate-600">Canlı Önizleme</span>
+                <div className="inline-flex rounded-lg border border-slate-200 bg-slate-50 p-0.5">
+                  <button
+                    type="button"
+                    onClick={() => setFormPreviewDevice("desktop")}
+                    className={`inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-[11px] font-bold transition ${
+                      formPreviewDevice === "desktop"
+                        ? "bg-white text-primary shadow-sm"
+                        : "text-slate-500 hover:text-ink"
+                    }`}
+                  >
+                    <Monitor size={12} /> Masaüstü
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setFormPreviewDevice("mobile")}
+                    className={`inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-[11px] font-bold transition ${
+                      formPreviewDevice === "mobile"
+                        ? "bg-white text-primary shadow-sm"
+                        : "text-slate-500 hover:text-ink"
+                    }`}
+                  >
+                    <Smartphone size={12} /> Mobil
+                  </button>
+                </div>
               </div>
 
+              {/* Canlı Mini Önizleme */}
+              {formPreviewDevice === "desktop" ? (
+                <div className="relative h-44 w-full overflow-hidden rounded-xl border border-slate-200 bg-primary-dark">
+                  {form.image && (
+                    <Image src={form.image} alt={form.title || "Önizleme"} fill className="object-cover" unoptimized />
+                  )}
+                  {(form.title || form.subtitle || form.buttonText) && (
+                    <>
+                      <div className="absolute inset-0 bg-gradient-to-r from-[#06101F]/90 via-[#081529]/65 to-transparent" />
+                      <div className="relative z-10 flex h-full flex-col justify-center p-5 max-w-md text-white">
+                        {form.badge && (
+                          <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-gold-light">
+                            {form.badge}
+                          </span>
+                        )}
+                        {form.title && (
+                          <h3 className="mt-1 font-serif text-lg font-bold leading-snug line-clamp-2">{form.title}</h3>
+                        )}
+                        {form.subtitle && (
+                          <p className="mt-1 text-[11px] text-slate-200 line-clamp-2">{form.subtitle}</p>
+                        )}
+                        {form.buttonText && (
+                          <span className="mt-2.5 inline-flex w-fit items-center rounded-md bg-white px-3 py-1 text-[10px] font-bold text-primary-dark">
+                            {form.buttonText}
+                          </span>
+                        )}
+                      </div>
+                    </>
+                  )}
+                  <span className="absolute top-2 right-2 rounded bg-black/60 px-2 py-0.5 text-[10px] font-semibold text-white">
+                    Masaüstü Önizleme
+                  </span>
+                </div>
+              ) : (
+                <div className="rounded-xl border border-slate-200 bg-slate-100/80 py-4 px-3 flex justify-center">
+                  <div className="w-full max-w-[270px] rounded-2xl border-[3px] border-slate-800 bg-[#0C2B63] overflow-hidden shadow-lg">
+                    {(() => {
+                      const customMob = form.mobileImage?.trim() || "";
+                      const mobSrc = customMob || form.image;
+                      const fit = form.mobileFit || (customMob ? "cover" : "contain");
+                      if (fit === "contain") {
+                        return (
+                          <div className="relative w-full min-h-[110px] overflow-hidden bg-slate-100">
+                            {mobSrc && (
+                              // eslint-disable-next-line @next/next/no-img-element
+                              <img src={mobSrc} alt={form.title || "Mobil Önizleme"} className="w-full h-auto block" />
+                            )}
+                          </div>
+                        );
+                      }
+                      return (
+                        <div className={`relative w-full overflow-hidden bg-[#0C2B63] ${customMob ? "aspect-[4/5]" : "aspect-[16/9]"}`}>
+                          {mobSrc && (
+                            <Image
+                              src={mobSrc}
+                              alt={form.title || "Mobil Önizleme"}
+                              fill
+                              className="object-cover"
+                              unoptimized
+                            />
+                          )}
+                        </div>
+                      );
+                    })()}
+                    {(form.title?.trim() || form.subtitle?.trim() || form.buttonText?.trim()) && (
+                      <div className="bg-gradient-to-b from-[#0C2B63] to-[#122854] px-3 py-3 text-white">
+                        {form.title?.trim() && (
+                          <h3 className="text-xs font-extrabold leading-snug line-clamp-2">{form.title}</h3>
+                        )}
+                        {form.subtitle?.trim() && (
+                          <p className="mt-1 text-[10px] text-white/80 line-clamp-2">{form.subtitle}</p>
+                        )}
+                        {form.buttonText?.trim() && (
+                          <span className="mt-2 inline-flex items-center rounded-md bg-white px-2.5 py-1 text-[9px] font-bold text-primary-dark">
+                            {form.buttonText.replace(/\s*→\s*$/, "")}
+                          </span>
+                        )}
+                      </div>
+                    )}
+                    <div className="bg-[#0B2352] border-t border-white/10 px-3 py-1.5 flex items-center justify-between text-[9px] text-white/75 font-mono">
+                      <span>‹ ›</span>
+                      <span>━━ ─ ─</span>
+                      <span>01/05</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               <ImagePickerField
-                label="Slayt Arka Plan Fotoğrafı *"
-                recommendedSize="1920 × 800 px (Yatay Geniş)"
+                label="Slayt Masaüstü Fotoğrafı *"
+                recommendedSize="1920 × 800 px (Yatay Geniş • Kayıpsız Yüksek Kalite)"
                 value={form.image}
                 onChange={(url) => setForm({ ...form, image: url })}
+                highQuality
               />
+
+              {/* Mobil Uyum Ayarları */}
+              <div className="rounded-xl border border-sky-200/80 bg-sky-50/50 p-4 space-y-3">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-sky-100 text-sky-700">
+                      <Smartphone size={15} />
+                    </span>
+                    <div>
+                      <p className="text-xs font-bold text-ink">Mobil Uyum &amp; Görünüm Desteği</p>
+                      <p className="text-[11px] text-slate-600">
+                        Boş bırakılırsa yatay görsel mobilde otomatik kırpılmadan tam gösterilir.
+                      </p>
+                    </div>
+                  </div>
+                  {form.mobileImage?.trim() && (
+                    <button
+                      type="button"
+                      onClick={() => setForm({ ...form, mobileImage: "", mobileFit: "contain" })}
+                      className="text-[11px] font-bold text-red-600 hover:underline"
+                    >
+                      Özel Mobil Görseli Kaldır
+                    </button>
+                  )}
+                </div>
+
+                <ImagePickerField
+                  label="Özel Mobil Görsel (Opsiyonel)"
+                  recommendedSize="1080 × 1080 px veya 1080 × 1350 px (Kare / Dikey)"
+                  value={form.mobileImage || ""}
+                  onChange={(url) =>
+                    setForm({
+                      ...form,
+                      mobileImage: url,
+                      mobileFit: url.trim() ? "cover" : "contain",
+                    })
+                  }
+                  highQuality
+                />
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                    Mobil Görsel Yerleşim Modu
+                  </label>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setForm({ ...form, mobileFit: "contain" })}
+                      className={`text-left rounded-lg border px-3 py-2 transition ${
+                        (form.mobileFit || (form.mobileImage?.trim() ? "cover" : "contain")) === "contain"
+                          ? "border-primary bg-white ring-2 ring-primary/15"
+                          : "border-slate-200 bg-white/70 hover:border-slate-300"
+                      }`}
+                    >
+                      <div className="text-xs font-bold text-ink">Tam Görünüm — Kırpmadan (Önerilen)</div>
+                      <div className="text-[10px] text-slate-500 mt-0.5">
+                        Yatay afişin tamamı kenarları kesilmeden net görünür.
+                      </div>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setForm({ ...form, mobileFit: "cover" })}
+                      className={`text-left rounded-lg border px-3 py-2 transition ${
+                        (form.mobileFit || (form.mobileImage?.trim() ? "cover" : "contain")) === "cover"
+                          ? "border-primary bg-white ring-2 ring-primary/15"
+                          : "border-slate-200 bg-white/70 hover:border-slate-300"
+                      }`}
+                    >
+                      <div className="text-xs font-bold text-ink">Ekranı Doldur (Cover)</div>
+                      <div className="text-[10px] text-slate-500 mt-0.5">
+                        Özel dikey/kare mobil görseller için çerçeveyi tam doldurur.
+                      </div>
+                    </button>
+                  </div>
+                </div>
+              </div>
 
               <div>
                 <label className="block text-xs font-semibold text-slate-700 mb-1">Slayt Başlığı (Opsiyonel)</label>
@@ -590,36 +785,111 @@ export default function SlideEditor() {
           onClick={() => setPreviewSlide(null)}
         >
           <div
-            className="relative w-full max-w-4xl bg-primary-dark rounded-2xl overflow-hidden border border-white/15 shadow-2xl text-white"
+            className={`relative w-full ${
+              modalPreviewDevice === "mobile" ? "max-w-[380px]" : "max-w-4xl"
+            } bg-primary-dark rounded-2xl overflow-hidden border border-white/15 shadow-2xl text-white transition-all`}
             onClick={(e) => e.stopPropagation()}
           >
-            <button
-              type="button"
-              onClick={() => setPreviewSlide(null)}
-              className="absolute top-4 right-4 z-40 w-9 h-9 rounded-full bg-black/60 text-white flex items-center justify-center hover:bg-black/90"
-            >
-              <X size={20} />
-            </button>
-            <div className="relative min-h-[380px] sm:min-h-[440px] flex items-center p-6 sm:p-12 overflow-hidden">
-              <Image src={previewSlide.image} alt={previewSlide.title} fill className="object-cover" unoptimized />
-              <div className="absolute inset-0 bg-gradient-to-r from-[#06101F]/95 via-[#081529]/75 to-transparent" />
-              <div className="relative z-10 max-w-xl">
-                <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-gold-light">
-                  {previewSlide.badge}
-                </span>
-                <h2 className="mt-3 font-serif text-2xl sm:text-4xl font-bold text-white leading-tight">
-                  {previewSlide.title}
-                </h2>
-                <p className="mt-3 text-sm text-slate-200 leading-relaxed">{previewSlide.subtitle}</p>
-                {previewSlide.buttonText && (
-                  <div className="mt-6">
-                    <span className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-white text-primary-dark font-bold text-xs">
-                      {previewSlide.buttonText}
-                    </span>
+            <div className="flex items-center justify-between px-4 py-3 bg-[#091c42] border-b border-white/10">
+              <div className="inline-flex rounded-lg bg-white/10 p-0.5">
+                <button
+                  type="button"
+                  onClick={() => setModalPreviewDevice("desktop")}
+                  className={`inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-bold transition ${
+                    modalPreviewDevice === "desktop" ? "bg-white text-primary" : "text-white/75 hover:text-white"
+                  }`}
+                >
+                  <Monitor size={13} /> Masaüstü
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setModalPreviewDevice("mobile")}
+                  className={`inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-bold transition ${
+                    modalPreviewDevice === "mobile" ? "bg-white text-primary" : "text-white/75 hover:text-white"
+                  }`}
+                >
+                  <Smartphone size={13} /> Mobil
+                </button>
+              </div>
+              <button
+                type="button"
+                onClick={() => setPreviewSlide(null)}
+                className="w-8 h-8 rounded-full bg-white/10 text-white flex items-center justify-center hover:bg-white/20"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            {modalPreviewDevice === "desktop" ? (
+              <div className="relative min-h-[380px] sm:min-h-[440px] flex items-center p-6 sm:p-12 overflow-hidden">
+                <Image src={previewSlide.image} alt={previewSlide.title} fill className="object-cover" unoptimized />
+                {(previewSlide.title?.trim() || previewSlide.subtitle?.trim() || previewSlide.buttonText?.trim()) && (
+                  <>
+                    <div className="absolute inset-0 bg-gradient-to-r from-[#06101F]/95 via-[#081529]/75 to-transparent" />
+                    <div className="relative z-10 max-w-xl">
+                      <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-gold-light">
+                        {previewSlide.badge}
+                      </span>
+                      <h2 className="mt-3 font-serif text-2xl sm:text-4xl font-bold text-white leading-tight">
+                        {previewSlide.title}
+                      </h2>
+                      <p className="mt-3 text-sm text-slate-200 leading-relaxed">{previewSlide.subtitle}</p>
+                      {previewSlide.buttonText && (
+                        <div className="mt-6">
+                          <span className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-white text-primary-dark font-bold text-xs">
+                            {previewSlide.buttonText}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
+              </div>
+            ) : (
+              <div>
+                {(() => {
+                  const customMob = previewSlide.mobileImage?.trim() || "";
+                  const mobSrc = customMob || previewSlide.image;
+                  const fit = previewSlide.mobileFit || (customMob ? "cover" : "contain");
+                  if (fit === "contain") {
+                    return (
+                      <div className="relative w-full min-h-[140px] overflow-hidden bg-slate-100">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={mobSrc} alt={previewSlide.title || "Mobil Önizleme"} className="w-full h-auto block" />
+                      </div>
+                    );
+                  }
+                  return (
+                    <div className={`relative w-full overflow-hidden bg-[#0C2B63] ${customMob ? "aspect-[4/5]" : "aspect-[16/9]"}`}>
+                      <Image
+                        src={mobSrc}
+                        alt={previewSlide.title || "Mobil Önizleme"}
+                        fill
+                        className="object-cover"
+                        unoptimized
+                      />
+                    </div>
+                  );
+                })()}
+                {(previewSlide.title?.trim() || previewSlide.subtitle?.trim() || previewSlide.buttonText?.trim()) && (
+                  <div className="bg-gradient-to-b from-[#0C2B63] to-[#122854] px-4 py-4 text-white">
+                    {previewSlide.title?.trim() && (
+                      <h2 className="font-display text-lg font-extrabold leading-snug">{previewSlide.title}</h2>
+                    )}
+                    {previewSlide.subtitle?.trim() && (
+                      <p className="mt-2 text-xs text-white/85 leading-relaxed">{previewSlide.subtitle}</p>
+                    )}
+                    {previewSlide.buttonText?.trim() && (
+                      <div className="mt-3.5">
+                        <span className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white text-primary-dark font-bold text-xs">
+                          {previewSlide.buttonText}
+                        </span>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
-            </div>
+            )}
           </div>
         </div>
       )}

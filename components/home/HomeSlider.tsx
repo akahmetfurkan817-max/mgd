@@ -54,8 +54,10 @@ export default function HomeSlider() {
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState(0);
   const [progressKey, setProgressKey] = useState(0);
+  const [mobileHeight, setMobileHeight] = useState<number | null>(null);
 
   const containerRef = useRef<HTMLDivElement>(null);
+  const slideRefs = useRef<(HTMLDivElement | null)[]>([]);
   const pointerIdRef = useRef<number | null>(null);
   const startXRef = useRef(0);
   const startYRef = useRef(0);
@@ -70,6 +72,35 @@ export default function HomeSlider() {
       setCurrent(0);
     }
   }, [total, current]);
+
+  // Mobilde aktif slaytın yüksekliğine yumuşakça uyum sağla (metinli ve metinsiz afişler arasında boşluk oluşmasın)
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const measure = () => {
+      if (window.innerWidth >= 768) {
+        setMobileHeight(null);
+        return;
+      }
+      const el = slideRefs.current[current];
+      if (el && el.offsetHeight > 0) {
+        setMobileHeight(el.offsetHeight);
+      }
+    };
+
+    measure();
+    const activeEl = slideRefs.current[current];
+    let observer: ResizeObserver | null = null;
+    if (activeEl && typeof ResizeObserver !== "undefined") {
+      observer = new ResizeObserver(measure);
+      observer.observe(activeEl);
+    }
+    window.addEventListener("resize", measure);
+    return () => {
+      observer?.disconnect();
+      window.removeEventListener("resize", measure);
+    };
+  }, [current, total, slides]);
 
   const goTo = useCallback(
     (index: number) => {
@@ -193,7 +224,7 @@ export default function HomeSlider() {
     <section id="manset-slider" aria-label="Ana Sayfa Manşetleri" className="relative bg-white select-none">
       {/* Üst Tam Genişlik Slayt Alanı */}
       <div
-        className="relative bg-primary overflow-hidden"
+        className="relative bg-[#0C2B63] overflow-hidden"
         onMouseEnter={() => setHoverPaused(true)}
         onMouseLeave={() => setHoverPaused(false)}
       >
@@ -203,11 +234,16 @@ export default function HomeSlider() {
           onPointerMove={handlePointerMove}
           onPointerUp={finishDrag}
           onPointerCancel={finishDrag}
-          style={{ touchAction: "pan-y" }}
-          className={`relative w-full overflow-hidden ${isDragging ? "cursor-grabbing" : "cursor-grab"}`}
+          style={{
+            touchAction: "pan-y",
+            ...(mobileHeight ? { height: `${mobileHeight}px` } : {}),
+          }}
+          className={`relative w-full overflow-hidden transition-[height] duration-300 md:!h-auto ${
+            isDragging ? "cursor-grabbing" : "cursor-grab"
+          }`}
         >
           <div
-            className="flex will-change-transform"
+            className="flex items-start md:items-stretch will-change-transform"
             style={{
               transform: `translate3d(calc(${-current * 100}% + ${dragOffset}px), 0, 0)`,
               transition: isDragging ? "none" : "transform 680ms cubic-bezier(0.22, 1, 0.36, 1)",
@@ -220,9 +256,18 @@ export default function HomeSlider() {
               const { href: resolvedHref, isExternal } = resolveSlideLink(item.linkUrl);
               const slideClickable = !item.buttonText?.trim() && Boolean(resolvedHref);
 
+              const desktopSrc = item.image || "/images/slider/yeniden-milli-genclik.jpg";
+              const customMobileSrc = item.mobileImage?.trim() || "";
+              const mobileSrc = customMobileSrc || desktopSrc;
+              // Özel mobil görsel yüklendiyse varsayılan cover, yatay masaüstü görseli kullanılıyorsa varsayılan kırpmadan tam görünüm (contain)
+              const mobileFitMode = item.mobileFit || (customMobileSrc ? "cover" : "contain");
+
               return (
                 <div
                   key={item.id || idx}
+                  ref={(el) => {
+                    slideRefs.current[idx] = el;
+                  }}
                   onClick={() => {
                     if (!slideClickable || didDragRef.current) return;
                     if (isExternal) {
@@ -231,20 +276,109 @@ export default function HomeSlider() {
                       window.location.href = resolvedHref;
                     }
                   }}
-                  className={`relative w-full shrink-0 min-h-[480px] sm:min-h-[540px] lg:min-h-[600px] flex items-center ${
+                  className={`relative w-full shrink-0 md:min-h-[540px] lg:min-h-[600px] md:flex md:items-center ${
                     slideClickable ? "cursor-pointer" : ""
                   }`}
                 >
+                  {/* ==================== MOBİL GÖRÜNÜM (< 768px) ==================== */}
+                  <div className="md:hidden w-full">
+                    {mobileFitMode === "contain" ? (
+                      <div className="relative w-full min-h-[160px] overflow-hidden bg-slate-100">
+                        {/* Yatay afişler mobilde kendi doğal oranında, kenar boşluğu ve kırpma olmadan tam genişlikte görünür */}
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={mobileSrc}
+                          alt={item.title || "Milli Gençlik Derneği"}
+                          draggable={false}
+                          className="w-full h-auto block select-none"
+                        />
+                      </div>
+                    ) : (
+                      <div
+                        className={`relative w-full overflow-hidden bg-[#0C2B63] ${
+                          customMobileSrc ? "aspect-[4/5] sm:aspect-[4/3]" : "aspect-[16/9]"
+                        }`}
+                      >
+                        <Image
+                          src={mobileSrc}
+                          alt={item.title || "Milli Gençlik Derneği"}
+                          fill
+                          sizes="100vw"
+                          draggable={false}
+                          className={`object-cover object-center ${
+                            isActive && sliderZoomEnabled ? "animate-ken-burns" : "scale-100"
+                          }`}
+                          priority={idx === 0}
+                          unoptimized
+                        />
+                      </div>
+                    )}
+
+                    {/* Mobilde Slayt Metinleri (Görseli kapatmamak için hemen altında temiz kart olarak görünür) */}
+                    {hasText && (
+                      <div className="bg-gradient-to-b from-[#0C2B63] to-[#122854] px-4 pt-4 pb-5 text-white">
+                        {item.title?.trim() && (
+                          <h1 className="font-display text-xl sm:text-2xl font-extrabold tracking-[-0.02em] text-white leading-snug">
+                            {item.title}
+                          </h1>
+                        )}
+
+                        {item.subtitle?.trim() && (
+                          <p className="mt-2 text-xs sm:text-sm text-white/85 leading-relaxed font-medium">
+                            {item.subtitle}
+                          </p>
+                        )}
+
+                        {item.buttonText?.trim() && (
+                          <div className="mt-4">
+                            {isExternal ? (
+                              <a
+                                href={resolvedHref}
+                                target="_blank"
+                                rel="noreferrer"
+                                draggable={false}
+                                onPointerDown={(e) => e.stopPropagation()}
+                                className="group inline-flex items-stretch overflow-hidden rounded-xl bg-white shadow-lg transition-transform duration-200 active:scale-[0.98]"
+                              >
+                                <span className="flex items-center px-4 py-2.5 text-xs sm:text-sm font-bold text-ink">
+                                  {item.buttonText.replace(/\s*→\s*$/, "")}
+                                </span>
+                                <span className="flex items-center justify-center bg-secondary px-3.5 text-white">
+                                  <ArrowRight size={15} />
+                                </span>
+                              </a>
+                            ) : (
+                              <Link
+                                href={resolvedHref || "/kurumsal"}
+                                draggable={false}
+                                onPointerDown={(e) => e.stopPropagation()}
+                                className="group inline-flex items-stretch overflow-hidden rounded-xl bg-white shadow-lg transition-transform duration-200 active:scale-[0.98]"
+                              >
+                                <span className="flex items-center px-4 py-2.5 text-xs sm:text-sm font-bold text-ink">
+                                  {item.buttonText.replace(/\s*→\s*$/, "")}
+                                </span>
+                                <span className="flex items-center justify-center bg-secondary px-3.5 text-white">
+                                  <ArrowRight size={15} />
+                                </span>
+                              </Link>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* ==================== MASAÜSTÜ GÖRÜNÜM (>= 768px) ==================== */}
                   {/* Arka Plan Fotoğrafı */}
                   <div
-                    className="absolute inset-0 overflow-hidden"
+                    className="hidden md:block absolute inset-0 overflow-hidden"
                     style={{
                       transform: `translate3d(${parallaxPx}px, 0, 0)`,
                       transition: isDragging ? "none" : "transform 680ms cubic-bezier(0.22, 1, 0.36, 1)",
                     }}
                   >
                     <Image
-                      src={item.image || "/images/slider/yeniden-milli-genclik.jpg"}
+                      src={desktopSrc}
                       alt={item.title || "Milli Gençlik Derneği"}
                       fill
                       sizes="100vw"
@@ -266,22 +400,22 @@ export default function HomeSlider() {
                     )}
                   </div>
 
-                  {/* Slayt Metinleri (Sadece doldurulmuşsa görünür) */}
+                  {/* Masaüstü Slayt Metinleri (Sadece doldurulmuşsa görünür) */}
                   {hasText && (
-                    <div className="container-x relative z-20 pt-10 pb-28 sm:pt-12 sm:pb-32">
+                    <div className="hidden md:block container-x relative z-20 pt-12 pb-32">
                       <div
-                        className={`max-w-2xl sm:pl-14 lg:pl-16 transition-all duration-700 ${
+                        className={`max-w-2xl pl-14 lg:pl-16 transition-all duration-700 ${
                           isActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4 pointer-events-none"
                         }`}
                       >
                         {item.title?.trim() && (
-                          <h1 className="font-display text-3xl sm:text-5xl lg:text-[56px] font-extrabold tracking-[-0.025em] text-white leading-[1.08] drop-shadow-sm">
+                          <h1 className="font-display text-4xl lg:text-[56px] font-extrabold tracking-[-0.025em] text-white leading-[1.08] drop-shadow-sm">
                             {item.title}
                           </h1>
                         )}
 
                         {item.subtitle?.trim() && (
-                          <p className="mt-4 text-sm sm:text-base lg:text-[17px] text-white/90 leading-relaxed max-w-xl font-medium">
+                          <p className="mt-4 text-base lg:text-[17px] text-white/90 leading-relaxed max-w-xl font-medium">
                             {item.subtitle}
                           </p>
                         )}
@@ -329,9 +463,9 @@ export default function HomeSlider() {
             })}
           </div>
 
-          {/* Sol / Sağ Beyaz Yuvarlak Oklar */}
+          {/* Masaüstü Sol / Sağ Beyaz Yuvarlak Oklar */}
           {total > 1 && (
-            <div className="pointer-events-none absolute inset-x-0 top-[46%] -translate-y-1/2 z-30 hidden sm:flex items-center justify-between px-4 lg:px-7">
+            <div className="pointer-events-none absolute inset-x-0 top-[46%] -translate-y-1/2 z-30 hidden md:flex items-center justify-between px-4 lg:px-7">
               <button
                 type="button"
                 onClick={prevSlide}
@@ -351,10 +485,10 @@ export default function HomeSlider() {
             </div>
           )}
 
-          {/* Alt Sayaç, İlerleme Çubukları ve Duraklat Butonu */}
+          {/* Masaüstü Alt Sayaç, İlerleme Çubukları ve Duraklat Butonu */}
           {total > 1 && (
-            <div className="absolute bottom-16 sm:bottom-20 inset-x-0 z-30">
-              <div className="container-x sm:pl-20 lg:pl-24 flex items-center gap-3.5">
+            <div className="hidden md:block absolute bottom-20 inset-x-0 z-30">
+              <div className="container-x pl-20 lg:pl-24 flex items-center gap-3.5">
                 <span className="font-mono text-xs font-bold text-white/95 tracking-wider">
                   {String(current + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}
                 </span>
@@ -368,7 +502,7 @@ export default function HomeSlider() {
                         type="button"
                         onClick={() => goTo(idx)}
                         aria-label={`Slayt ${idx + 1}`}
-                        className="relative h-1 w-9 sm:w-12 rounded-full bg-white/35 overflow-hidden"
+                        className="relative h-1 w-12 rounded-full bg-white/35 overflow-hidden"
                       >
                         {active && (
                           <span
@@ -399,10 +533,78 @@ export default function HomeSlider() {
             </div>
           )}
         </div>
+
+        {/* Mobil Alt Kontrol Çubuğu (Görselin üstünü kapatmadan hemen altında yer alır) */}
+        {total > 1 && (
+          <div className="md:hidden bg-[#0B2352] border-t border-white/10 px-3.5 py-2.5 flex items-center justify-between gap-2.5">
+            <div className="flex items-center gap-1.5 shrink-0">
+              <button
+                type="button"
+                onClick={prevSlide}
+                aria-label="Önceki Slayt"
+                className="flex h-7 w-7 items-center justify-center rounded-full bg-white/12 border border-white/20 text-white active:scale-95 transition"
+              >
+                <ChevronLeft size={15} />
+              </button>
+              <button
+                type="button"
+                onClick={nextSlide}
+                aria-label="Sonraki Slayt"
+                className="flex h-7 w-7 items-center justify-center rounded-full bg-white/12 border border-white/20 text-white active:scale-95 transition"
+              >
+                <ChevronRight size={15} />
+              </button>
+            </div>
+
+            <div className="flex items-center gap-1.5 flex-1 justify-center overflow-hidden">
+              {slides.map((s, idx) => {
+                const active = idx === current;
+                return (
+                  <button
+                    key={s.id || idx}
+                    type="button"
+                    onClick={() => goTo(idx)}
+                    aria-label={`Slayt ${idx + 1}`}
+                    className={`relative h-1.5 rounded-full bg-white/25 overflow-hidden transition-all ${
+                      active ? "w-8" : "w-4"
+                    }`}
+                  >
+                    {active && (
+                      <span
+                        key={`m-${progressKey}-${current}`}
+                        style={
+                          {
+                            "--slide-duration": `${AUTOPLAY_MS}ms`,
+                            animationPlayState: isPaused || isDragging ? "paused" : "running",
+                          } as React.CSSProperties
+                        }
+                        className="block h-full w-full bg-white animate-slide-progress"
+                      />
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="flex items-center gap-2 shrink-0">
+              <span className="font-mono text-[11px] font-bold text-white/90 tracking-wider">
+                {String(current + 1).padStart(2, "0")}/{String(total).padStart(2, "0")}
+              </span>
+              <button
+                type="button"
+                onClick={() => setManualPaused((p) => !p)}
+                aria-label={manualPaused ? "Oynat" : "Duraklat"}
+                className="flex h-7 w-7 items-center justify-center rounded-full border border-white/25 bg-white/12 text-white active:scale-95 transition"
+              >
+                {manualPaused ? <Play size={10} className="fill-current ml-0.5" /> : <Pause size={10} className="fill-current" />}
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
-      {/* Slayt Altına Binen Yüzer Komisyon Kartı (Ortaöğretim: Mavi • Üniversiteler: Beyaz / Mavi Yazı) */}
-      <div className="container-x relative z-30 -mt-12 sm:-mt-14 pb-6">
+      {/* Slayt Altına Binen Yüzer Komisyon Kartı (Mobilde görseli kapatmamak için mt-4, masaüstünde -mt-14) */}
+      <div className="container-x relative z-30 mt-4 md:-mt-14 pb-6">
         <div className="rounded-2xl shadow-[0_18px_45px_-12px_rgba(10,25,60,0.28)] overflow-hidden border border-slate-200/70">
           <div className="grid grid-cols-1 md:grid-cols-2">
             {COMMISSION_CARDS.map((card) => {

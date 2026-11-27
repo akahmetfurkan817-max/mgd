@@ -5,6 +5,8 @@ export interface HomeSlideItem {
   title: string;
   subtitle: string;
   image: string;
+  mobileImage?: string;
+  mobileFit?: "contain" | "cover";
   linkUrl: string;
   buttonText: string;
   date?: string;

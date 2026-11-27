@@ -7,15 +7,19 @@ export interface UploadMediaResult {
   error?: string;
 }
 
-const MAX_IMAGE_WIDTH = 1920;
-const MAX_IMAGE_HEIGHT = 1920;
-const COMPRESS_THRESHOLD_BYTES = 350 * 1024; // 350 KB
+const MAX_IMAGE_WIDTH = 2560;
+const MAX_IMAGE_HEIGHT = 2560;
+const COMPRESS_THRESHOLD_BYTES = 1500 * 1024; // 1.5 MB altındaki görsellere hiç dokunma
+
+const HQ_MAX_WIDTH = 3840;
+const HQ_MAX_HEIGHT = 3840;
+const HQ_SAFE_LIMIT_BYTES = 3.8 * 1024 * 1024; // 3.8 MB altı slayt afişleri %100 orijinal kalitede yüklenir
 
 /**
- * Büyük raster görselleri tarayıcıda kalite kaybı olmadan WebP/JPEG olarak optimize eder.
- * Böylece Vercel 4.5 MB limitine takılmadan 15-20 MB kamera fotoğrafları bile anında yüklenir.
+ * Büyük raster görselleri tarayıcıda yüksek kaliteyi koruyarak optimize eder.
+ * highQuality=true (slayt/afişler) için 3.8 MB altındaki dosyalar hiç sıkıştırılmadan %100 orijinal yüklenir.
  */
-async function optimizeImageIfNeeded(file: File): Promise<File> {
+async function optimizeImageIfNeeded(file: File, highQuality = false): Promise<File> {
   if (typeof window === "undefined") return file;
 
   const type = (file.type || "").toLowerCase();
@@ -26,8 +30,11 @@ async function optimizeImageIfNeeded(file: File): Promise<File> {
 
   if (!isRasterImage) return file;
 
-  // Küçük görselleri olduğu gibi gönder
-  if (file.size <= COMPRESS_THRESHOLD_BYTES) return file;
+  const threshold = highQuality ? HQ_SAFE_LIMIT_BYTES : COMPRESS_THRESHOLD_BYTES;
+  if (file.size <= threshold) return file;
+
+  const maxW = highQuality ? HQ_MAX_WIDTH : MAX_IMAGE_WIDTH;
+  const maxH = highQuality ? HQ_MAX_HEIGHT : MAX_IMAGE_HEIGHT;
 
   try {
     const dataUrl = await new Promise<string>((resolve, reject) => {
@@ -45,8 +52,8 @@ async function optimizeImageIfNeeded(file: File): Promise<File> {
     });
 
     let { width, height } = img;
-    if (width > MAX_IMAGE_WIDTH || height > MAX_IMAGE_HEIGHT) {
-      const ratio = Math.min(MAX_IMAGE_WIDTH / width, MAX_IMAGE_HEIGHT / height);
+    if (width > maxW || height > maxH) {
+      const ratio = Math.min(maxW / width, maxH / height);
       width = Math.max(1, Math.round(width * ratio));
       height = Math.max(1, Math.round(height * ratio));
     }
@@ -57,24 +64,29 @@ async function optimizeImageIfNeeded(file: File): Promise<File> {
     const ctx = canvas.getContext("2d");
     if (!ctx) return file;
 
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = "high";
     ctx.drawImage(img, 0, 0, width, height);
 
-    const preferWebp = true;
     const tryBlob = (mime: string, quality: number) =>
       new Promise<Blob | null>((resolve) => canvas.toBlob((b) => resolve(b), mime, quality));
 
-    let blob = await tryBlob(preferWebp ? "image/webp" : "image/jpeg", 0.85);
+    const firstQuality = highQuality ? 0.96 : 0.93;
+    const fallbackQuality = highQuality ? 0.92 : 0.88;
+    const sizeLimit = highQuality ? HQ_SAFE_LIMIT_BYTES : 1800 * 1024;
+
+    let blob = await tryBlob("image/webp", firstQuality);
     let outMime = blob?.type || "image/webp";
 
     // WebP desteklenmiyorsa JPEG'e düş
-    if (!blob || (preferWebp && outMime !== "image/webp")) {
-      blob = await tryBlob("image/jpeg", 0.85);
+    if (!blob || outMime !== "image/webp") {
+      blob = await tryBlob("image/jpeg", firstQuality);
       outMime = "image/jpeg";
     }
 
-    // Hâlâ 900 KB üzerindeyse bir kademe daha sıkıştır
-    if (blob && blob.size > 900 * 1024) {
-      const smaller = await tryBlob(outMime, 0.72);
+    // Hâlâ limit üzerindeyse çok hafif bir kademe düşür
+    if (blob && blob.size > sizeLimit) {
+      const smaller = await tryBlob(outMime, fallbackQuality);
       if (smaller && smaller.size < blob.size) {
         blob = smaller;
       }
@@ -97,10 +109,12 @@ async function optimizeImageIfNeeded(file: File): Promise<File> {
 
 export async function uploadMedia(
   file: File,
-  options?: { targetPath?: string; skipOptimize?: boolean },
+  options?: { targetPath?: string; skipOptimize?: boolean; highQuality?: boolean },
 ): Promise<UploadMediaResult> {
   try {
-    const prepared = options?.skipOptimize ? file : await optimizeImageIfNeeded(file);
+    const prepared = options?.skipOptimize
+      ? file
+      : await optimizeImageIfNeeded(file, Boolean(options?.highQuality));
 
     const formData = new FormData();
     formData.append("file", prepared);
