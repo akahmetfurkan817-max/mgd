@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { Pencil, Plus, Trash2 } from "lucide-react";
+import { Link2, Pencil, Plus, Trash2 } from "lucide-react";
 import { Card, Field, IDLE, PageHeader, SaveStatus, type SaveState } from "@/components/admin/ui";
 import ImagePickerField from "@/components/admin/ImagePickerField";
 import CategoryManagerBar from "@/components/admin/CategoryManagerBar";
@@ -18,6 +18,8 @@ const empty = (defaultCat = "Genel Merkez"): NewsItem => ({
   category: defaultCat,
   date: new Date().toISOString().slice(0, 10),
   image: "/images/basinda-biz/teskilat.png",
+  linkUrl: "",
+  linkText: "",
 });
 
 export default function NewsEditor() {
@@ -28,7 +30,10 @@ export default function NewsEditor() {
   const [state, setState] = useState<SaveState>(IDLE);
 
   const save = async () => {
-    if (!form.title.trim()) return;
+    if (!form.title.trim()) {
+      setState({ status: "error", message: "Başlık alanı zorunludur." });
+      return;
+    }
     setState({ status: "saving" });
     const res = await saveSection("news", form);
     if (res.ok) {
@@ -36,14 +41,18 @@ export default function NewsEditor() {
       setState({ status: "saved" });
       setTimeout(() => setState(IDLE), 2500);
     } else {
-      setState({ status: "error", message: res.error ?? "Hata" });
+      setState({ status: "error", message: res.error ?? "Kaydedilemedi." });
     }
   };
 
   const remove = async (id: string) => {
     if (!window.confirm("Bu haber kalıcı olarak silinsin mi?")) return;
+    setState({ status: "saving" });
     const res = await deleteNews(id);
-    setState(res.ok ? { status: "saved" } : { status: "error", message: res.error ?? "Hata" });
+    if (res.ok && form.id === id) {
+      setForm(empty(categories[0]));
+    }
+    setState(res.ok ? { status: "saved" } : { status: "error", message: res.error ?? "Silinemedi." });
     setTimeout(() => setState(IDLE), 2500);
   };
 
@@ -63,12 +72,38 @@ export default function NewsEditor() {
             <Field label="Başlık *" value={form.title} onChange={(v) => setForm({ ...form, title: v })} />
             <Field label="Kısa Özet *" multiline value={form.summary} onChange={(v) => setForm({ ...form, summary: v })} />
             <Field
-              label="Detaylı Haber Metni (Opsiyonel)"
+              label="Detaylı Haber Metni (Opsiyonel — İçine yazdığınız linkler otomatik mavi tıklanabilir olur)"
               multiline
               value={form.content || ""}
               onChange={(v) => setForm({ ...form, content: v })}
-              placeholder="Paragrafları alt alta yazabilirsiniz..."
+              placeholder="Paragrafları alt alta yazabilirsiniz. Örn: Başvuru için https://www.milbis.net/burs adresine tıklayın..."
             />
+
+            <div className="rounded-xl border border-blue-200/80 bg-blue-50/50 p-3.5 space-y-2.5">
+              <div className="flex items-center gap-1.5 text-xs font-bold text-blue-900">
+                <Link2 size={14} className="text-blue-600" />
+                <span>Yazı Altı Tıklanabilir Bağlantı (Opsiyonel)</span>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                <input
+                  type="text"
+                  value={form.linkText || ""}
+                  onChange={(e) => setForm({ ...form, linkText: e.target.value })}
+                  placeholder="Bağlantı Yazısı (Örn: Başvuru Sayfasına Git)"
+                  className="w-full rounded-lg border border-blue-200 bg-white px-3 py-2 text-xs text-ink focus:border-blue-500 focus:outline-none"
+                />
+                <input
+                  type="text"
+                  value={form.linkUrl || ""}
+                  onChange={(e) => setForm({ ...form, linkUrl: e.target.value })}
+                  placeholder="https://www.milbis.net/burs"
+                  className="w-full rounded-lg border border-blue-200 bg-white px-3 py-2 text-xs font-mono text-ink focus:border-blue-500 focus:outline-none"
+                />
+              </div>
+              <p className="text-[11px] text-blue-800/80">
+                Hem metnin içine yapıştırdığınız linkler hem de buraya yazdığınız bağlantı, haberin altında mavi tıklanabilir link olarak otomatik görünür.
+              </p>
+            </div>
 
             <ImagePickerField
               label="Kapak Fotoğrafı"

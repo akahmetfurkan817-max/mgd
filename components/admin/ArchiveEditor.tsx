@@ -62,7 +62,10 @@ export default function ArchiveEditor() {
   const save = async (e: React.FormEvent) => {
     e.preventDefault();
     const cleanUrl = normalizeLink(form.fileUrl);
-    if (!form.title.trim() || !cleanUrl) return;
+    if (!form.title.trim() || !cleanUrl) {
+      setState({ status: "error", message: "Başlık ve dosya linki zorunludur." });
+      return;
+    }
     setState({ status: "saving" });
     const res = await saveSection("archive", {
       ...form,
@@ -70,7 +73,7 @@ export default function ArchiveEditor() {
       downloadUrl: normalizeLink(form.downloadUrl || cleanUrl),
     });
     if (res.ok) {
-      setForm(empty());
+      setForm(empty(categories[0]));
       setState({ status: "saved" });
       setTimeout(() => setState(IDLE), 2500);
     } else {
@@ -80,7 +83,11 @@ export default function ArchiveEditor() {
 
   const remove = async (id: string) => {
     if (!window.confirm("Bu arşiv dosyası kalıcı olarak silinsin mi?")) return;
+    setState({ status: "saving" });
     const res = await deleteItem("archive", id);
+    if (res.ok && form.id === id) {
+      setForm(empty(categories[0]));
+    }
     setState(res.ok ? { status: "saved" } : { status: "error", message: res.error ?? "Silinemedi." });
     setTimeout(() => setState(IDLE), 2500);
   };

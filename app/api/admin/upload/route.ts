@@ -6,7 +6,7 @@ import crypto from "crypto";
 import { collection, deleteDoc, doc, getDoc, getDocs, setDoc } from "firebase/firestore";
 import { SESSION_COOKIE, verifySession } from "@/lib/auth";
 import { COLLECTIONS, getDb, isFirebaseConfigured } from "@/lib/firebase";
-import { getAdminStorageBucket } from "@/lib/firebase-admin";
+import { getAdminDb, getAdminStorageBucket } from "@/lib/firebase-admin";
 
 export const dynamic = "force-dynamic";
 
@@ -140,7 +140,45 @@ export async function GET() {
     }
   }
 
-  // 2. Firestore Bulut Medya Deposu (Vercel + Localhost tam uyumlu)
+  // 2. Firestore Bulut Medya Deposu (Admin SDK öncelikli — Vercel + Localhost tam uyumlu)
+  const adminDb = getAdminDb();
+  if (adminDb) {
+    try {
+      const snap = await adminDb.collection(COLLECTIONS.media).get();
+      const files = snap.docs
+        .map((d) => {
+          const data = d.data() as {
+            name?: string;
+            fileName?: string;
+            size?: number;
+            modifiedAt?: string;
+            contentType?: string;
+          };
+          const fileName = data.fileName || d.id;
+          const size = Number(data.size || 0);
+          const modifiedAt = String(data.modifiedAt || new Date(0).toISOString());
+          const isPdf = data.contentType === "application/pdf" || fileName.toLowerCase().endsWith(".pdf");
+          return {
+            id: `media-${d.id}`,
+            name: data.name || fileName.replace(/^\d+-/, "").replace(/\.[^/.]+$/, "").replace(/[_-]+/g, " "),
+            fileName,
+            path: `/api/media/${encodeURIComponent(d.id)}`,
+            category: "uploaded" as const,
+            size,
+            modifiedAt,
+            contentType: data.contentType || "image/webp",
+            desc: `${isPdf ? "PDF Belge" : "Bulut Görsel"} (${Math.max(1, Math.round(size / 1024))} KB)`,
+          };
+        })
+        .filter((f) => !f.contentType.includes("pdf"));
+
+      files.sort((a, b) => b.modifiedAt.localeCompare(a.modifiedAt));
+      return NextResponse.json({ ok: true, files, storage: "firestore" });
+    } catch (error) {
+      console.warn("Admin Firestore medya listeleme hatası:", error);
+    }
+  }
+
   if (isFirebaseConfigured) {
     const db = getDb();
     if (db) {
@@ -277,7 +315,72 @@ export async function POST(req: Request) {
       }
     }
 
-    // 2. Öncelik: Firestore Bulut Medya Deposu (Vercel + Localhost sorunsuz çalışır)
+    // 2. Öncelik: Firestore Bulut Medya Deposu (Admin SDK ile — firestore.rules kısıtına takılmaz!)
+    const adminDb = getAdminDb();
+    if (adminDb) {
+      const existingMediaId = targetPath ? extractFirestoreMediaId(targetPath) : null;
+      const docId = existingMediaId || `${Date.now()}-${base}${ext}`;
+      const base64 = buffer.toString("base64");
+      const now = new Date().toISOString();
+
+      if (existingMediaId) {
+        const prevSnap = await adminDb.collection(COLLECTIONS.media).doc(existingMediaId).get();
+        if (prevSnap.exists) {
+          const prevChunks = Number((prevSnap.data() as { chunkCount?: number } | undefined)?.chunkCount || 1);
+          if (prevChunks > 1) {
+            await Promise.all(
+              Array.from({ length: prevChunks }, (_, i) =>
+                adminDb.collection(COLLECTIONS.mediaChunks).doc(`${existingMediaId}_${i}`).delete(),
+              ),
+            );
+          }
+        }
+      }
+
+      if (base64.length <= MAX_SINGLE_DOC_BASE64) {
+        await adminDb.collection(COLLECTIONS.media).doc(docId).set({
+          name: displayName,
+          fileName: `${base}${ext}`,
+          contentType,
+          size: buffer.length,
+          chunkCount: 1,
+          data: base64,
+          modifiedAt: now,
+        });
+      } else {
+        const totalChunks = Math.ceil(base64.length / CHUNK_SIZE);
+        await Promise.all(
+          Array.from({ length: totalChunks }, (_, i) =>
+            adminDb.collection(COLLECTIONS.mediaChunks).doc(`${docId}_${i}`).set({
+              mediaId: docId,
+              index: i,
+              data: base64.slice(i * CHUNK_SIZE, (i + 1) * CHUNK_SIZE),
+            }),
+          ),
+        );
+        await adminDb.collection(COLLECTIONS.media).doc(docId).set({
+          name: displayName,
+          fileName: `${base}${ext}`,
+          contentType,
+          size: buffer.length,
+          chunkCount: totalChunks,
+          modifiedAt: now,
+        });
+      }
+
+      const url = existingMediaId
+        ? `/api/media/${encodeURIComponent(docId)}?t=${Date.now()}`
+        : `/api/media/${encodeURIComponent(docId)}`;
+
+      return NextResponse.json({
+        ok: true,
+        url,
+        name: displayName,
+        size: buffer.length,
+        storage: "firestore",
+      });
+    }
+
     if (isFirebaseConfigured) {
       const db = getDb();
       if (db) {
@@ -394,24 +497,42 @@ export async function DELETE(req: Request) {
       targetPath = body?.path || "";
     }
 
-    // 1. Firestore medya silme
+    // 1. Firestore medya silme (Admin SDK öncelikli)
     const mediaId = extractFirestoreMediaId(targetPath);
-    if (mediaId && isFirebaseConfigured) {
-      const db = getDb();
-      if (db) {
-        const snap = await getDoc(doc(db, COLLECTIONS.media, mediaId));
-        if (snap.exists()) {
-          const chunkCount = Number((snap.data() as { chunkCount?: number }).chunkCount || 1);
+    if (mediaId) {
+      const adminDb = getAdminDb();
+      if (adminDb) {
+        const snap = await adminDb.collection(COLLECTIONS.media).doc(mediaId).get();
+        if (snap.exists) {
+          const chunkCount = Number((snap.data() as { chunkCount?: number } | undefined)?.chunkCount || 1);
           if (chunkCount > 1) {
             await Promise.all(
               Array.from({ length: chunkCount }, (_, i) =>
-                deleteDoc(doc(db, COLLECTIONS.mediaChunks, `${mediaId}_${i}`)),
+                adminDb.collection(COLLECTIONS.mediaChunks).doc(`${mediaId}_${i}`).delete(),
               ),
             );
           }
-          await deleteDoc(doc(db, COLLECTIONS.media, mediaId));
+          await adminDb.collection(COLLECTIONS.media).doc(mediaId).delete();
         }
         return NextResponse.json({ ok: true, deleted: mediaId, storage: "firestore" });
+      }
+      if (isFirebaseConfigured) {
+        const db = getDb();
+        if (db) {
+          const snap = await getDoc(doc(db, COLLECTIONS.media, mediaId));
+          if (snap.exists()) {
+            const chunkCount = Number((snap.data() as { chunkCount?: number }).chunkCount || 1);
+            if (chunkCount > 1) {
+              await Promise.all(
+                Array.from({ length: chunkCount }, (_, i) =>
+                  deleteDoc(doc(db, COLLECTIONS.mediaChunks, `${mediaId}_${i}`)),
+                ),
+              );
+            }
+            await deleteDoc(doc(db, COLLECTIONS.media, mediaId));
+          }
+          return NextResponse.json({ ok: true, deleted: mediaId, storage: "firestore" });
+        }
       }
     }
 

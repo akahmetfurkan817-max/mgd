@@ -3,10 +3,11 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { ArrowLeft, CalendarDays, Clock, Newspaper, Share2 } from "lucide-react";
+import { ArrowLeft, CalendarDays, Clock, ExternalLink, Newspaper, Share2 } from "lucide-react";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import ScrollReveal from "@/components/ui/ScrollReveal";
+import LinkifiedText from "@/components/ui/LinkifiedText";
 import { useNews } from "@/hooks/useSiteData";
 import { slugify } from "@/lib/slug";
 
@@ -117,14 +118,44 @@ export default function HaberDetayPage() {
                   />
                 </div>
 
-                {/* Haber Metni */}
+                {/* Haber Metni (Metin içi tüm bağlantılar otomatik mavi tıklanabilir linke dönüşür) */}
                 <div className="mt-8 space-y-5 text-[15px] sm:text-base leading-[1.85] text-slate-700">
                   {paragraphs.map((p, idx) => (
                     <p key={idx} className={idx === 0 ? "font-semibold text-ink text-base sm:text-lg leading-relaxed" : ""}>
-                      {p}
+                      <LinkifiedText text={p} />
                     </p>
                   ))}
                 </div>
+
+                {/* Yazı Altı Özel Bağlantı (Admin panelinden eklendiyse mavi tıklanabilir link olarak görünür) */}
+                {item.linkUrl?.trim() && (() => {
+                  const raw = item.linkUrl.trim();
+                  const isExternal = !raw.startsWith("/") && !raw.startsWith("#");
+                  const href = isExternal && !/^https?:\/\//i.test(raw) ? `https://${raw}` : raw;
+                  const label = item.linkText?.trim() || raw;
+                  return (
+                    <div className="mt-8 pt-6 border-t border-slate-200">
+                      {isExternal ? (
+                        <a
+                          href={href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-2 text-base font-bold text-blue-600 hover:text-blue-800 underline decoration-blue-400 underline-offset-4 transition-colors break-all"
+                        >
+                          <span>{label}</span>
+                          <ExternalLink size={16} className="shrink-0" />
+                        </a>
+                      ) : (
+                        <Link
+                          href={href}
+                          className="inline-flex items-center gap-2 text-base font-bold text-blue-600 hover:text-blue-800 underline decoration-blue-400 underline-offset-4 transition-colors break-all"
+                        >
+                          <span>{label}</span>
+                        </Link>
+                      )}
+                    </div>
+                  );
+                })()}
               </ScrollReveal>
             </article>
 

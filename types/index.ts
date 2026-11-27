@@ -93,6 +93,8 @@ export interface NewsItem {
   category: NewsCategory;
   date: string; // ISO
   image?: string;
+  linkUrl?: string;
+  linkText?: string;
 }
 
 export type ArchiveCategory = string;
@@ -363,4 +365,5 @@ export interface SiteSettings {
   headerLabels?: HeaderLabelsConfig;
   sliderZoomEnabled?: boolean;
   sliderMobileMode?: "new" | "classic";
+  managedCollections?: Record<string, boolean>;
 }

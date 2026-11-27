@@ -418,7 +418,7 @@ export default function MediaManager() {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {filtered.map((item) => {
             const isUploaded = item.category === "uploaded";
-            const cleanPath = item.path.split("?")[0];
+            const cleanPath = stripCacheBuster(item.path);
             const isDeleting = deletingPath === cleanPath;
 
             return (

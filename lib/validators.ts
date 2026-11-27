@@ -12,9 +12,12 @@ export function parseNews(v: unknown): NewsItem | null {
   if (!isObj(v)) return null;
   const title = str(v.title, 300);
   const category = str(v.category, 100) || "Genel Merkez";
-  const date = str(v.date, 10);
-  if (!title || !/^\d{4}-\d{2}-\d{2}$/.test(date)) return null;
+  const rawDate = str(v.date, 10);
+  const date = /^\d{4}-\d{2}-\d{2}$/.test(rawDate) ? rawDate : new Date().toISOString().slice(0, 10);
+  if (!title) return null;
   const content = str(v.content, 20000);
+  const linkUrl = str(v.linkUrl, 1000);
+  const linkText = str(v.linkText, 200);
   return {
     id: str(v.id, 100),
     title,
@@ -23,6 +26,8 @@ export function parseNews(v: unknown): NewsItem | null {
     category,
     date,
     image: str(v.image, 500),
+    ...(linkUrl ? { linkUrl } : {}),
+    ...(linkText ? { linkText } : {}),
   };
 }
 

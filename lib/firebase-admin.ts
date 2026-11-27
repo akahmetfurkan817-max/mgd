@@ -1,20 +1,36 @@
 import { cert, getApp, getApps, initializeApp, type App, type ServiceAccount } from "firebase-admin/app";
 import { getFirestore, type Firestore as AdminFirestore } from "firebase-admin/firestore";
 import { getStorage } from "firebase-admin/storage";
-import { collection, deleteDoc, doc, setDoc, writeBatch } from "firebase/firestore";
+import { collection, deleteDoc, doc, getDoc, getDocs, limit as fsLimit, query, setDoc, writeBatch } from "firebase/firestore";
 import { getDb, isFirebaseConfigured } from "@/lib/firebase";
+
+export interface UnifiedDocSnap {
+  id: string;
+  exists: boolean;
+  data: () => Record<string, unknown> | undefined;
+}
+
+export interface UnifiedQuerySnap {
+  empty: boolean;
+  docs: UnifiedDocSnap[];
+}
 
 export interface UnifiedDocRef {
   id: string;
   _docRef?: unknown;
+  get: () => Promise<UnifiedDocSnap>;
   set: (data: unknown, options?: { merge?: boolean }) => Promise<unknown>;
   delete: () => Promise<unknown>;
 }
 
+export interface UnifiedCollectionRef {
+  doc: (id?: string) => UnifiedDocRef;
+  get: () => Promise<UnifiedQuerySnap>;
+  limit: (n: number) => { get: () => Promise<UnifiedQuerySnap> };
+}
+
 export interface UnifiedDb {
-  collection: (col: string) => {
-    doc: (id?: string) => UnifiedDocRef;
-  };
+  collection: (col: string) => UnifiedCollectionRef;
   batch: () => {
     set: (docRef: unknown, data: unknown, options?: { merge?: boolean }) => void;
     commit: () => Promise<void>;
@@ -83,6 +99,14 @@ export function getAdminDb(): UnifiedDb | null {
           return {
             id: dRef.id,
             _docRef: dRef,
+            get: async () => {
+              const s = await getDoc(dRef);
+              return {
+                id: s.id,
+                exists: s.exists(),
+                data: () => (s.exists() ? (s.data() as Record<string, unknown>) : undefined),
+              };
+            },
             set: async (data: unknown, options?: { merge?: boolean }) => {
               // @ts-expect-error setDoc supports record objects
               return setDoc(dRef, data, options?.merge ? { merge: true } : {});
@@ -92,6 +116,30 @@ export function getAdminDb(): UnifiedDb | null {
             },
           };
         },
+        get: async () => {
+          const snap = await getDocs(collection(clientDb, colName));
+          return {
+            empty: snap.empty,
+            docs: snap.docs.map((s) => ({
+              id: s.id,
+              exists: true,
+              data: () => s.data() as Record<string, unknown>,
+            })),
+          };
+        },
+        limit: (n: number) => ({
+          get: async () => {
+            const snap = await getDocs(query(collection(clientDb, colName), fsLimit(n)));
+            return {
+              empty: snap.empty,
+              docs: snap.docs.map((s) => ({
+                id: s.id,
+                exists: true,
+                data: () => s.data() as Record<string, unknown>,
+              })),
+            };
+          },
+        }),
       }),
       batch: () => {
         const b = writeBatch(clientDb);

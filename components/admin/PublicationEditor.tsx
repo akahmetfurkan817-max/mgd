@@ -7,7 +7,7 @@ import { Card, Field, IDLE, PageHeader, SaveStatus, type SaveState } from "@/com
 import ImagePickerField from "@/components/admin/ImagePickerField";
 import CategoryManagerBar from "@/components/admin/CategoryManagerBar";
 import { usePublications, useSiteSettings } from "@/hooks/useSiteData";
-import { saveSection } from "@/lib/adminApi";
+import { deleteItem, saveSection } from "@/lib/adminApi";
 import { uploadMedia } from "@/lib/uploadMedia";
 import type { Publication, PublicationCategory } from "@/types";
 
@@ -48,7 +48,10 @@ export default function PublicationEditor() {
   };
 
   const save = async () => {
-    if (!form.title.trim()) return;
+    if (!form.title.trim()) {
+      setState({ status: "error", message: "Yayın başlığı zorunludur." });
+      return;
+    }
     setState({ status: "saving" });
 
     const payload = {
@@ -58,11 +61,11 @@ export default function PublicationEditor() {
 
     const res = await saveSection("publications", payload);
     if (res.ok) {
-      setForm(empty());
+      setForm(empty(categories[0]));
       setState({ status: "saved" });
       setTimeout(() => setState(IDLE), 2000);
     } else {
-      setState({ status: "error", message: res.error || "Hata" });
+      setState({ status: "error", message: res.error || "Kaydedilemedi." });
     }
   };
 
@@ -70,15 +73,14 @@ export default function PublicationEditor() {
     if (!window.confirm("Bu yayını silmek istediğinize emin misiniz?")) return;
     setState({ status: "saving" });
 
-    const res = await fetch(`/api/admin/publications?id=${encodeURIComponent(id)}`, {
-      method: "DELETE",
-    });
+    const res = await deleteItem("publications", id);
 
     if (res.ok) {
+      if (form.id === id) setForm(empty(categories[0]));
       setState({ status: "saved" });
       setTimeout(() => setState(IDLE), 2000);
     } else {
-      setState({ status: "error", message: "Silme işlemi başarısız." });
+      setState({ status: "error", message: res.error || "Silme işlemi başarısız." });
     }
   };
 

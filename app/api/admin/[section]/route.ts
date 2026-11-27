@@ -4,6 +4,10 @@ import { SESSION_COOKIE, verifySession } from "@/lib/auth";
 import { can } from "@/lib/permissions";
 import { COLLECTIONS } from "@/lib/firebase";
 import { getAdminDb } from "@/lib/firebase-admin";
+import { NEWS } from "@/data/news";
+import { ARCHIVE_ITEMS } from "@/data/archive";
+import { PUBLICATIONS } from "@/data/publications";
+import { VIDEOS } from "@/data/videos";
 import {
   parseArchiveItem,
   parseIbanList,
@@ -85,6 +89,7 @@ export async function PUT(req: Request, { params }: { params: { section: string 
       if (!item) return bad;
       const ref = item.id ? db.collection(COLLECTIONS.news).doc(item.id) : db.collection(COLLECTIONS.news).doc();
       await ref.set({ ...item, id: ref.id });
+      await db.collection(COLLECTIONS.settings).doc("site").set({ managedCollections: { news: true } }, { merge: true });
       return NextResponse.json({ ok: true, id: ref.id });
     }
 
@@ -93,6 +98,7 @@ export async function PUT(req: Request, { params }: { params: { section: string 
       if (!item) return bad;
       const ref = item.id ? db.collection(COLLECTIONS.publications).doc(item.id) : db.collection(COLLECTIONS.publications).doc();
       await ref.set({ ...item, id: ref.id });
+      await db.collection(COLLECTIONS.settings).doc("site").set({ managedCollections: { publications: true } }, { merge: true });
       return NextResponse.json({ ok: true, id: ref.id });
     }
 
@@ -154,6 +160,7 @@ export async function PUT(req: Request, { params }: { params: { section: string 
       if (!vid) return bad;
       const ref = vid.id ? db.collection(COLLECTIONS.videos).doc(vid.id) : db.collection(COLLECTIONS.videos).doc();
       await ref.set({ ...vid, id: ref.id });
+      await db.collection(COLLECTIONS.settings).doc("site").set({ managedCollections: { videos: true } }, { merge: true });
       return NextResponse.json({ ok: true, id: ref.id });
     }
 
@@ -162,6 +169,7 @@ export async function PUT(req: Request, { params }: { params: { section: string 
       if (!item) return bad;
       const ref = item.id ? db.collection(COLLECTIONS.archive).doc(item.id) : db.collection(COLLECTIONS.archive).doc();
       await ref.set({ ...item, id: ref.id });
+      await db.collection(COLLECTIONS.settings).doc("site").set({ managedCollections: { archive: true } }, { merge: true });
       return NextResponse.json({ ok: true, id: ref.id });
     }
 
@@ -194,6 +202,38 @@ export async function DELETE(req: Request, { params }: { params: { section: stri
     newsletter: COLLECTIONS.newsletter,
   };
 
-  await g.db.collection(colMap[g.section]).doc(id).delete();
+  const seedMap: Partial<Record<string, { id: string }[]>> = {
+    news: NEWS,
+    archive: ARCHIVE_ITEMS,
+    publications: PUBLICATIONS,
+    videos: VIDEOS,
+  };
+
+  const colRef = g.db.collection(colMap[g.section]);
+  const seeds = seedMap[g.section];
+
+  if (seeds) {
+    const existingSnap = await colRef.limit(1).get();
+    if (existingSnap.empty) {
+      // İlk kez örnek verilerden biri siliniyorsa kalan örnek kayıtları Firestore'a aktar
+      const remaining = seeds.filter((item) => item.id !== id);
+      if (remaining.length > 0) {
+        const batch = g.db.batch();
+        remaining.forEach((item) => {
+          batch.set(colRef.doc(item.id), item);
+        });
+        await batch.commit();
+      }
+    } else {
+      await colRef.doc(id).delete();
+    }
+    await g.db
+      .collection(COLLECTIONS.settings)
+      .doc("site")
+      .set({ managedCollections: { [g.section]: true } }, { merge: true });
+    return NextResponse.json({ ok: true });
+  }
+
+  await colRef.doc(id).delete();
   return NextResponse.json({ ok: true });
 }

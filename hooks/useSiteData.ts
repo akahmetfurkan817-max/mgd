@@ -53,22 +53,30 @@ export function hydrateSiteCache(initial?: Record<string, unknown> | null) {
   }
 }
 
-function useCollection<T>(name: string, seed: T[], combine: (remote: T[], seed: T[]) => T[]): Live<T[]> {
+function useCollection<T>(
+  name: string,
+  seed: T[],
+  combine: (remote: T[], seed: T[], managed?: boolean) => T[],
+  managed = false,
+): Live<T[]> {
   const cacheKey = `mgd_col_${name}`;
   const [state, setState] = useState<Live<T[]>>(() => {
     const mem = memoryCache.get(cacheKey);
     if (Array.isArray(mem)) {
-      return { data: combine(mem as T[], seed), live: true, loading: false };
+      return { data: combine(mem as T[], seed, managed), live: true, loading: false };
     }
-    return { data: seed, live: false, loading: isFirebaseConfigured };
+    return { data: managed ? [] : seed, live: false, loading: isFirebaseConfigured };
   });
 
   useEffect(() => {
     try {
       if (memoryCache.has(cacheKey)) {
         const current = memoryCache.get(cacheKey);
-        if (Array.isArray(current) && current.length > 0) {
-          localStorage.setItem(cacheKey, JSON.stringify(current));
+        if (Array.isArray(current)) {
+          if (current.length > 0) {
+            localStorage.setItem(cacheKey, JSON.stringify(current));
+          }
+          setState({ data: combine(current as T[], seed, managed), live: true, loading: false });
         }
       } else {
         const cached = localStorage.getItem(cacheKey);
@@ -76,7 +84,7 @@ function useCollection<T>(name: string, seed: T[], combine: (remote: T[], seed: 
           const parsed = JSON.parse(cached);
           if (Array.isArray(parsed) && parsed.length > 0) {
             memoryCache.set(cacheKey, parsed);
-            setState({ data: combine(parsed, seed), live: true, loading: false });
+            setState({ data: combine(parsed, seed, managed), live: true, loading: false });
           }
         }
       }
@@ -92,7 +100,7 @@ function useCollection<T>(name: string, seed: T[], combine: (remote: T[], seed: 
       (snap) => {
         const remote = snap.docs.map((d) => d.data() as T);
         memoryCache.set(cacheKey, remote);
-        setState({ data: combine(remote, seed), live: true, loading: false });
+        setState({ data: combine(remote, seed, managed), live: true, loading: false });
         try {
           if (remote.length > 0) {
             localStorage.setItem(cacheKey, JSON.stringify(remote));
@@ -106,7 +114,7 @@ function useCollection<T>(name: string, seed: T[], combine: (remote: T[], seed: 
         setState((prev) => (prev.loading ? { ...prev, loading: false } : prev));
       },
     );
-  }, [cacheKey, name, seed, combine]);
+  }, [cacheKey, name, seed, combine, managed]);
 
   return state;
 }
@@ -189,19 +197,13 @@ const combineLeaders = (remote: Leader[], seed: Leader[]): Leader[] => {
 
 const EMPTY_APPLICATIONS: VolunteerApplication[] = [];
 
-const combineNews = (remote: NewsItem[], seed: NewsItem[]): NewsItem[] => {
-  if (!remote || remote.length === 0) return seed;
-  if (remote.length < 6) {
-    const ids = new Set(remote.map((r) => r.id));
-    return [...remote, ...seed.filter((s) => !ids.has(s.id))].sort((a, b) =>
-      String(b.date || "").localeCompare(String(a.date || "")),
-    );
-  }
+const combineNews = (remote: NewsItem[], seed: NewsItem[], managed = false): NewsItem[] => {
+  if (!remote || remote.length === 0) return managed ? [] : seed;
   return [...remote].sort((a, b) => String(b.date || "").localeCompare(String(a.date || "")));
 };
 
-const combinePublications = (remote: Publication[], seed: Publication[]): Publication[] => {
-  if (!remote || remote.length === 0) return seed;
+const combinePublications = (remote: Publication[], seed: Publication[], managed = false): Publication[] => {
+  if (!remote || remote.length === 0) return managed ? [] : seed;
   return [...remote].sort((a, b) => String(b.date || "").localeCompare(String(a.date || "")));
 };
 
@@ -211,7 +213,8 @@ const combineApplications = (remote: VolunteerApplication[], seed: VolunteerAppl
 };
 
 export function useNews(): Live<NewsItem[]> {
-  return useCollection<NewsItem>(COLLECTIONS.news, NEWS, combineNews);
+  const { data: settings } = useSiteSettings();
+  return useCollection<NewsItem>(COLLECTIONS.news, NEWS, combineNews, Boolean(settings.managedCollections?.news));
 }
 export function useProvinces(): Live<Province[]> {
   return useCollection<Province>(COLLECTIONS.provinces, PROVINCES, combineProvinces);
@@ -228,7 +231,13 @@ export function useIban(): Live<IbanInfo[]> {
 }
 
 export function usePublications(): Live<Publication[]> {
-  return useCollection<Publication>(COLLECTIONS.publications, PUBLICATIONS, combinePublications);
+  const { data: settings } = useSiteSettings();
+  return useCollection<Publication>(
+    COLLECTIONS.publications,
+    PUBLICATIONS,
+    combinePublications,
+    Boolean(settings.managedCollections?.publications),
+  );
 }
 
 export function useApplications(): Live<VolunteerApplication[]> {
@@ -244,13 +253,14 @@ export function useSocialPosts(): Live<SocialPost[]> {
   return useCollection<SocialPost>(COLLECTIONS.social, SOCIAL_POSTS, combineSocialPosts);
 }
 
-const combineVideos = (remote: VideoItem[], seed: VideoItem[]): VideoItem[] => {
-  if (!remote || remote.length === 0) return seed;
+const combineVideos = (remote: VideoItem[], seed: VideoItem[], managed = false): VideoItem[] => {
+  if (!remote || remote.length === 0) return managed ? [] : seed;
   return remote;
 };
 
 export function useVideos(): Live<VideoItem[]> {
-  return useCollection<VideoItem>(COLLECTIONS.videos, VIDEOS, combineVideos);
+  const { data: settings } = useSiteSettings();
+  return useCollection<VideoItem>(COLLECTIONS.videos, VIDEOS, combineVideos, Boolean(settings.managedCollections?.videos));
 }
 
 export function useSiteSettings(): Live<SiteSettings> {
@@ -342,13 +352,19 @@ export function useOncuSahsiyetler(): Live<OncuSahsiyet[]> {
   };
 }
 
-const combineArchive = (remote: ArchiveItem[], seed: ArchiveItem[]): ArchiveItem[] => {
-  if (!remote || remote.length === 0) return seed;
+const combineArchive = (remote: ArchiveItem[], seed: ArchiveItem[], managed = false): ArchiveItem[] => {
+  if (!remote || remote.length === 0) return managed ? [] : seed;
   return [...remote].sort((a, b) => (b.date || "").localeCompare(a.date || ""));
 };
 
 export function useArchiveItems(): Live<ArchiveItem[]> {
-  return useCollection<ArchiveItem>(COLLECTIONS.archive, ARCHIVE_ITEMS, combineArchive);
+  const { data: settings } = useSiteSettings();
+  return useCollection<ArchiveItem>(
+    COLLECTIONS.archive,
+    ARCHIVE_ITEMS,
+    combineArchive,
+    Boolean(settings.managedCollections?.archive),
+  );
 }
 
 const EMPTY_SUBSCRIBERS: NewsletterSubscriber[] = [];
