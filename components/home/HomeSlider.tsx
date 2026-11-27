@@ -46,6 +46,7 @@ export default function HomeSlider() {
   const { data: slides } = useSlides();
   const { data: settings } = useSiteSettings();
   const sliderZoomEnabled = Boolean(settings.sliderZoomEnabled);
+  const useClassicMobile = settings.sliderMobileMode === "classic";
   const total = slides.length;
 
   const [current, setCurrent] = useState(0);
@@ -76,6 +77,10 @@ export default function HomeSlider() {
   // Mobilde aktif slaytın yüksekliğine yumuşakça uyum sağla (metinli ve metinsiz afişler arasında boşluk oluşmasın)
   useEffect(() => {
     if (typeof window === "undefined") return;
+    if (useClassicMobile) {
+      setMobileHeight(null);
+      return;
+    }
 
     const measure = () => {
       if (window.innerWidth >= 1024) {
@@ -100,7 +105,7 @@ export default function HomeSlider() {
       observer?.disconnect();
       window.removeEventListener("resize", measure);
     };
-  }, [current, total, slides]);
+  }, [current, total, slides, useClassicMobile]);
 
   const goTo = useCallback(
     (index: number) => {
@@ -276,11 +281,14 @@ export default function HomeSlider() {
                       window.location.href = resolvedHref;
                     }
                   }}
-                  className={`relative w-full shrink-0 lg:min-h-[600px] lg:flex lg:items-center ${
-                    slideClickable ? "cursor-pointer" : ""
-                  }`}
+                  className={`relative w-full shrink-0 ${
+                    useClassicMobile
+                      ? "min-h-[480px] sm:min-h-[540px] lg:min-h-[600px] flex items-center"
+                      : "lg:min-h-[600px] lg:flex lg:items-center"
+                  } ${slideClickable ? "cursor-pointer" : ""}`}
                 >
                   {/* ==================== MOBİL & TABLET GÖRÜNÜM (< 1024px) ==================== */}
+                  {!useClassicMobile && (
                   <div className="lg:hidden w-full">
                     {mobileFitMode === "contain" ? (
                       <div className="relative w-full min-h-[160px] overflow-hidden bg-slate-100">
@@ -367,11 +375,12 @@ export default function HomeSlider() {
                       </div>
                     )}
                   </div>
+                  )}
 
-                  {/* ==================== MASAÜSTÜ GÖRÜNÜM (>= 1024px) ==================== */}
+                  {/* ==================== MASAÜSTÜ (VE ESKİ MOBİL) GÖRÜNÜM ==================== */}
                   {/* Arka Plan Fotoğrafı */}
                   <div
-                    className="hidden lg:block absolute inset-0 overflow-hidden"
+                    className={`${useClassicMobile ? "block" : "hidden lg:block"} absolute inset-0 overflow-hidden`}
                     style={{
                       transform: `translate3d(${parallaxPx}px, 0, 0)`,
                       transition: isDragging ? "none" : "transform 680ms cubic-bezier(0.22, 1, 0.36, 1)",
@@ -400,16 +409,20 @@ export default function HomeSlider() {
                     )}
                   </div>
 
-                  {/* Masaüstü Slayt Metinleri (Sadece doldurulmuşsa görünür) */}
+                  {/* Masaüstü (ve Eski Mobil) Slayt Metinleri (Sadece doldurulmuşsa görünür) */}
                   {hasText && (
-                    <div className="hidden lg:block container-x relative z-20 pt-12 pb-32">
+                    <div
+                      className={`${
+                        useClassicMobile ? "block pt-10 pb-28 sm:pt-12 sm:pb-32" : "hidden lg:block pt-12 pb-32"
+                      } container-x relative z-20`}
+                    >
                       <div
-                        className={`max-w-2xl pl-14 lg:pl-16 transition-all duration-700 ${
+                        className={`max-w-2xl sm:pl-14 lg:pl-16 transition-all duration-700 ${
                           isActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4 pointer-events-none"
                         }`}
                       >
                         {item.title?.trim() && (
-                          <h1 className="font-display text-4xl lg:text-[56px] font-extrabold tracking-[-0.025em] text-white leading-[1.08] drop-shadow-sm">
+                          <h1 className="font-display text-3xl sm:text-5xl lg:text-[56px] font-extrabold tracking-[-0.025em] text-white leading-[1.08] drop-shadow-sm">
                             {item.title}
                           </h1>
                         )}
@@ -485,10 +498,14 @@ export default function HomeSlider() {
             </div>
           )}
 
-          {/* Masaüstü Alt Sayaç, İlerleme Çubukları ve Duraklat Butonu */}
+          {/* Masaüstü (ve Eski Mobil) Alt Sayaç, İlerleme Çubukları ve Duraklat Butonu */}
           {total > 1 && (
-            <div className="hidden lg:block absolute bottom-20 inset-x-0 z-30">
-              <div className="container-x pl-20 lg:pl-24 flex items-center gap-3.5">
+            <div
+              className={`${
+                useClassicMobile ? "block bottom-16 sm:bottom-20" : "hidden lg:block bottom-20"
+              } absolute inset-x-0 z-30`}
+            >
+              <div className="container-x sm:pl-20 lg:pl-24 flex items-center gap-3.5">
                 <span className="font-mono text-xs font-bold text-white/95 tracking-wider">
                   {String(current + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}
                 </span>
@@ -534,8 +551,8 @@ export default function HomeSlider() {
           )}
         </div>
 
-        {/* Mobil & Tablet Alt Kontrol Çubuğu (Görselin üstünü kapatmadan hemen altında yer alır) */}
-        {total > 1 && (
+        {/* Mobil & Tablet Alt Kontrol Çubuğu (Yeni görünümde görselin üstünü kapatmadan hemen altında yer alır) */}
+        {!useClassicMobile && total > 1 && (
           <div className="lg:hidden bg-[#0B2352] border-t border-white/10 px-3.5 py-2.5 flex items-center justify-between gap-2.5">
             <div className="flex items-center gap-1.5 shrink-0">
               <button
@@ -603,8 +620,12 @@ export default function HomeSlider() {
         )}
       </div>
 
-      {/* Slayt Altına Binen Yüzer Komisyon Kartı (Mobil/Tablette görseli kapatmamak için mt-4, masaüstünde -mt-14) */}
-      <div className="container-x relative z-30 mt-4 lg:-mt-14 pb-6">
+      {/* Slayt Altına Binen Yüzer Komisyon Kartı (Yeni mobil görünümde mt-4, eski/masaüstü görünümde -mt-12/-mt-14) */}
+      <div
+        className={`container-x relative z-30 pb-6 ${
+          useClassicMobile ? "-mt-12 sm:-mt-14" : "mt-4 lg:-mt-14"
+        }`}
+      >
         <div className="rounded-2xl shadow-[0_18px_45px_-12px_rgba(10,25,60,0.28)] overflow-hidden border border-slate-200/70">
           <div className="grid grid-cols-1 md:grid-cols-2">
             {COMMISSION_CARDS.map((card) => {

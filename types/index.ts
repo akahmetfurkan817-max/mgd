@@ -361,4 +361,5 @@ export interface SiteSettings {
   categories?: SiteCategoriesConfig;
   headerLabels?: HeaderLabelsConfig;
   sliderZoomEnabled?: boolean;
+  sliderMobileMode?: "new" | "classic";
 }

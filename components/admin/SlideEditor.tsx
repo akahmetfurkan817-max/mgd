@@ -55,6 +55,10 @@ export default function SlideEditor() {
   const [slides, setSlides] = useState<HomeSlideItem[]>(liveSlides);
   const [zoomEnabled, setZoomEnabled] = useState<boolean>(Boolean(siteSettings.sliderZoomEnabled));
   const [savingZoom, setSavingZoom] = useState(false);
+  const [mobileMode, setMobileMode] = useState<"new" | "classic">(
+    siteSettings.sliderMobileMode === "classic" ? "classic" : "new",
+  );
+  const [savingMobileMode, setSavingMobileMode] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [previewSlide, setPreviewSlide] = useState<HomeSlideItem | null>(null);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
@@ -72,6 +76,10 @@ export default function SlideEditor() {
   useEffect(() => {
     setZoomEnabled(Boolean(siteSettings.sliderZoomEnabled));
   }, [siteSettings.sliderZoomEnabled]);
+
+  useEffect(() => {
+    setMobileMode(siteSettings.sliderMobileMode === "classic" ? "classic" : "new");
+  }, [siteSettings.sliderMobileMode]);
 
   useEffect(() => {
     if (live && liveSlides.length > 0) {
@@ -97,6 +105,27 @@ export default function SlideEditor() {
       }
     } finally {
       setSavingZoom(false);
+    }
+  };
+
+  const handleSetMobileMode = async (next: "new" | "classic") => {
+    if (next === mobileMode || savingMobileMode) return;
+    setMobileMode(next);
+    setSavingMobileMode(true);
+    try {
+      const res = await saveSection("content", { sliderMobileMode: next });
+      if (res.ok) {
+        notify(
+          "ok",
+          next === "new"
+            ? "Slider Yeni Görünüm (Tam Afiş) aktif edildi ve anında yayına alındı."
+            : "Slider Eski Görünüm aktif edildi ve anında yayına alındı.",
+        );
+      } else {
+        notify("err", res.error || "Görünüm ayarı kaydedilemedi.");
+      }
+    } finally {
+      setSavingMobileMode(false);
     }
   };
 
@@ -240,6 +269,35 @@ export default function SlideEditor() {
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
+          <div
+            className="inline-flex items-center rounded-xl border border-slate-200 bg-slate-100 p-0.5"
+            title="Ana sayfa mobil slider görünümünü anında değiştirin"
+          >
+            <button
+              type="button"
+              onClick={() => handleSetMobileMode("classic")}
+              disabled={savingMobileMode}
+              className={`rounded-lg px-3 py-1.5 text-xs font-bold transition ${
+                mobileMode === "classic"
+                  ? "bg-primary text-white shadow-sm"
+                  : "text-slate-600 hover:text-ink"
+              }`}
+            >
+              Eski Görünüm
+            </button>
+            <button
+              type="button"
+              onClick={() => handleSetMobileMode("new")}
+              disabled={savingMobileMode}
+              className={`rounded-lg px-3 py-1.5 text-xs font-bold transition ${
+                mobileMode === "new"
+                  ? "bg-emerald-600 text-white shadow-sm"
+                  : "text-slate-600 hover:text-ink"
+              }`}
+            >
+              Yeni Görünüm
+            </button>
+          </div>
           <button
             type="button"
             onClick={handleToggleZoom}
