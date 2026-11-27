@@ -291,7 +291,7 @@ export default function HomeSlider() {
                   {!useClassicMobile && (
                   <div className="lg:hidden w-full">
                     {mobileFitMode === "contain" ? (
-                      <div className="relative w-full min-h-[160px] overflow-hidden bg-slate-100">
+                      <div className="relative w-full overflow-hidden bg-[#0B2352]">
                         {/* Yatay afişler mobilde kendi doğal oranında, kenar boşluğu ve kırpma olmadan tam genişlikte görünür */}
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
