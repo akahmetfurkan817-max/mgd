@@ -1,5 +1,3 @@
-import Image from "next/image";
-
 interface LogoProps {
   className?: string;
   light?: boolean;
@@ -7,25 +5,22 @@ interface LogoProps {
 
 /**
  * Milli Gençlik Derneği Resmî Yatay Logosu
+ * Sabit boyutlu (415x157 -> 116x44) render edilerek mobilde sayfa yenileme anında büyüme/küçülme (CLS) tamamen engellenir.
  */
 export default function Logo({ className = "", light = false }: LogoProps) {
   const logoSrc = light ? "/images/mgd-logo-light.png" : "/images/mgd-logo.png";
 
   return (
-    <span className={`inline-flex items-center select-none ${className}`}>
-      <div
-        className="relative h-11 sm:h-13 w-32 sm:w-40 shrink-0"
-        style={{ position: "relative", width: "160px", height: "48px", maxWidth: "100%", overflow: "hidden" }}
-      >
-        <Image
-          src={logoSrc}
-          alt="Milli Gençlik Derneği Logosu"
-          fill
-          sizes="(max-width: 640px) 130px, 160px"
-          className="object-contain object-left"
-          priority
-        />
-      </div>
+    <span className={`inline-flex items-center shrink-0 select-none ${className}`}>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={logoSrc}
+        alt="Milli Gençlik Derneği Logosu"
+        width={116}
+        height={44}
+        decoding="sync"
+        className="block h-[44px] w-[116px] shrink-0 object-contain object-left"
+      />
     </span>
   );
 }

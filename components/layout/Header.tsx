@@ -608,14 +608,14 @@ export default function Header() {
                       Kurumsal Belgeler &amp; Tüzük
                     </Link>
                     <Link href="/oncu-sahsiyetler" onClick={() => setMobileMenuOpen(false)} className="block rounded-lg px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-surface">
-                      Öncü Şahsiyetler
+                      {navLabels.oncuSahsiyetler}
                     </Link>
                   </div>
                 </div>
 
                 <div className="pt-3 border-t border-slate-100">
                   <span className="px-2 text-[10px] font-extrabold uppercase tracking-[0.18em] text-primary">
-                    Haberler &amp; Arşiv
+                    {navLabels.haberler} &amp; Arşiv
                   </span>
                   <div className="mt-1.5 space-y-0.5">
                     <Link href="/haberler" onClick={() => setMobileMenuOpen(false)} className="block rounded-lg px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-surface">
@@ -631,24 +631,24 @@ export default function Header() {
                       Yayınlar &amp; E-Kütüphane
                     </Link>
                     <Link href="/dosya-arsivi" onClick={() => setMobileMenuOpen(false)} className="block rounded-lg px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-surface">
-                      Dosya Arşivi
+                      {navLabels.dosyaArsivi}
                     </Link>
                   </div>
                 </div>
 
                 <div className="pt-3 border-t border-slate-100">
                   <span className="px-2 text-[10px] font-extrabold uppercase tracking-[0.18em] text-primary">
-                    Medya &amp; İletişim
+                    {navLabels.medya} &amp; {navLabels.iletisim}
                   </span>
                   <div className="mt-1.5 space-y-0.5">
                     <Link href="/videolar" onClick={() => setMobileMenuOpen(false)} className="block rounded-lg px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-surface">
                       MGD TV &amp; Video Galeri
                     </Link>
                     <Link href="/etkinlikler" onClick={() => setMobileMenuOpen(false)} className="block rounded-lg px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-surface">
-                      Program Takvimi
+                      {navLabels.programTakvimi}
                     </Link>
                     <Link href="/iletisim" onClick={() => setMobileMenuOpen(false)} className="block rounded-lg px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-surface">
-                      İletişim
+                      {navLabels.iletisim}
                     </Link>
                   </div>
                 </div>
@@ -664,15 +664,15 @@ export default function Header() {
                 }}
                 className="btn-primary w-full py-3"
               >
-                <User size={16} /> Üyelik / Başvuru
+                <User size={16} /> {navLabels.uyelikBasvuru}
               </button>
               <a
-                href="https://milbis.net/giris"
+                href={navLabels.milbisUrl}
                 target="_blank"
                 rel="noreferrer"
                 className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-slate-900 px-5 py-3 text-sm font-bold text-white hover:bg-slate-800 transition"
               >
-                <LogIn size={16} /> MİLBİS Giriş <ExternalLink size={13} />
+                <LogIn size={16} /> {navLabels.milbisGiris} <ExternalLink size={13} />
               </a>
               <button
                 type="button"
@@ -682,7 +682,7 @@ export default function Header() {
                 }}
                 className="btn-outline w-full py-3"
               >
-                <Landmark size={16} className="text-secondary" /> Bağış Yap (İBAN)
+                <Landmark size={16} className="text-secondary" /> {navLabels.bagisYap}
               </button>
             </div>
           </div>
