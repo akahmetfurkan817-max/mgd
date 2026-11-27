@@ -31,6 +31,7 @@ export interface HomeSlideItem {
   image: string;
   mobileImage?: string;
   mobileFit?: "contain" | "cover";
+  hiddenLink?: string;
   linkUrl: string;
   buttonText: string;
   date?: string;

@@ -10,6 +10,7 @@ import {
   Check,
   Eye,
   Layers,
+  Link2,
   Loader2,
   Monitor,
   Pencil,
@@ -44,6 +45,7 @@ const EMPTY_FORM: HomeSlideItem = {
   image: "/images/slider/burs-universite.jpg",
   mobileImage: "",
   mobileFit: "contain",
+  hiddenLink: "",
   linkUrl: "/haberler",
   buttonText: "Detayları İncele",
   date: "Yeni Duyuru",
@@ -189,6 +191,7 @@ export default function SlideEditor() {
       ...currentItem,
       mobileImage: currentItem.mobileImage || "",
       mobileFit: currentItem.mobileFit || (currentItem.mobileImage?.trim() ? "cover" : "contain"),
+      hiddenLink: currentItem.hiddenLink || (!currentItem.buttonText?.trim() ? currentItem.linkUrl || "" : ""),
     });
     setFormPreviewDevice("desktop");
     setModalOpen(true);
@@ -225,6 +228,7 @@ export default function SlideEditor() {
       ...form,
       mobileImage: form.mobileImage?.trim() || "",
       mobileFit: form.mobileFit || (form.mobileImage?.trim() ? "cover" : "contain"),
+      hiddenLink: form.hiddenLink?.trim() || "",
     };
     const next =
       editingIndex !== null
@@ -494,6 +498,12 @@ export default function SlideEditor() {
                   <p className="text-xs text-slate-600 mt-1 line-clamp-2 leading-relaxed">{item.subtitle}</p>
                 )}
                 <div className="mt-2.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500">
+                  {item.hiddenLink?.trim() && (
+                    <span className="inline-flex items-center gap-1 rounded-md border border-indigo-200 bg-indigo-50 px-2 py-0.5 text-[11px] font-bold text-indigo-700">
+                      <Link2 size={11} /> Gizli Bağlantı:{" "}
+                      <span className="font-mono font-semibold truncate max-w-[200px]">{item.hiddenLink}</span>
+                    </span>
+                  )}
                   {item.buttonText && <span className="font-semibold text-primary">Buton: {item.buttonText}</span>}
                   {item.linkUrl && (
                     <>
@@ -819,6 +829,24 @@ export default function SlideEditor() {
                     className="w-full rounded-lg border border-slate-300 px-3 py-2 text-xs focus:border-primary focus:outline-none"
                   />
                 </div>
+              </div>
+
+              {/* Gizli Bağlantı (Görsele Tıklayınca Gidilecek Adres) */}
+              <div className="rounded-xl border border-indigo-200/80 bg-indigo-50/50 p-4 space-y-2">
+                <label className="flex items-center gap-1.5 text-xs font-bold text-indigo-900">
+                  <Link2 size={14} className="text-indigo-600" />
+                  Gizli Bağlantı (Opsiyonel)
+                </label>
+                <input
+                  type="text"
+                  value={form.hiddenLink || ""}
+                  onChange={(e) => setForm({ ...form, hiddenLink: e.target.value })}
+                  placeholder="https://www.milbis.net/burs"
+                  className="w-full rounded-lg border border-indigo-200 bg-white px-3.5 py-2.5 text-sm font-mono text-ink focus:border-indigo-500 focus:outline-none"
+                />
+                <p className="text-[11px] text-indigo-800/80">
+                  Slayt görselinin herhangi bir yerine tıklandığında ekranda buton göstermeden doğrudan bu adrese yönlendirir. Site içi (<code>/haberler</code>) veya harici (<code>https://www.milbis.net/burs</code>) adres yazabilirsiniz.
+                </p>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

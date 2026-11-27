@@ -259,7 +259,10 @@ export default function HomeSlider() {
               const parallaxPx = isActive && isDragging ? dragOffset * -0.14 : 0;
               const hasText = Boolean(item.title?.trim() || item.subtitle?.trim() || item.buttonText?.trim());
               const { href: resolvedHref, isExternal } = resolveSlideLink(item.linkUrl);
-              const slideClickable = !item.buttonText?.trim() && Boolean(resolvedHref);
+              const { href: resolvedHiddenHref, isExternal: isHiddenExternal } = resolveSlideLink(
+                item.hiddenLink?.trim() || (!item.buttonText?.trim() ? item.linkUrl : ""),
+              );
+              const slideClickable = Boolean(resolvedHiddenHref);
 
               const desktopSrc = item.image || "/images/slider/yeniden-milli-genclik.jpg";
               const customMobileSrc = item.mobileImage?.trim() || "";
@@ -273,12 +276,14 @@ export default function HomeSlider() {
                   ref={(el) => {
                     slideRefs.current[idx] = el;
                   }}
-                  onClick={() => {
+                  onClick={(e) => {
                     if (!slideClickable || didDragRef.current) return;
-                    if (isExternal) {
-                      window.open(resolvedHref, "_blank", "noopener,noreferrer");
+                    const target = e.target as HTMLElement;
+                    if (target.closest("button") || target.closest("a")) return;
+                    if (isHiddenExternal) {
+                      window.open(resolvedHiddenHref, "_blank", "noopener,noreferrer");
                     } else {
-                      window.location.href = resolvedHref;
+                      window.location.href = resolvedHiddenHref;
                     }
                   }}
                   className={`relative w-full shrink-0 ${

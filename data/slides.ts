@@ -7,6 +7,7 @@ export interface HomeSlideItem {
   image: string;
   mobileImage?: string;
   mobileFit?: "contain" | "cover";
+  hiddenLink?: string;
   linkUrl: string;
   buttonText: string;
   date?: string;
@@ -33,7 +34,8 @@ export const HOME_SLIDES: HomeSlideItem[] = [
     subtitle:
       "Genel Merkez Eğitim ve Burs Komisyonumuz tarafından yürütülen karşılıksız eğitim desteği ve barınma bursu başvuruları başlamıştır.",
     image: "/images/slider/burs-universite.jpg",
-    linkUrl: "/haberler#burs-basvuru",
+    hiddenLink: "https://www.milbis.net/burs",
+    linkUrl: "https://www.milbis.net/burs",
     buttonText: "Burs Başvuru Formuna Git →",
     date: "Aktif Başvuru",
   },
