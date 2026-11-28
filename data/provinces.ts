@@ -1,12 +1,61 @@
 import type { Province } from "@/types";
 import { MAP_PROVINCES } from "@/data/turkey-map";
 
-// ÖRNEK VERİ — 81 il için yer tutucu kayıtlar üretilir. Gerçek bilgiler OVERRIDES içinde
-// ya da Yönetim Paneli > 81 İl Bilgisi bölümünde güncellenmelidir.
+// 81 il için kayıtlar üretilir. Gerçek il başkanı ve telefon bilgileri OVERRIDES içinde
+// tanımlıdır; ayrıca Yönetim Paneli > 81 İl Bilgisi bölümünden güncellenebilir.
 const OVERRIDES: Partial<Record<number, Partial<Province>>> = {
-  6: { address: "Örnek Mah. Örnek Cad. No:1 Çankaya / Ankara" },
-  34: { address: "Örnek Mah. Örnek Sok. No:1 Fatih / İstanbul" },
+  1: { chairName: "Hasan ARIK", phone: "0538 884 36 75" },
+  2: { chairName: "Bekir KORKMAZ", phone: "0546 416 74 02" },
+  4: { chairName: "Volkan BİLGİ", phone: "0543 369 22 54" },
+  5: { chairName: "Levent ÇAĞLAR", phone: "0535 060 21 08" },
+  6: {
+    chairName: "Osman ÖTKÜN",
+    phone: "0542 212 99 99",
+    address: "Örnek Mah. Örnek Cad. No:1 Çankaya / Ankara",
+  },
+  7: { chairName: "Mesut İsmail ÖZDEM", phone: "0506 354 11 20" },
+  9: { chairName: "Erdem GEDİZ", phone: "0530 381 20 23" },
+  11: { chairName: "Alper YILDIRIM", phone: "0554 342 59 19" },
+  12: { chairName: "Selahattin TURHAN", phone: "0501 168 79 89" },
+  14: { chairName: "Yavuz YANAR", phone: "0505 751 58 77" },
+  16: { chairName: "Halil KAYA", phone: "0505 698 13 01" },
+  19: { chairName: "Vehbi AĞIR", phone: "0539 475 61 66" },
+  20: { chairName: "İbrahim GENCER", phone: "0554 349 75 59" },
+  23: { chairName: "Mahmut ÖZEREN", phone: "0533 268 62 58" },
+  27: { chairName: "Osman AKSU", phone: "0532 300 33 81" },
+  30: { chairName: "Abdülhamit TATLI", phone: "0543 449 67 39" },
+  31: { chairName: "İsmail Furkan ARIKOĞLU", phone: "0531 917 17 78" },
+  32: { chairName: "Metin GÖL", phone: "0537 543 50 31" },
+  33: { chairName: "Bayram GENÇ", phone: "0555 718 67 92" },
+  34: {
+    chairName: "İbrahim DEMİR",
+    phone: "0532 551 03 03",
+    address: "Örnek Mah. Örnek Sok. No:1 Fatih / İstanbul",
+  },
   35: { address: "Örnek Mah. Örnek Cad. No:1 Konak / İzmir" },
+  37: { chairName: "Zafer GÜLER", phone: "0546 860 59 33" },
+  38: { chairName: "Yüksel ÇELEN", phone: "0536 576 24 13" },
+  41: { chairName: "Yakup GÜZELTEPE", phone: "0535 847 40 52" },
+  42: { chairName: "İshak ARSLAN", phone: "0544 842 15 71" },
+  43: { chairName: "İsmail SAĞDIÇ", phone: "0539 389 18 69" },
+  47: { chairName: "Abdulbasit BARIK", phone: "0533 723 17 02" },
+  48: { chairName: "Kadir Ali SELÇUK", phone: "0530 030 58 09" },
+  49: { chairName: "Mehmet Emin FIRAT", phone: "0506 343 06 76" },
+  50: { chairName: "Oğuzhan DOĞAN", phone: "0545 325 50 71" },
+  54: { chairName: "Bayram BUDAK", phone: "0546 480 83 41" },
+  55: { chairName: "Mustafa Yunus GONCA", phone: "0543 245 64 65" },
+  59: { chairName: "Olcay İNANÇ", phone: "0531 279 20 65" },
+  61: { chairName: "Adil MALKOÇ", phone: "0533 614 52 85" },
+  63: { chairName: "Nebi KAPLAN", phone: "0542 790 55 99" },
+  64: { chairName: "M. Talha KAHRAMAN", phone: "0555 492 48 32" },
+  65: { chairName: "Kaya ORTASAÇ", phone: "0532 466 64 22" },
+  66: { chairName: "Hasan ÇELİK", phone: "0537 848 47 48" },
+  72: { chairName: "Abdulcelil ALTUN", phone: "0505 475 39 40" },
+  73: { chairName: "Doğan Barış KILINÇ", phone: "0542 227 24 17" },
+  76: { chairName: "Muhittin GÜNTEKİN", phone: "0546 616 41 18" },
+  78: { chairName: "İlhan KAVİLCİ", phone: "0541 336 55 74" },
+  79: { chairName: "Uğur Erdal AVCI", phone: "0532 388 29 01" },
+  80: { chairName: "Mahmut SEVEN", phone: "0532 336 71 85" },
 };
 
 export const PROVINCES: Province[] = MAP_PROVINCES.map(({ plate, name }) => ({
